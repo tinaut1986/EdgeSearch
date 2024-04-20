@@ -38,6 +38,7 @@ namespace Test_web
             lblProgress = new System.Windows.Forms.Label();
             txtURL = new System.Windows.Forms.TextBox();
             btnOpen = new System.Windows.Forms.Button();
+            lblResumen = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)webView).BeginInit();
             SuspendLayout();
             // 
@@ -49,22 +50,22 @@ namespace Test_web
             webView.DefaultBackgroundColor = System.Drawing.Color.White;
             webView.Location = new System.Drawing.Point(12, 41);
             webView.Name = "webView";
-            webView.Size = new System.Drawing.Size(1007, 447);
+            webView.Size = new System.Drawing.Size(1106, 486);
             webView.TabIndex = 0;
             webView.ZoomFactor = 1D;
             // 
             // progressBar
             // 
             progressBar.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            progressBar.Location = new System.Drawing.Point(9, 519);
+            progressBar.Location = new System.Drawing.Point(225, 533);
             progressBar.Name = "progressBar";
-            progressBar.Size = new System.Drawing.Size(1007, 23);
+            progressBar.Size = new System.Drawing.Size(809, 23);
             progressBar.TabIndex = 1;
             // 
             // btnPlay
             // 
             btnPlay.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            btnPlay.Location = new System.Drawing.Point(944, 494);
+            btnPlay.Location = new System.Drawing.Point(1040, 533);
             btnPlay.Name = "btnPlay";
             btnPlay.Size = new System.Drawing.Size(75, 23);
             btnPlay.TabIndex = 2;
@@ -75,7 +76,7 @@ namespace Test_web
             // txtLowerUpdate
             // 
             txtLowerUpdate.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            txtLowerUpdate.Location = new System.Drawing.Point(126, 494);
+            txtLowerUpdate.Location = new System.Drawing.Point(123, 533);
             txtLowerUpdate.Name = "txtLowerUpdate";
             txtLowerUpdate.Size = new System.Drawing.Size(45, 23);
             txtLowerUpdate.TabIndex = 3;
@@ -85,7 +86,7 @@ namespace Test_web
             // 
             label1.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             label1.AutoSize = true;
-            label1.Location = new System.Drawing.Point(12, 498);
+            label1.Location = new System.Drawing.Point(9, 537);
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(108, 15);
             label1.TabIndex = 4;
@@ -94,7 +95,7 @@ namespace Test_web
             // txtUpperUpdate
             // 
             txtUpperUpdate.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            txtUpperUpdate.Location = new System.Drawing.Point(177, 494);
+            txtUpperUpdate.Location = new System.Drawing.Point(174, 533);
             txtUpperUpdate.Name = "txtUpperUpdate";
             txtUpperUpdate.Size = new System.Drawing.Size(45, 23);
             txtUpperUpdate.TabIndex = 3;
@@ -106,7 +107,7 @@ namespace Test_web
             lblProgress.AutoSize = true;
             lblProgress.BackColor = System.Drawing.Color.Transparent;
             lblProgress.ForeColor = System.Drawing.Color.Black;
-            lblProgress.Location = new System.Drawing.Point(500, 523);
+            lblProgress.Location = new System.Drawing.Point(601, 537);
             lblProgress.Name = "lblProgress";
             lblProgress.Size = new System.Drawing.Size(24, 15);
             lblProgress.TabIndex = 5;
@@ -118,14 +119,14 @@ namespace Test_web
             txtURL.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             txtURL.Location = new System.Drawing.Point(12, 12);
             txtURL.Name = "txtURL";
-            txtURL.Size = new System.Drawing.Size(923, 23);
+            txtURL.Size = new System.Drawing.Size(1022, 23);
             txtURL.TabIndex = 6;
             txtURL.KeyPress += txtURL_KeyPress;
             // 
             // btnOpen
             // 
             btnOpen.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            btnOpen.Location = new System.Drawing.Point(941, 11);
+            btnOpen.Location = new System.Drawing.Point(1040, 11);
             btnOpen.Name = "btnOpen";
             btnOpen.Size = new System.Drawing.Size(75, 23);
             btnOpen.TabIndex = 2;
@@ -133,11 +134,23 @@ namespace Test_web
             btnOpen.UseVisualStyleBackColor = true;
             btnOpen.Click += btnOpen_Click;
             // 
+            // lblResumen
+            // 
+            lblResumen.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            lblResumen.AutoSize = true;
+            lblResumen.BackColor = System.Drawing.Color.Transparent;
+            lblResumen.Location = new System.Drawing.Point(896, 537);
+            lblResumen.Name = "lblResumen";
+            lblResumen.Size = new System.Drawing.Size(135, 15);
+            lblResumen.TabIndex = 7;
+            lblResumen.Text = "searches: 0 | points: 0/90";
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1031, 558);
+            ClientSize = new System.Drawing.Size(1130, 568);
+            Controls.Add(lblResumen);
             Controls.Add(txtURL);
             Controls.Add(lblProgress);
             Controls.Add(label1);
@@ -165,6 +178,7 @@ namespace Test_web
         private System.Windows.Forms.Label lblProgress;
         private System.Windows.Forms.TextBox txtURL;
         private System.Windows.Forms.Button btnOpen;
+        private System.Windows.Forms.Label lblResumen;
     }
 }
 

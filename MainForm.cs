@@ -15,6 +15,8 @@ namespace Test_web
         private int refreshSeconds;
         private int lowerLimit;
         private int upperLimit;
+        private int searchesCount = 0;
+        private int pointsLimit = 90;
         private Random random;
         private bool isPlaying;
 
@@ -46,9 +48,7 @@ namespace Test_web
                 searches.AddRange(lines.Select(line => line.Trim())); // Añade cada línea a la lista
             }
             else
-            {
-                MessageBox.Show($"El archivo {finalPath} no existe.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+                MessageBox.Show($"El archivo {finalPath} no existe.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);            
         }
 
         private async void WebView_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
@@ -86,7 +86,7 @@ namespace Test_web
 
             if (elapsedSeconds >= refreshSeconds)
             {
-                if (searches.Count == 0)
+                if (searches.Count == 0 || (searchesCount * 3) >= pointsLimit)
                 {
                     btnPlay_Click(null, null);
                     return;
@@ -96,7 +96,7 @@ namespace Test_web
                 int randomIndex = random.Next(0, searches.Count);
                 string search = searches[randomIndex];
 
-                webView.Source = new Uri($"https://www.bing.com/search?q={search}");
+                webView.Source = new Uri($"https://www.bing.com/search?q={search}&form=QBLH&sp=-1&ghc=1&lq=0&pq={search}");
 
                 // Elimina el elemento seleccionado para que no se repita
                 searches.RemoveAt(randomIndex);
@@ -104,6 +104,8 @@ namespace Test_web
                 elapsedSeconds = 0; // Reinicia el contador de segundos
                 UpdateLimits();
                 txtURL.Text = webView.Source.AbsoluteUri;
+                searchesCount++;
+                lblResumen.Text = $"searches: {searchesCount} | points: {searchesCount * 3}/{pointsLimit}";
             }
 
             UpdateProgressBar();
@@ -138,7 +140,7 @@ namespace Test_web
             }
 
             btnOpen.Enabled = !isPlaying;
-            txtURL.Enabled = !isPlaying;
+            txtURL.ReadOnly = isPlaying;
         }
 
         private void UpdateLimits()
