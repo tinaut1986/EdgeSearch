@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
+using System.Runtime.InteropServices.Marshalling;
 using System.Windows.Forms;
 using System.Xml.Linq;
 
@@ -11,15 +11,16 @@ namespace Test_web
 {
     public partial class MainForm : Form
     {
+        private Preferences _preferences;
+
         private Timer refreshTimer;
         private int elapsedSeconds;
         private int refreshSeconds;
-        private int lowerLimit;
-        private int upperLimit;
         private int searchesCount = 0;
         private int pointsLimit = 90;
-        private Random random;
-        private bool isPlaying;
+        private Random _random;
+        private bool _isPlaying;
+        private string _nextSearch;
 
         private List<string> toSearch = new List<string>();
         private List<string> sagas = new List<string>();
@@ -32,16 +33,33 @@ namespace Test_web
         public MainForm()
         {
             InitializeComponent();
+
+            _random = new Random();
             InitializeWebView();
             InitializeProgressBar();
             SetupRefreshTimer();
-            isPlaying = false;
-            random = new Random();
+
+            // Ruta al archivo de configuración
+            string configFilePath = "config.json";
+
+            // Carga las preferencias
+            _preferences = new Preferences(configFilePath);
+
+            RefreshUpdateRange();
+
+            _isPlaying = false;
 
             LoadSearchesFromFile("searches.xml"); // Carga las búsquedas desde el archivo
+            SetNextSearch();
 
             Load += Form_Load;
             webView.CoreWebView2InitializationCompleted += WebView_CoreWebView2InitializationCompleted;
+        }
+
+        private void SetNextSearch()
+        {
+            _nextSearch = CreateSearch();
+            lblNextSearch.Text = $"Next search: {_nextSearch}";
         }
 
         private void LoadSearchesFromFile(string filePath)
@@ -67,6 +85,11 @@ namespace Test_web
             }
             else
                 MessageBox.Show($"El archivo {finalPath} no existe.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void RefreshUpdateRange()
+        {
+            lblRange.Text = $"Refresh range (segs): {_preferences.LowerLimit}/{_preferences.UpperLimit}";
         }
 
         private async void WebView_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
@@ -110,8 +133,9 @@ namespace Test_web
                     return;
                 }
 
-                string search = CreateSearch();
-                
+                string search = _nextSearch;
+                SetNextSearch();
+
                 webView.Source = new Uri($"https://www.bing.com/search?q={search}&form=QBLH&sp=-1&ghc=1&lq=0&pq={search}");
 
                 usedSearchs.Add(search);
@@ -131,7 +155,7 @@ namespace Test_web
             do
             {
                 // Selecciona un elemento al azar de la lista
-                search = toSearch[random.Next(0, toSearch.Count)];
+                search = toSearch[_random.Next(0, toSearch.Count)];
 
                 search = search.Replace("%year%", DateTime.Today.Year.ToString());
                 if (search.Contains("%saga%"))
@@ -150,11 +174,11 @@ namespace Test_web
             return search;
         }
 
-        private string GetSaga() => sagas[random.Next(0, sagas.Count)];
-        private string GetGame() => games[random.Next(0, games.Count)];
-        private string GetHardware() => hardware[random.Next(0, hardware.Count)];
-        private string GetCompany() => companies[random.Next(0, companies.Count)];
-        private string GetRetro() => retro[random.Next(0, retro.Count)];
+        private string GetSaga() => sagas[_random.Next(0, sagas.Count)];
+        private string GetGame() => games[_random.Next(0, games.Count)];
+        private string GetHardware() => hardware[_random.Next(0, hardware.Count)];
+        private string GetCompany() => companies[_random.Next(0, companies.Count)];
+        private string GetRetro() => retro[_random.Next(0, retro.Count)];
 
         private void InitializeProgressBar()
         {
@@ -165,34 +189,32 @@ namespace Test_web
         {
             progressBar.Value = progressBar.Maximum - elapsedSeconds; // Calcula el progreso actual basado en los segundos transcurridos
 
-            lblProgress.Text = $"{elapsedSeconds}/{refreshSeconds} s"; // Actualiza el texto del Label
+            lblProgress.Text = $"{elapsedSeconds}/{refreshSeconds} segs"; // Actualiza el texto del Label
         }
 
         private void btnPlay_Click(object sender, EventArgs e)
         {
-            if (!isPlaying)
+            if (!_isPlaying)
             {
                 UpdateLimits();
                 refreshTimer.Start(); // Inicia el temporizador cuando se presiona el botón
-                isPlaying = true;
+                _isPlaying = true;
                 btnPlay.Text = "Stop"; // Cambia el texto del botón a "Stop"
             }
             else
             {
                 refreshTimer.Stop(); // Detiene el temporizador si ya está activo
-                isPlaying = false;
+                _isPlaying = false;
                 btnPlay.Text = "Play"; // Cambia el texto del botón a "Play"
             }
 
-            btnOpen.Enabled = !isPlaying;
-            txtURL.ReadOnly = isPlaying;
+            btnOpen.Enabled = !_isPlaying;
+            txtURL.ReadOnly = _isPlaying;
         }
 
         private void UpdateLimits()
         {
-            lowerLimit = int.Parse(txtLowerUpdate.Text);
-            upperLimit = int.Parse(txtUpperUpdate.Text);
-            refreshSeconds = random.Next(lowerLimit, upperLimit + 1);
+            refreshSeconds = _random.Next(_preferences.LowerLimit, _preferences.UpperLimit + 1);
             elapsedSeconds = 0;
 
             UpdateProgressBarLimits();
@@ -214,6 +236,11 @@ namespace Test_web
         {
             if (e.KeyChar == (char)ConsoleKey.Enter)
                 btnOpen_Click(null, null);
+        }
+
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            SetNextSearch();
         }
     }
 }

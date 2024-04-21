@@ -32,13 +32,13 @@ namespace Test_web
             webView = new Microsoft.Web.WebView2.WinForms.WebView2();
             progressBar = new System.Windows.Forms.ProgressBar();
             btnPlay = new System.Windows.Forms.Button();
-            txtLowerUpdate = new System.Windows.Forms.TextBox();
-            label1 = new System.Windows.Forms.Label();
-            txtUpperUpdate = new System.Windows.Forms.TextBox();
+            lblRange = new System.Windows.Forms.Label();
             lblProgress = new System.Windows.Forms.Label();
             txtURL = new System.Windows.Forms.TextBox();
             btnOpen = new System.Windows.Forms.Button();
             lblResumen = new System.Windows.Forms.Label();
+            lblNextSearch = new System.Windows.Forms.Label();
+            btnRefresh = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)webView).BeginInit();
             SuspendLayout();
             // 
@@ -50,22 +50,22 @@ namespace Test_web
             webView.DefaultBackgroundColor = System.Drawing.Color.White;
             webView.Location = new System.Drawing.Point(12, 41);
             webView.Name = "webView";
-            webView.Size = new System.Drawing.Size(1106, 486);
+            webView.Size = new System.Drawing.Size(1106, 450);
             webView.TabIndex = 0;
             webView.ZoomFactor = 1D;
             // 
             // progressBar
             // 
             progressBar.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            progressBar.Location = new System.Drawing.Point(225, 533);
+            progressBar.Location = new System.Drawing.Point(168, 525);
             progressBar.Name = "progressBar";
-            progressBar.Size = new System.Drawing.Size(809, 23);
+            progressBar.Size = new System.Drawing.Size(869, 23);
             progressBar.TabIndex = 1;
             // 
             // btnPlay
             // 
             btnPlay.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            btnPlay.Location = new System.Drawing.Point(1040, 533);
+            btnPlay.Location = new System.Drawing.Point(1043, 525);
             btnPlay.Name = "btnPlay";
             btnPlay.Size = new System.Drawing.Size(75, 23);
             btnPlay.TabIndex = 2;
@@ -73,33 +73,15 @@ namespace Test_web
             btnPlay.UseVisualStyleBackColor = true;
             btnPlay.Click += btnPlay_Click;
             // 
-            // txtLowerUpdate
+            // lblRange
             // 
-            txtLowerUpdate.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            txtLowerUpdate.Location = new System.Drawing.Point(123, 533);
-            txtLowerUpdate.Name = "txtLowerUpdate";
-            txtLowerUpdate.Size = new System.Drawing.Size(45, 23);
-            txtLowerUpdate.TabIndex = 3;
-            txtLowerUpdate.Text = "15";
-            // 
-            // label1
-            // 
-            label1.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            label1.AutoSize = true;
-            label1.Location = new System.Drawing.Point(9, 537);
-            label1.Name = "label1";
-            label1.Size = new System.Drawing.Size(108, 15);
-            label1.TabIndex = 4;
-            label1.Text = "Refresh range (seg)";
-            // 
-            // txtUpperUpdate
-            // 
-            txtUpperUpdate.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            txtUpperUpdate.Location = new System.Drawing.Point(174, 533);
-            txtUpperUpdate.Name = "txtUpperUpdate";
-            txtUpperUpdate.Size = new System.Drawing.Size(45, 23);
-            txtUpperUpdate.TabIndex = 3;
-            txtUpperUpdate.Text = "90";
+            lblRange.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            lblRange.AutoSize = true;
+            lblRange.Location = new System.Drawing.Point(12, 529);
+            lblRange.Name = "lblRange";
+            lblRange.Size = new System.Drawing.Size(136, 15);
+            lblRange.TabIndex = 4;
+            lblRange.Text = "Refresh range (segs): 0/0";
             // 
             // lblProgress
             // 
@@ -107,7 +89,7 @@ namespace Test_web
             lblProgress.AutoSize = true;
             lblProgress.BackColor = System.Drawing.Color.Transparent;
             lblProgress.ForeColor = System.Drawing.Color.Black;
-            lblProgress.Location = new System.Drawing.Point(601, 537);
+            lblProgress.Location = new System.Drawing.Point(604, 529);
             lblProgress.Name = "lblProgress";
             lblProgress.Size = new System.Drawing.Size(24, 15);
             lblProgress.TabIndex = 5;
@@ -138,25 +120,45 @@ namespace Test_web
             // 
             lblResumen.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             lblResumen.BackColor = System.Drawing.Color.Transparent;
-            lblResumen.Location = new System.Drawing.Point(828, 537);
+            lblResumen.Location = new System.Drawing.Point(831, 529);
             lblResumen.Name = "lblResumen";
             lblResumen.Size = new System.Drawing.Size(203, 15);
             lblResumen.TabIndex = 7;
             lblResumen.Text = "searches: 0 | points: 0/90";
             lblResumen.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // lblNextSearch
+            // 
+            lblNextSearch.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            lblNextSearch.Location = new System.Drawing.Point(12, 501);
+            lblNextSearch.Name = "lblNextSearch";
+            lblNextSearch.Size = new System.Drawing.Size(1025, 15);
+            lblNextSearch.TabIndex = 4;
+            lblNextSearch.Text = "Next search:";
+            // 
+            // btnRefresh
+            // 
+            btnRefresh.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            btnRefresh.Location = new System.Drawing.Point(1043, 497);
+            btnRefresh.Name = "btnRefresh";
+            btnRefresh.Size = new System.Drawing.Size(75, 23);
+            btnRefresh.TabIndex = 2;
+            btnRefresh.Text = "Refresh";
+            btnRefresh.UseVisualStyleBackColor = true;
+            btnRefresh.Click += btnRefresh_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1130, 568);
+            ClientSize = new System.Drawing.Size(1130, 560);
             Controls.Add(lblResumen);
             Controls.Add(txtURL);
             Controls.Add(lblProgress);
-            Controls.Add(label1);
-            Controls.Add(txtUpperUpdate);
-            Controls.Add(txtLowerUpdate);
+            Controls.Add(lblNextSearch);
+            Controls.Add(lblRange);
             Controls.Add(btnOpen);
+            Controls.Add(btnRefresh);
             Controls.Add(btnPlay);
             Controls.Add(progressBar);
             Controls.Add(webView);
@@ -172,13 +174,13 @@ namespace Test_web
         private Microsoft.Web.WebView2.WinForms.WebView2 webView;
         private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.Button btnPlay;
-        private System.Windows.Forms.TextBox txtLowerUpdate;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtUpperUpdate;
+        private System.Windows.Forms.Label lblRange;
         private System.Windows.Forms.Label lblProgress;
         private System.Windows.Forms.TextBox txtURL;
         private System.Windows.Forms.Button btnOpen;
         private System.Windows.Forms.Label lblResumen;
+        private System.Windows.Forms.Label lblNextSearch;
+        private System.Windows.Forms.Button btnRefresh;
     }
 }
 
