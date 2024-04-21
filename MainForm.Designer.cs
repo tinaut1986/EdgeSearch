@@ -137,13 +137,13 @@ namespace Test_web
             // lblResumen
             // 
             lblResumen.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            lblResumen.AutoSize = true;
             lblResumen.BackColor = System.Drawing.Color.Transparent;
-            lblResumen.Location = new System.Drawing.Point(896, 537);
+            lblResumen.Location = new System.Drawing.Point(828, 537);
             lblResumen.Name = "lblResumen";
-            lblResumen.Size = new System.Drawing.Size(135, 15);
+            lblResumen.Size = new System.Drawing.Size(203, 15);
             lblResumen.TabIndex = 7;
             lblResumen.Text = "searches: 0 | points: 0/90";
+            lblResumen.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // MainForm
             // 

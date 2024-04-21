@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <searches>
+    <item>Historia de los videojuegos</item>
+    <item>Las 10 mejores franquicias de videojuegos</item>
+    <item>Los videojuegos más vendidos de todos los tiempos</item>
+    <item>Próximos lanzamientos de videojuegos %year%</item>
+    <item>Exclusivos de %hardware%</item>
+    <item>Exclusivos de %retro%</item>
+    <item>Juegos destacados de %hardware%</item>
+	<item>Juegos destacados de %retro%</item>
+    <item>Visión general de la serie %saga%</item>
+    <item>Evolución de los juegos de %saga%</item>
+    <item>Evolución de los juegos de disparos en primera persona</item>
+    <item>Juegos de rol para jugar en %year%</item>
+    <item>Los videojuegos de consola más vendidos</item>
+    <item>Tendencias de juegos de realidad virtual</item>
+    <item>Los mejores juegos indie</item>
+    <item>Torneos y campeonatos de esports</item>
+    <item>Estadísticas de la industria del videojuego</item>
+    <item>Consolas retro para coleccionar</item>
+    <item>Los mejores accesorios de juegos para %year%</item>
+    <item>Consola vs. juegos de PC</item>
+    <item>Los juegos más esperados para PlayStation</item>
+    <item>La historia de la serie %saga%</item>
+    <item>La evolución de la saga %saga%</item>
+    <item>Todos los juegos de Pokemon por generación</item>
+    <item>Los juegos de la saga %saga% por orden</item>
+    <item>La cronología de la serie %saga%</item>
+    <item>La historia de la saga %saga%</item>
+    <item>Los juegos más vendidos de la serie %saga%</item>
+    <item>Los mejores juegos de la saga %saga%</item>
+    <item>Los juegos más valorados de la saga %saga%</item>
+    <item>Los mejores juegos de lucha de Street Fighter</item>
+    <item>Los mejores juegos de lucha de Tekken</item>
+    <item>Los juegos de la serie %saga% por orden</item>
+    <item>Los juegos más famosos de la saga %saga%</item>
+    <item>La historia de %company%</item>
+    <item>Los juegos más populares de %saga%</item>
+    <item>Los juegos de la serie %saga%</item>
+    <item>Los juegos más vendidos de %retro%</item>
+    <item>Los juegos más vendidos de %hardware%</item>
+    <item>Los mejores juegos de %retro%</item>
+    <item>Los mejores juegos de %hardware%</item>
+    <item>Los mejores juegos de %retro% de todos los tiempos</item>
+    <item>Los mejores juegos de %hardware% de todos los tiempos</item>
+    <item>Los mejores juegos de simulación</item>
+    <item>Los mejores juegos de estrategia en tiempo real</item>
+    <item>La evolución de los juegos de carreras</item>
+    <item>Los mejores juegos de plataformas</item>
+    <item>Los juegos de rol más populares</item>
+    <item>Los mejores juegos de mundo abierto</item>
+    <item>Los juegos de aventuras gráficas más famosos</item>
+    <item>Los mejores juegos de terror para jugar de noche</item>
+    <item>La evolución de los juegos de sandbox</item>
+    <item>Los mejores juegos de acción de todos los tiempos</item>
+    <item>Los mejores juegos de la serie %saga%</item>
+    <item>Los juegos más populares de la serie %saga%</item>
+    <item>Los mejores juegos de %saga%</item>
+    <item>Los juegos más esperados de %year%</item>
+    <item>Los mejores juegos de deportes para %retro%</item>
+    <item>Los mejores juegos de deportes para %hardware%</item>
+    <item>Los juegos más populares de la serie %saga%</item>
+    <item>Los juegos de aventuras más populares</item>
+    <item>Los juegos más vendidos de la saga %saga%</item>
+    <item>Los mejores juegos de lucha para %hardware%</item>
+    <item>Los mejores juegos de lucha para %retro%</item>
+    <item>Los juegos de acción más populares para %hardware%</item>
+    <item>Los juegos de acción más populares para %retro%</item>
+    <item>Los mejores juegos de conducción para %retro%</item>
+    <item>Los mejores juegos de conducción para %hardware%</item>
+    <item>Los juegos de rol más populares para %hardware%</item>
+    <item>Los juegos de rol más populares para %retro%</item>
+    <item>Los mejores juegos de aventuras para %retro%</item>
+    <item>Los mejores juegos de aventuras para %hardware%</item>
+    <item>Los mejores juegos cooperativos para %retro%</item>
+    <item>Los mejores juegos cooperativos para %hardware%</item>
+    <item>Los mejores juegos de terror para %retro%</item>
+    <item>Los mejores juegos de terror para %hardware%</item>
+    <item>Los mejores juegos de estrategia para %hardware%</item>
+	<item>Los mejores juegos de estrategia para %retro%</item>
+    <item>Los juegos de terror más populares de la serie Resident Evil</item>
+    <item>Los juegos de terror más populares de la serie Silent Hill</item>
+    <item>Los juegos de terror más populares de la serie Fatal Frame</item>
+    <item>Los juegos más influyentes de la serie %saga%</item>
+    <item>Los mejores juegos de simulación para %hardware%</item>
+	<item>Los mejores juegos de simulación para %retro%</item>
+    <item>Los juegos de simulación más influyentes de la serie %saga%</item>
+    <item>Últimas tendencias en tecnología</item>
+    <item>Los dispositivos tecnológicos más innovadores de %year%</item>
+    <item>Mejores gadgets para gamers</item>
+    <item>La historia de la tecnología</item>
+    <item>Los mejores dispositivos de realidad virtual</item>
+    <item>Los mejores auriculares para juegos</item>
+    <item>Los mejores micrófonos para streaming</item>
+    <item>Los mejores ordenadores para videojuegos</item>
+    <item>Las mejores tarjetas gráficas en %year%</item>
+    <item>Los procesadores más potentes para gaming</item>
+    <item>Los mejores monitores para juegos</item>
+    <item>Tecnología de inteligencia artificial en videojuegos</item>
+    <item>La evolución de las consolas de videojuegos</item>
+    <item>Tecnología de almacenamiento para videojuegos</item>
+    <item>Mejores soluciones de refrigeración para PC</item>
+    <item>Las mejores configuraciones para streaming</item>
+    <item>Las mejores cámaras para streamers</item>
+    <item>Mejores programas de edición de video para creadores de contenido</item>
+    <item>Las mejores configuraciones para eSports</item>
+    <item>La historia de la tecnología en videojuegos</item>
+    <item>Las tecnologías más recientes en realidad virtual</item>
+    <item>La evolución de la inteligencia artificial</item>
+    <item>Los mejores dispositivos de realidad aumentada</item>
+    <item>Las mejores plataformas para juegos en la nube</item>
+    <item>Los mejores servicios de streaming de videojuegos</item>
+    <item>Los mejores servicios de suscripción para juegos</item>
+    <item>La evolución de la tecnología de gráficos para videojuegos</item>
+    <item>Las mejores aplicaciones de realidad aumentada para smartphones</item>
+    <item>Las mejores aplicaciones de realidad virtual para Oculus Quest</item>
+    <item>Tecnologías emergentes para juegos móviles</item>
+    <item>Los mejores drones para fotografía y video</item>
+    <item>Las mejores tecnologías para casas inteligentes</item>
+    <item>Los mejores dispositivos portátiles para tecnología</item>
+    <item>Las mejores aplicaciones para monitorear la salud</item>
+    <item>Los mejores dispositivos para crear contenido</item>
+    <item>Los mejores sistemas de sonido para videojuegos</item>
+    <item>Los mejores routers para gaming</item>
+    <item>Los mejores teclados mecánicos para juegos</item>
+    <item>Los mejores ratones para juegos</item>
+    <item>Los mejores dispositivos de almacenamiento externo para juegos</item>
+    <item>La historia de la tecnología de internet</item>
+    <item>Las tecnologías más recientes para conectividad inalámbrica</item>
+    <item>Los mejores auriculares inalámbricos para juegos</item>
+    <item>Los mejores controladores para %hardware%</item>
+    <item>La evolución de la tecnología de consolas de videojuegos</item>
+    <item>Los mejores sistemas operativos para juegos</item>
+    <item>Los mejores emuladores para videojuegos retro</item>
+    <item>Las mejores plataformas para compartir contenido de juegos</item>
+    <item>La historia del desarrollo de videojuegos</item>
+    <item>Las mejores herramientas para desarrollo de juegos</item>
+    <item>Los mejores lenguajes de programación para desarrollo de juegos</item>
+    <item>Las mejores tecnologías para edición de sonido y música</item>
+    <item>Los mejores dispositivos para edición de video</item>
+    <item>Las mejores placas base para ordenadores de juegos</item>
+    <item>Las tecnologías más recientes para almacenamiento SSD</item>
+    <item>Los mejores sistemas de refrigeración líquida para PC</item>
+    <item>Las mejores tecnologías para mejorar la duración de la batería en dispositivos móviles</item>
+    <item>La evolución de la tecnología de inteligencia artificial</item>
+    <item>Los mejores juegos de realidad aumentada para móviles</item>
+    <item>Los mejores juegos de realidad virtual para PlayStation VR2</item>
+    <item>Los mejores dispositivos de tecnología wearable para salud</item>
+    <item>Las mejores aplicaciones para organizar la productividad</item>
+    <item>Los mejores dispositivos para videojuegos en movimiento</item>
+    <item>Los mejores sistemas de iluminación RGB para PC</item>
+    <item>Los mejores altavoces Bluetooth para juegos</item>
+    <item>Los mejores micrófonos USB para streamers</item>
+    <item>Los mejores sistemas de respaldo de energía para PC</item>
+    <item>La historia de la evolución de Internet de las Cosas (IoT)</item>
+    <item>Los mejores asistentes virtuales para casas inteligentes</item>
+  </searches>
+  <hardware>
+    <item>Xbox Series S</item>
+    <item>Xbox Series X</item>
+    <item>Xbox One</item>
+    <item>PlayStation 5</item>
+    <item>PlayStation 4</item>
+	<item>Nintendo Switch</item>
+	<item>Steam Deck</item>
+	<item>Pc</item>
+	<item>PlayStation VR2</item>
+    <item>Valve Index</item>
+    <item>Meta Quest 2</item>
+    <item>Oculus Rift S</item>
+	<item>ASUS ROG Ally</item>
+  </hardware>
+  <retro>
+    <item>Game Boy</item>
+    <item>Game Boy Color</item>
+	<item>Game Boy Advance</item>
+	<item>Game Boy Mini</item>
+	<item>Xbox</item>
+	<item>Xbox 360</item>
+	<item>PlayStation 2</item>
+	<item>PlayStation 3</item>
+	<item>NES</item>
+	<item>SNES</item>
+	<item>Nintendo 64</item>
+	<item>Nintendo GameCube</item>
+	<item>Wii</item>
+	<item>Wii U</item>
+	<item>PSP</item>
+	<item>PSVita</item>
+	<item>Nintendo DS</item>
+	<item>Nintendo 3DS</item>
+    <item>New Nintendo 3DS</item>
+	<item>Atari 2600</item>
+    <item>SEGA Genesis</item>
+    <item>SEGA Dreamcast</item>
+    <item>SEGA Saturn</item>
+    <item>Commodore 64</item>
+  </retro>
+  <sagas>
+    <item>The Legend of Zelda</item>
+    <item>Final Fantasy</item>
+    <item>Kingdome Hearts</item>
+    <item>Metal Gear</item>
+    <item>Tales of</item>
+    <item>Resident Evil</item>
+    <item>Silent Hill</item>
+    <item>Mario Kart</item>
+    <item>Mario Party</item>
+    <item>Super Mario</item>
+    <item>Metroid</item>
+	<item>Megaman</item>
+    <item>Pikmin</item>
+    <item>Animal Crossing</item>
+    <item>Super Smash Bros.</item>
+    <item>Street Fighter</item>
+    <item>Tomb Raider</item>
+    <item>Tekken</item>
+    <item>Donkey Kong</item>
+    <item>Kirby</item>
+    <item>Pokémon</item>
+    <item>Dragon Quest</item>
+    <item>Fire Emblem</item>
+    <item>Castlevania</item>
+    <item>Dark Souls</item>
+    <item>F-Zero</item>
+    <item>Megaman</item>
+    <item>Harvest Moon</item>
+    <item>Shin Megami Tensei</item>
+    <item>Sonic the Hedgehog</item>
+    <item>Yakuza</item>
+    <item>Kingdom Hearts</item>
+    <item>Persona</item>
+    <item>Devil May Cry</item>
+    <item>Star Fox</item>
+    <item>Xenoblade Chronicles</item>
+    <item>EarthBound</item>
+    <item>The Elder Scrolls</item>
+    <item>The Witcher</item>
+    <item>Halo</item>
+    <item>Mass Effect</item>
+    <item>Assassin's Creed</item>
+    <item>Call of Duty</item>
+    <item>Borderlands</item>
+    <item>Fallout</item>
+    <item>Gears of War</item>
+    <item>Pokemon</item>
+</sagas>
+  <games>
+    <item>Ocarina Of Time</item>
+	<item>Majora's Mask</item>
+    <item>Final Fantasy 1</item>
+	<item>Final Fantasy 2</item>
+	<item>Final Fantasy 3</item>
+	<item>Final Fantasy 4</item>
+	<item>Final Fantasy 5</item>
+	<item>Final Fantasy 6</item>
+	<item>Final Fantasy 7</item>
+	<item>Final Fantasy 8</item>
+	<item>Final Fantasy 9</item>
+	<item>Final Fantasy 10</item>
+	<item>Final Fantasy 12</item>
+	<item>Final Fantasy 13</item>
+	<item>Final Fantasy 15</item>
+	<item>Final Fantasy 16</item>
+	<item>Final Fantasy 16</item>
+  </games>
+  <companies>
+  	<item>Nintendo</item>
+	<item>Microsoft</item>
+	<item>Sony</item>
+	<item>Sega</item>
+	<item>Steam</item>
+	<item>Namco</item>
+	<item>Capcom</item>
+	<item>Square Enix</item>
+	<item>Square Soft</item>
+	<item>Enix</item>
+	<item>Konami</item>
+  </companies>
+</root>

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace Test_web
 {
@@ -20,7 +21,13 @@ namespace Test_web
         private Random random;
         private bool isPlaying;
 
-        List<string> searches = new List<string>();
+        private List<string> toSearch = new List<string>();
+        private List<string> sagas = new List<string>();
+        private List<string> hardware = new List<string>();
+        private List<string> retro = new List<string>();
+        private List<string> games = new List<string>();
+        private List<string> companies = new List<string>();
+        private List<string> usedSearchs = new List<string>();
 
         public MainForm()
         {
@@ -31,7 +38,7 @@ namespace Test_web
             isPlaying = false;
             random = new Random();
 
-            LoadSearchesFromFile("searches.txt"); // Carga las búsquedas desde el archivo
+            LoadSearchesFromFile("searches.xml"); // Carga las búsquedas desde el archivo
 
             Load += Form_Load;
             webView.CoreWebView2InitializationCompleted += WebView_CoreWebView2InitializationCompleted;
@@ -39,16 +46,27 @@ namespace Test_web
 
         private void LoadSearchesFromFile(string filePath)
         {
-            string solutionDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../..");
+            string solutionDir = AppDomain.CurrentDomain.BaseDirectory;
             string finalPath = Path.Combine(solutionDir, filePath);
+            if (!File.Exists(finalPath))
+            {
+                solutionDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../..");
+                finalPath = Path.Combine(solutionDir, filePath);
+            }
 
             if (File.Exists(finalPath))
             {
-                string[] lines = File.ReadAllLines(finalPath);
-                searches.AddRange(lines.Select(line => line.Trim())); // Añade cada línea a la lista
+                var xml = XElement.Load(finalPath);
+
+                toSearch = xml.Element("searches")?.Elements("item").Select(e => e.Value).ToList() ?? new List<string>();
+                sagas = xml.Element("sagas")?.Elements("item").Select(e => e.Value).ToList() ?? new List<string>();
+                hardware = xml.Element("hardware")?.Elements("item").Select(e => e.Value).ToList() ?? new List<string>();
+                retro = xml.Element("retro")?.Elements("item").Select(e => e.Value).ToList() ?? new List<string>();
+                games = xml.Element("games")?.Elements("item").Select(e => e.Value).ToList() ?? new List<string>();
+                companies = xml.Element("companies")?.Elements("item").Select(e => e.Value).ToList() ?? new List<string>();
             }
             else
-                MessageBox.Show($"El archivo {finalPath} no existe.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);            
+                MessageBox.Show($"El archivo {finalPath} no existe.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private async void WebView_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
@@ -86,21 +104,17 @@ namespace Test_web
 
             if (elapsedSeconds >= refreshSeconds)
             {
-                if (searches.Count == 0 || (searchesCount * 3) >= pointsLimit)
+                if (toSearch.Count == 0 || (searchesCount * 3) >= pointsLimit)
                 {
                     btnPlay_Click(null, null);
                     return;
                 }
 
-                // Selecciona un elemento al azar de la lista
-                int randomIndex = random.Next(0, searches.Count);
-                string search = searches[randomIndex];
-
+                string search = CreateSearch();
+                
                 webView.Source = new Uri($"https://www.bing.com/search?q={search}&form=QBLH&sp=-1&ghc=1&lq=0&pq={search}");
 
-                // Elimina el elemento seleccionado para que no se repita
-                searches.RemoveAt(randomIndex);
-
+                usedSearchs.Add(search);
                 elapsedSeconds = 0; // Reinicia el contador de segundos
                 UpdateLimits();
                 txtURL.Text = webView.Source.AbsoluteUri;
@@ -110,6 +124,37 @@ namespace Test_web
 
             UpdateProgressBar();
         }
+
+        private string CreateSearch()
+        {
+            string search = "";
+            do
+            {
+                // Selecciona un elemento al azar de la lista
+                search = toSearch[random.Next(0, toSearch.Count)];
+
+                search = search.Replace("%year%", DateTime.Today.Year.ToString());
+                if (search.Contains("%saga%"))
+                    search = search.Replace("%saga%", GetSaga());
+                if (search.Contains("%game%"))
+                    search = search.Replace("%game%", GetGame());
+                if (search.Contains("%retro%"))
+                    search = search.Replace("%retro%", GetRetro());
+                if (search.Contains("%hardware%"))
+                    search = search.Replace("%hardware%", GetHardware());
+                if (search.Contains("%company%"))
+                    search = search.Replace("%company%", GetCompany());
+            }
+            while (usedSearchs.Contains(search));
+
+            return search;
+        }
+
+        private string GetSaga() => sagas[random.Next(0, sagas.Count)];
+        private string GetGame() => games[random.Next(0, games.Count)];
+        private string GetHardware() => hardware[random.Next(0, hardware.Count)];
+        private string GetCompany() => companies[random.Next(0, companies.Count)];
+        private string GetRetro() => retro[random.Next(0, retro.Count)];
 
         private void InitializeProgressBar()
         {
