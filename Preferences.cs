@@ -1,11 +1,19 @@
 ﻿using System;
+using System.ComponentModel.Design.Serialization;
 using System.IO;
 using Newtonsoft.Json; // Asegúrate de tener la librería Newtonsoft.Json instalada
 
 public class Preferences
 {
+    public enum Mode
+    {
+        Desktop = 0,
+        Mobile = 1,
+    }
+
     public int LowerLimit { get; set; }
     public int UpperLimit { get; set; }
+    public Mode LastMode { get; set; }
 
     private readonly string _configFilePath;
 
@@ -13,6 +21,7 @@ public class Preferences
     {
         LowerLimit = 15;
         UpperLimit = 90;
+        LastMode = Mode.Desktop;
     }
 
     public Preferences(string configFilePath)
@@ -55,6 +64,7 @@ public class Preferences
     {
         LowerLimit = preferences.LowerLimit;
         UpperLimit = preferences.UpperLimit;
+        LastMode = preferences.LastMode;
     }
 
     public void Save()
@@ -65,6 +75,6 @@ public class Preferences
 
     public override string ToString()
     {
-        return $"Preferences(LowerLimit={LowerLimit}, UpperLimit={UpperLimit})";
+        return $"Preferences(LowerLimit={LowerLimit}, UpperLimit={UpperLimit}, LastMode={LastMode})";
     }
 }

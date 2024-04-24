@@ -111,6 +111,9 @@ namespace Test_web
         private void Form_Load(object sender, EventArgs e)
         {
             webView.EnsureCoreWebView2Async(null);
+
+            if (_preferences.LastMode == Preferences.Mode.Mobile)
+                chkMobile.Checked = true;
         }
 
         private async void InitializeWebView()
@@ -270,11 +273,21 @@ namespace Test_web
         private void chkMobile_CheckedChanged(object sender, EventArgs e)
         {
             if (chkMobile.Checked)
-                webView.CoreWebView2.Settings.UserAgent = mobileUserAgent;
+            {
+                if (webView.CoreWebView2?.Settings != null)
+                    webView.CoreWebView2.Settings.UserAgent = mobileUserAgent;
+                _preferences.LastMode = Preferences.Mode.Mobile;
+            }
             else
-                webView.CoreWebView2.Settings.UserAgent = desktopUserAgent;
+            {
+                if (webView.CoreWebView2?.Settings != null)
+                    webView.CoreWebView2.Settings.UserAgent = desktopUserAgent;
+                _preferences.LastMode = Preferences.Mode.Desktop;
+            }
 
-            webView.Reload();
+            _preferences.Save();
+            if (webView.Source != null)
+                webView.Reload();
 
             UpdateLblResume();
         }

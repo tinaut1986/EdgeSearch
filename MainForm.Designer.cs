@@ -29,6 +29,7 @@ namespace Test_web
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             webView = new Microsoft.Web.WebView2.WinForms.WebView2();
             progressBar = new System.Windows.Forms.ProgressBar();
             btnPlay = new System.Windows.Forms.Button();
@@ -177,6 +178,7 @@ namespace Test_web
             Controls.Add(btnPlay);
             Controls.Add(progressBar);
             Controls.Add(webView);
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";
             Text = "Edge search";
             ((System.ComponentModel.ISupportInitialize)webView).EndInit();
