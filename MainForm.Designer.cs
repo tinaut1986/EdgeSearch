@@ -39,6 +39,7 @@ namespace Test_web
             lblResumen = new System.Windows.Forms.Label();
             lblNextSearch = new System.Windows.Forms.Label();
             btnRefresh = new System.Windows.Forms.Button();
+            chkMobile = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)webView).BeginInit();
             SuspendLayout();
             // 
@@ -101,14 +102,14 @@ namespace Test_web
             txtURL.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             txtURL.Location = new System.Drawing.Point(12, 12);
             txtURL.Name = "txtURL";
-            txtURL.Size = new System.Drawing.Size(1022, 23);
+            txtURL.Size = new System.Drawing.Size(965, 23);
             txtURL.TabIndex = 6;
             txtURL.KeyPress += txtURL_KeyPress;
             // 
             // btnOpen
             // 
             btnOpen.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            btnOpen.Location = new System.Drawing.Point(1040, 11);
+            btnOpen.Location = new System.Drawing.Point(983, 12);
             btnOpen.Name = "btnOpen";
             btnOpen.Size = new System.Drawing.Size(75, 23);
             btnOpen.TabIndex = 2;
@@ -147,11 +148,25 @@ namespace Test_web
             btnRefresh.UseVisualStyleBackColor = true;
             btnRefresh.Click += btnRefresh_Click;
             // 
+            // chkMobile
+            // 
+            chkMobile.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            chkMobile.Appearance = System.Windows.Forms.Appearance.Button;
+            chkMobile.AutoSize = true;
+            chkMobile.Location = new System.Drawing.Point(1064, 10);
+            chkMobile.Name = "chkMobile";
+            chkMobile.Size = new System.Drawing.Size(54, 25);
+            chkMobile.TabIndex = 8;
+            chkMobile.Text = "Mobile";
+            chkMobile.UseVisualStyleBackColor = true;
+            chkMobile.CheckedChanged += chkMobile_CheckedChanged;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1130, 560);
+            Controls.Add(chkMobile);
             Controls.Add(lblResumen);
             Controls.Add(txtURL);
             Controls.Add(lblProgress);
@@ -181,6 +196,7 @@ namespace Test_web
         private System.Windows.Forms.Label lblResumen;
         private System.Windows.Forms.Label lblNextSearch;
         private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.CheckBox chkMobile;
     }
 }
 

@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.Marshalling;
 using System.Windows.Forms;
 using System.Xml.Linq;
 
@@ -11,13 +10,17 @@ namespace Test_web
 {
     public partial class MainForm : Form
     {
+        private const string mobileUserAgent = "Mozilla/5.0 (Linux; Android 9; ASUS_X00TD; Flow) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/359.0.0.288 Mobile Safari/537.36";
+        private const string desktopUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36";
         private Preferences _preferences;
 
         private Timer refreshTimer;
         private int elapsedSeconds;
         private int refreshSeconds;
-        private int searchesCount = 0;
-        private int pointsLimit = 90;
+        private int desktopSearchesCount = 0;
+        private int mobileSearchesCount = 0;
+        private int desktopPointsLimit = 90;
+        private int mobilePointsLimit = 60;
         private Random _random;
         private bool _isPlaying;
         private string _nextSearch;
@@ -92,14 +95,16 @@ namespace Test_web
             lblRange.Text = $"Refresh range (segs): {_preferences.LowerLimit}/{_preferences.UpperLimit}";
         }
 
-        private async void WebView_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
+        private void WebView_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
         {
-            // Espera a que WebView2 esté inicializado antes de cargar la página
-            await webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(
-                       "var userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36';" +
-                       "window.navigator.__defineGetter__('userAgent', function(){ return userAgent; });");
+            webView.CoreWebView2.Settings.UserAgent = chkMobile.Checked ? mobileUserAgent : desktopUserAgent;
 
-            webView.Source = new Uri("https://www.bing.com/");
+            webView.Source = new Uri("https://www.google.es/");
+            RefreshURLText();
+        }
+
+        private void RefreshURLText()
+        {
             txtURL.Text = webView.Source.AbsoluteUri;
         }
 
@@ -111,6 +116,7 @@ namespace Test_web
         private async void InitializeWebView()
         {
             Controls.Add(webView);
+
             await webView.EnsureCoreWebView2Async(); // Inicializar WebView2
         }
 
@@ -127,7 +133,9 @@ namespace Test_web
 
             if (elapsedSeconds >= refreshSeconds)
             {
-                if (toSearch.Count == 0 || (searchesCount * 3) >= pointsLimit)
+                if (toSearch.Count == 0
+                    || (!chkMobile.Checked && (desktopSearchesCount * 3) >= desktopPointsLimit)
+                    || (chkMobile.Checked && (mobileSearchesCount * 3) >= mobilePointsLimit))
                 {
                     btnPlay_Click(null, null);
                     return;
@@ -142,11 +150,24 @@ namespace Test_web
                 elapsedSeconds = 0; // Reinicia el contador de segundos
                 UpdateLimits();
                 txtURL.Text = webView.Source.AbsoluteUri;
-                searchesCount++;
-                lblResumen.Text = $"searches: {searchesCount} | points: {searchesCount * 3}/{pointsLimit}";
+
+                if (chkMobile.Checked)
+                    mobileSearchesCount++;
+                else
+                    desktopSearchesCount++;
+
+                UpdateLblResume();
             }
 
             UpdateProgressBar();
+        }
+
+        private void UpdateLblResume()
+        {
+            int searchesCount = chkMobile.Checked ? mobileSearchesCount : desktopSearchesCount;
+            int pointsLimit = chkMobile.Checked ? mobilePointsLimit : desktopPointsLimit;
+
+            lblResumen.Text = $"searches: {searchesCount} | points: {searchesCount * 3}/{pointsLimit}";
         }
 
         private string CreateSearch()
@@ -229,7 +250,10 @@ namespace Test_web
 
         private void btnOpen_Click(object sender, EventArgs e)
         {
-            webView.Source = new Uri(txtURL.Text);
+            if (txtURL.Text != webView.Source.ToString())
+                webView.Source = new Uri(txtURL.Text);
+            else
+                webView.Reload();
         }
 
         private void txtURL_KeyPress(object sender, KeyPressEventArgs e)
@@ -241,6 +265,18 @@ namespace Test_web
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             SetNextSearch();
+        }
+
+        private void chkMobile_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkMobile.Checked)
+                webView.CoreWebView2.Settings.UserAgent = mobileUserAgent;
+            else
+                webView.CoreWebView2.Settings.UserAgent = desktopUserAgent;
+
+            webView.Reload();
+
+            UpdateLblResume();
         }
     }
 }
