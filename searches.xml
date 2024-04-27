@@ -175,7 +175,6 @@
     <item>Game Boy</item>
     <item>Game Boy Color</item>
 	<item>Game Boy Advance</item>
-	<item>Game Boy Mini</item>
 	<item>Xbox</item>
 	<item>Xbox 360</item>
 	<item>PlayStation 2</item>
@@ -200,7 +199,7 @@
   <sagas>
     <item>The Legend of Zelda</item>
     <item>Final Fantasy</item>
-    <item>Kingdome Hearts</item>
+    <item>Kingdom Hearts</item>
     <item>Metal Gear</item>
     <item>Tales of</item>
     <item>Resident Evil</item>

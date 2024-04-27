@@ -1,17 +1,17 @@
 ﻿using Microsoft.Web.WebView2.Core;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using static Preferences;
 
 namespace Test_web
 {
     public partial class MainForm : Form
     {
-        private const string mobileUserAgent = "Mozilla/5.0 (Linux; Android 9; ASUS_X00TD; Flow) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/359.0.0.288 Mobile Safari/537.36";
-        private const string desktopUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36";
         private Preferences _preferences;
 
         private Timer refreshTimer;
@@ -19,8 +19,6 @@ namespace Test_web
         private int refreshSeconds;
         private int desktopSearchesCount = 0;
         private int mobileSearchesCount = 0;
-        private int desktopPointsLimit = 90;
-        private int mobilePointsLimit = 60;
         private Random _random;
         private bool _isPlaying;
         private string _nextSearch;
@@ -97,9 +95,9 @@ namespace Test_web
 
         private void WebView_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
         {
-            webView.CoreWebView2.Settings.UserAgent = chkMobile.Checked ? mobileUserAgent : desktopUserAgent;
+            webView.CoreWebView2.Settings.UserAgent = chkMobile.Checked ? _preferences.MobileUserAgent : _preferences.DesktopUserAgent;
 
-            webView.Source = new Uri("https://www.google.es/");
+            webView.Source = new Uri("https://www.bing.es/");
             RefreshURLText();
         }
 
@@ -130,18 +128,43 @@ namespace Test_web
             refreshTimer.Tick += RefreshTimer_Tick;
         }
 
-        private void RefreshTimer_Tick(object sender, EventArgs e)
+        private async void RefreshTimer_Tick(object sender, EventArgs e)
         {
             elapsedSeconds++;
 
             if (elapsedSeconds >= refreshSeconds)
             {
-                if (toSearch.Count == 0
-                    || (!chkMobile.Checked && (desktopSearchesCount * 3) >= desktopPointsLimit)
-                    || (chkMobile.Checked && (mobileSearchesCount * 3) >= mobilePointsLimit))
+                if (toSearch.Count == 0)
                 {
                     btnPlay_Click(null, null);
                     return;
+                }
+
+                bool desktopPointsReached = (desktopSearchesCount * 3) >= _preferences.DesktopTotalPoints;
+                bool MobilePointsReached = (mobileSearchesCount * 3) >= _preferences.MobileTotalPoints;
+                if (!chkMobile.Checked && desktopPointsReached)
+                {
+                    if (!MobilePointsReached)
+                    {
+                        await ChangeMobileMode(Preferences.Mode.Mobile, false);
+                    }
+                    else
+                    {
+                        btnPlay_Click(null, null);
+                        return;
+                    }
+                }
+                else if (chkMobile.Checked && MobilePointsReached)
+                {
+                    if (!desktopPointsReached)
+                    {
+                        await ChangeMobileMode(Preferences.Mode.Desktop, false);
+                    }
+                    else
+                    {
+                        btnPlay_Click(null, null);
+                        return;
+                    }
                 }
 
                 string search = _nextSearch;
@@ -168,7 +191,7 @@ namespace Test_web
         private void UpdateLblResume()
         {
             int searchesCount = chkMobile.Checked ? mobileSearchesCount : desktopSearchesCount;
-            int pointsLimit = chkMobile.Checked ? mobilePointsLimit : desktopPointsLimit;
+            int pointsLimit = chkMobile.Checked ? _preferences.MobileTotalPoints : _preferences.DesktopTotalPoints;
 
             lblResumen.Text = $"searches: {searchesCount} | points: {searchesCount * 3}/{pointsLimit}";
         }
@@ -251,6 +274,48 @@ namespace Test_web
             progressBar.Value = progressBar.Maximum; // Establece el valor inicial como el máximo para empezar lleno
         }
 
+        private async System.Threading.Tasks.Task ChangeMobileMode(Preferences.Mode mode, bool reloadWeb)
+        {
+            chkMobile.Checked = mode == Preferences.Mode.Mobile;
+            await RefreshMobileMode(reloadWeb);
+        }
+
+        private async System.Threading.Tasks.Task RefreshMobileMode(bool reloadWeb)
+        {
+            _preferences.LastMode = chkMobile.Checked ? Mode.Mobile : Mode.Desktop;
+            if (_preferences.LastMode == Preferences.Mode.Mobile)
+            {
+                if (webView.CoreWebView2?.Settings != null)
+                    webView.CoreWebView2.Settings.UserAgent = _preferences.MobileUserAgent;
+            }
+            else
+            {
+                if (webView.CoreWebView2?.Settings != null)
+                    webView.CoreWebView2.Settings.UserAgent = _preferences.DesktopUserAgent;
+            }
+
+            _preferences.Save();
+
+            await DeleteSessionCookies();
+
+            if (webView.Source != null && reloadWeb)
+                webView.Reload();
+
+            UpdateLblResume();
+        }
+
+        private async System.Threading.Tasks.Task DeleteSessionCookies()
+        {
+            if (webView.CoreWebView2?.Settings != null)
+            {
+                foreach (CoreWebView2Cookie cookie in (await webView.CoreWebView2.CookieManager.GetCookiesAsync(null)).ToList())
+                {
+                    if (cookie.IsSession)
+                        webView.CoreWebView2.CookieManager.DeleteCookie(cookie);
+                }
+            }
+        }
+
         private void btnOpen_Click(object sender, EventArgs e)
         {
             if (txtURL.Text != webView.Source.ToString())
@@ -270,26 +335,9 @@ namespace Test_web
             SetNextSearch();
         }
 
-        private void chkMobile_CheckedChanged(object sender, EventArgs e)
+        private async void chkMobile_CheckedChanged(object sender, EventArgs e)
         {
-            if (chkMobile.Checked)
-            {
-                if (webView.CoreWebView2?.Settings != null)
-                    webView.CoreWebView2.Settings.UserAgent = mobileUserAgent;
-                _preferences.LastMode = Preferences.Mode.Mobile;
-            }
-            else
-            {
-                if (webView.CoreWebView2?.Settings != null)
-                    webView.CoreWebView2.Settings.UserAgent = desktopUserAgent;
-                _preferences.LastMode = Preferences.Mode.Desktop;
-            }
-
-            _preferences.Save();
-            if (webView.Source != null)
-                webView.Reload();
-
-            UpdateLblResume();
+            await RefreshMobileMode(true);
         }
     }
 }
