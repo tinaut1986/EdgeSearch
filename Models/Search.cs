@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static EdgeSearch.models.Preferences;
 
 namespace EdgeSearch.Models
@@ -18,6 +15,17 @@ namespace EdgeSearch.Models
         public Mode CurrentMode { get; set; }
         public int ElapsedSeconds { get; set; }
         public int RefreshSeconds { get; set; }
+        public bool IsPlaying { get; set; }
+        public string NextSearch { get; set; }
+        public Uri URL { get; set; }
+
+        public List<string> ToSearch { get; set; } = new List<string>();
+        public List<string> Sagas { get; set; } = new List<string>();
+        public List<string> Hardware { get; set; } = new List<string>();
+        public List<string> Retro { get; set; } = new List<string>();
+        public List<string> Games { get; set; } = new List<string>();
+        public List<string> Companies { get; set; } = new List<string>();
+        public List<string> UsedSearchs { get; set; } = new List<string>();
         public bool IsMobile => CurrentMode == Mode.Mobile;
         public bool IsDesktop => CurrentMode == Mode.Desktop;
 

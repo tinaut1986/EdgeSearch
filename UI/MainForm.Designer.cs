@@ -8,19 +8,6 @@ namespace EdgeSearch.UI
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        ///  Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -75,7 +62,6 @@ namespace EdgeSearch.UI
             btnPlay.TabIndex = 2;
             btnPlay.Text = "Play";
             btnPlay.UseVisualStyleBackColor = true;
-            btnPlay.Click += btnPlay_Click;
             // 
             // lblRange
             // 
@@ -107,7 +93,6 @@ namespace EdgeSearch.UI
             txtURL.Name = "txtURL";
             txtURL.Size = new System.Drawing.Size(965, 23);
             txtURL.TabIndex = 6;
-            txtURL.KeyPress += txtURL_KeyPress;
             // 
             // btnOpen
             // 
@@ -118,7 +103,6 @@ namespace EdgeSearch.UI
             btnOpen.TabIndex = 2;
             btnOpen.Text = "Open";
             btnOpen.UseVisualStyleBackColor = true;
-            btnOpen.Click += btnOpen_Click;
             // 
             // lblResumen
             // 
@@ -149,7 +133,6 @@ namespace EdgeSearch.UI
             btnRefresh.TabIndex = 2;
             btnRefresh.Text = "Refresh";
             btnRefresh.UseVisualStyleBackColor = true;
-            btnRefresh.Click += btnRefresh_Click;
             // 
             // chkMobile
             // 
@@ -162,7 +145,6 @@ namespace EdgeSearch.UI
             chkMobile.TabIndex = 8;
             chkMobile.Text = "Mobile";
             chkMobile.UseVisualStyleBackColor = true;
-            chkMobile.CheckedChanged += chkMobile_CheckedChanged;
             // 
             // btnForce
             // 
@@ -173,7 +155,6 @@ namespace EdgeSearch.UI
             btnForce.TabIndex = 2;
             btnForce.Text = "Force";
             btnForce.UseVisualStyleBackColor = true;
-            btnForce.Click += btnForce_Click;
             // 
             // btnCopy
             // 
@@ -184,7 +165,6 @@ namespace EdgeSearch.UI
             btnCopy.TabIndex = 2;
             btnCopy.Text = "Copy";
             btnCopy.UseVisualStyleBackColor = true;
-            btnCopy.Click += btnCopy_Click;
             // 
             // MainForm
             // 
