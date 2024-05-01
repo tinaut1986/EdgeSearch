@@ -1,10 +1,8 @@
+using EdgeSearch.UI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Test_web
+namespace EdgeSearch
 {
     static class Program
     {

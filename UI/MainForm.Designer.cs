@@ -1,5 +1,5 @@
 ﻿
-namespace Test_web
+namespace EdgeSearch.UI
 {
     partial class MainForm
     {
@@ -41,6 +41,8 @@ namespace Test_web
             lblNextSearch = new System.Windows.Forms.Label();
             btnRefresh = new System.Windows.Forms.Button();
             chkMobile = new System.Windows.Forms.CheckBox();
+            btnForce = new System.Windows.Forms.Button();
+            btnCopy = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)webView).BeginInit();
             SuspendLayout();
             // 
@@ -134,7 +136,7 @@ namespace Test_web
             lblNextSearch.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             lblNextSearch.Location = new System.Drawing.Point(12, 501);
             lblNextSearch.Name = "lblNextSearch";
-            lblNextSearch.Size = new System.Drawing.Size(1025, 15);
+            lblNextSearch.Size = new System.Drawing.Size(863, 15);
             lblNextSearch.TabIndex = 4;
             lblNextSearch.Text = "Next search:";
             // 
@@ -162,6 +164,28 @@ namespace Test_web
             chkMobile.UseVisualStyleBackColor = true;
             chkMobile.CheckedChanged += chkMobile_CheckedChanged;
             // 
+            // btnForce
+            // 
+            btnForce.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            btnForce.Location = new System.Drawing.Point(962, 497);
+            btnForce.Name = "btnForce";
+            btnForce.Size = new System.Drawing.Size(75, 23);
+            btnForce.TabIndex = 2;
+            btnForce.Text = "Force";
+            btnForce.UseVisualStyleBackColor = true;
+            btnForce.Click += btnForce_Click;
+            // 
+            // btnCopy
+            // 
+            btnCopy.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            btnCopy.Location = new System.Drawing.Point(881, 497);
+            btnCopy.Name = "btnCopy";
+            btnCopy.Size = new System.Drawing.Size(75, 23);
+            btnCopy.TabIndex = 2;
+            btnCopy.Text = "Copy";
+            btnCopy.UseVisualStyleBackColor = true;
+            btnCopy.Click += btnCopy_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -174,6 +198,8 @@ namespace Test_web
             Controls.Add(lblNextSearch);
             Controls.Add(lblRange);
             Controls.Add(btnOpen);
+            Controls.Add(btnCopy);
+            Controls.Add(btnForce);
             Controls.Add(btnRefresh);
             Controls.Add(btnPlay);
             Controls.Add(progressBar);
@@ -199,6 +225,8 @@ namespace Test_web
         private System.Windows.Forms.Label lblNextSearch;
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.CheckBox chkMobile;
+        private System.Windows.Forms.Button btnForce;
+        private System.Windows.Forms.Button btnCopy;
     }
 }
 
