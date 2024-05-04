@@ -28,7 +28,6 @@ namespace EdgeSearch.UI
             btnNext = new System.Windows.Forms.Button();
             chkMobile = new System.Windows.Forms.CheckBox();
             btnForce = new System.Windows.Forms.Button();
-            btnCopy = new System.Windows.Forms.Button();
             txtUpperLimit = new System.Windows.Forms.TextBox();
             txtLoweLimit = new System.Windows.Forms.TextBox();
             lblSearches = new System.Windows.Forms.Label();
@@ -38,6 +37,7 @@ namespace EdgeSearch.UI
             txtPointsLimit = new System.Windows.Forms.TextBox();
             lblPointsSeparator = new System.Windows.Forms.Label();
             lblRefreshRangeSeparator = new System.Windows.Forms.Label();
+            txtNextSearch = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)webView).BeginInit();
             SuspendLayout();
             // 
@@ -118,7 +118,7 @@ namespace EdgeSearch.UI
             lblNextSearch.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             lblNextSearch.Location = new System.Drawing.Point(12, 478);
             lblNextSearch.Name = "lblNextSearch";
-            lblNextSearch.Size = new System.Drawing.Size(926, 19);
+            lblNextSearch.Size = new System.Drawing.Size(78, 19);
             lblNextSearch.TabIndex = 4;
             lblNextSearch.Text = "Next search:";
             lblNextSearch.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -138,7 +138,7 @@ namespace EdgeSearch.UI
             chkMobile.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             chkMobile.Appearance = System.Windows.Forms.Appearance.Button;
             chkMobile.AutoSize = true;
-            chkMobile.Location = new System.Drawing.Point(1064, 10);
+            chkMobile.Location = new System.Drawing.Point(1064, 11);
             chkMobile.Name = "chkMobile";
             chkMobile.Size = new System.Drawing.Size(54, 25);
             chkMobile.TabIndex = 2;
@@ -154,16 +154,6 @@ namespace EdgeSearch.UI
             btnForce.TabIndex = 6;
             btnForce.Text = "Force";
             btnForce.UseVisualStyleBackColor = true;
-            // 
-            // btnCopy
-            // 
-            btnCopy.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            btnCopy.Location = new System.Drawing.Point(944, 476);
-            btnCopy.Name = "btnCopy";
-            btnCopy.Size = new System.Drawing.Size(54, 23);
-            btnCopy.TabIndex = 5;
-            btnCopy.Text = "Copy";
-            btnCopy.UseVisualStyleBackColor = true;
             // 
             // txtUpperLimit
             // 
@@ -185,7 +175,7 @@ namespace EdgeSearch.UI
             // 
             lblSearches.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             lblSearches.AutoSize = true;
-            lblSearches.Location = new System.Drawing.Point(12, 536);
+            lblSearches.Location = new System.Drawing.Point(12, 537);
             lblSearches.Name = "lblSearches";
             lblSearches.Size = new System.Drawing.Size(56, 15);
             lblSearches.TabIndex = 14;
@@ -204,7 +194,7 @@ namespace EdgeSearch.UI
             // 
             lblPoints.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             lblPoints.AutoSize = true;
-            lblPoints.Location = new System.Drawing.Point(134, 536);
+            lblPoints.Location = new System.Drawing.Point(134, 537);
             lblPoints.Name = "lblPoints";
             lblPoints.Size = new System.Drawing.Size(43, 15);
             lblPoints.TabIndex = 16;
@@ -231,7 +221,7 @@ namespace EdgeSearch.UI
             // 
             lblPointsSeparator.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             lblPointsSeparator.AutoSize = true;
-            lblPointsSeparator.Location = new System.Drawing.Point(217, 536);
+            lblPointsSeparator.Location = new System.Drawing.Point(217, 537);
             lblPointsSeparator.Name = "lblPointsSeparator";
             lblPointsSeparator.Size = new System.Drawing.Size(12, 15);
             lblPointsSeparator.TabIndex = 14;
@@ -249,6 +239,14 @@ namespace EdgeSearch.UI
             lblRefreshRangeSeparator.Text = "-";
             lblRefreshRangeSeparator.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // txtNextSearch
+            // 
+            txtNextSearch.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            txtNextSearch.Location = new System.Drawing.Point(96, 476);
+            txtNextSearch.Name = "txtNextSearch";
+            txtNextSearch.Size = new System.Drawing.Size(902, 23);
+            txtNextSearch.TabIndex = 9;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -256,6 +254,7 @@ namespace EdgeSearch.UI
             ClientSize = new System.Drawing.Size(1130, 570);
             Controls.Add(txtSearches);
             Controls.Add(txtCurrentPoints);
+            Controls.Add(txtNextSearch);
             Controls.Add(txtLoweLimit);
             Controls.Add(txtPointsLimit);
             Controls.Add(txtUpperLimit);
@@ -269,7 +268,6 @@ namespace EdgeSearch.UI
             Controls.Add(lblSearches);
             Controls.Add(lblRange);
             Controls.Add(btnOpen);
-            Controls.Add(btnCopy);
             Controls.Add(btnForce);
             Controls.Add(btnNext);
             Controls.Add(btnPlay);
@@ -297,7 +295,6 @@ namespace EdgeSearch.UI
         private System.Windows.Forms.Button btnNext;
         private System.Windows.Forms.CheckBox chkMobile;
         private System.Windows.Forms.Button btnForce;
-        private System.Windows.Forms.Button btnCopy;
         private System.Windows.Forms.TextBox txtUpperLimit;
         private System.Windows.Forms.TextBox txtLoweLimit;
         private System.Windows.Forms.Label lblSearches;
@@ -307,6 +304,7 @@ namespace EdgeSearch.UI
         private System.Windows.Forms.TextBox txtPointsLimit;
         private System.Windows.Forms.Label lblPointsSeparator;
         private System.Windows.Forms.Label lblRefreshRangeSeparator;
+        private System.Windows.Forms.TextBox txtNextSearch;
     }
 }
 

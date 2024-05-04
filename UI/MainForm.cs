@@ -1,8 +1,6 @@
-﻿using EdgeSearch.models;
-using EdgeSearch.Models;
+﻿using EdgeSearch.Models;
 using Microsoft.Web.WebView2.Core;
 using System;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -15,7 +13,6 @@ namespace EdgeSearch.UI
         public event EventHandler PlayClicked;
         public event EventHandler ForceClicked;
         public event EventHandler OpenClicked;
-        public event EventHandler CopyClicked;
         public event EventHandler NextSearchClicked;
         public event EventHandler MobileChanged;
         public event EventHandler<CoreWebView2InitializationCompletedEventArgs> CoreWebView2InitializationCompleted;
@@ -55,6 +52,9 @@ namespace EdgeSearch.UI
             txtURL.DataBindings.Clear();
             txtURL.DataBindings.Add(nameof(txtURL.Text), search, nameof(search.URL));
 
+            txtNextSearch.DataBindings.Clear();
+            txtNextSearch.DataBindings.Add(nameof(txtNextSearch.Text), search, nameof(search.NextSearch));
+
             chkMobile.DataBindings.Clear();
             chkMobile.DataBindings.Add(nameof(chkMobile.Checked), search, nameof(search.IsMobile));
 
@@ -72,6 +72,10 @@ namespace EdgeSearch.UI
 
             txtPointsLimit.DataBindings.Clear();
             txtPointsLimit.DataBindings.Add(nameof(txtPointsLimit.Text), search, nameof(search.PointsLimit));
+
+            progressBar.DataBindings.Clear();
+            progressBar.DataBindings.Add(nameof(progressBar.Maximum), search, nameof(search.SecondsToRefresh));
+            progressBar.DataBindings.Add(nameof(progressBar.Value), search, nameof(search.ElapsedSeconds));
         }
 
         private void InitializeEvents()
@@ -79,7 +83,6 @@ namespace EdgeSearch.UI
             webView.CoreWebView2InitializationCompleted += WebView_CoreWebView2InitializationCompleted;
             btnPlay.Click += btnPlay_Click;
             btnForce.Click += btnForce_Click;
-            btnCopy.Click += btnCopy_Click;
             btnNext.Click += btnNext_Click;
             chkMobile.CheckedChanged += chkMobile_CheckedChanged;
             btnOpen.Click += btnOpen_Click;
@@ -91,7 +94,6 @@ namespace EdgeSearch.UI
             webView.CoreWebView2InitializationCompleted -= WebView_CoreWebView2InitializationCompleted;
             btnPlay.Click -= btnPlay_Click;
             btnForce.Click -= btnForce_Click;
-            btnCopy.Click -= btnCopy_Click;
             btnNext.Click -= btnNext_Click;
             chkMobile.CheckedChanged -= chkMobile_CheckedChanged;
             btnOpen.Click -= btnOpen_Click;
@@ -113,7 +115,7 @@ namespace EdgeSearch.UI
         {
             Controls.Add(webView);
 
-            await webView.EnsureCoreWebView2Async(); // Inicializar WebView2
+            await webView.EnsureCoreWebView2Async();
         }
 
         public void SetURL(Uri url)
@@ -140,16 +142,7 @@ namespace EdgeSearch.UI
             txtURL.ReadOnly = search.IsPlaying;
             txtURL.Text = webView.Source.AbsoluteUri;
 
-            progressBar.Minimum = 0;
-            progressBar.Maximum = search.SecondsToRefresh; // Número de segundos para la recarga
-            progressBar.Value = progressBar.Maximum; // Establece el valor inicial como el máximo para empezar lleno
-
-            lblNextSearch.Text = $"Next search: {search.NextSearch}";
-
-            progressBar.Value = Math.Max(progressBar.Maximum - search.ElapsedSeconds, 0); // Calcula el progreso actual basado en los segundos transcurridos
-            lblProgress.Text = $"{search.ElapsedSeconds}/{search.SecondsToRefresh} segs"; // Actualiza el texto del Label
-
-            BindFields(search);
+            lblProgress.Text = $"{search.ElapsedSeconds}/{search.SecondsToRefresh} segs";
         }
 
         public void ReloadWeb()
@@ -201,11 +194,6 @@ namespace EdgeSearch.UI
         private void chkMobile_CheckedChanged(object sender, EventArgs e)
         {
             MobileChanged?.Invoke(sender, e);
-        }
-
-        private void btnCopy_Click(object sender, EventArgs e)
-        {
-            CopyClicked?.Invoke(sender, e);
         }
 
         private void btnForce_Click(object sender, EventArgs e)

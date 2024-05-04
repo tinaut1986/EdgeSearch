@@ -49,7 +49,6 @@ namespace EdgeSearch.Business
             _mainForm.OpenClicked += _mainForm_OpenClicked;
             _mainForm.NextSearchClicked += _mainForm_NextSearchClicked;
             _mainForm.MobileChanged += _mainForm_MobileChanged;
-            _mainForm.CopyClicked += _mainForm_CopyClicked;
             _mainForm.PlayClicked += _mainForm_PlayClicked;
         }
 
@@ -210,8 +209,8 @@ namespace EdgeSearch.Business
 
         public void RestartLimits()
         {
-            _search.SecondsToRefresh = _random.Next(_search.LowerLimit, _search.UpperLimit + 1);
             _search.ElapsedSeconds = 0;
+            _search.SecondsToRefresh = _random.Next(_search.LowerLimit, _search.UpperLimit + 1);
 
             _mainForm.UpdateInterface(_search);
         }
@@ -284,11 +283,6 @@ namespace EdgeSearch.Business
         private async void _mainForm_MobileChanged(object sender, EventArgs e)
         {
             await RefreshMobileMode(true);
-        }
-
-        private void _mainForm_CopyClicked(object sender, EventArgs e)
-        {
-            Clipboard.SetText(_search.NextSearch);
         }
 
         private void _mainForm_PlayClicked(object sender, EventArgs e)
