@@ -24,12 +24,20 @@ namespace EdgeSearch.UI
             lblProgress = new System.Windows.Forms.Label();
             txtURL = new System.Windows.Forms.TextBox();
             btnOpen = new System.Windows.Forms.Button();
-            lblResumen = new System.Windows.Forms.Label();
             lblNextSearch = new System.Windows.Forms.Label();
-            btnRefresh = new System.Windows.Forms.Button();
+            btnNext = new System.Windows.Forms.Button();
             chkMobile = new System.Windows.Forms.CheckBox();
             btnForce = new System.Windows.Forms.Button();
             btnCopy = new System.Windows.Forms.Button();
+            txtUpperLimit = new System.Windows.Forms.TextBox();
+            txtLoweLimit = new System.Windows.Forms.TextBox();
+            lblSearches = new System.Windows.Forms.Label();
+            txtSearches = new System.Windows.Forms.TextBox();
+            lblPoints = new System.Windows.Forms.Label();
+            txtCurrentPoints = new System.Windows.Forms.TextBox();
+            txtPointsLimit = new System.Windows.Forms.TextBox();
+            lblPointsSeparator = new System.Windows.Forms.Label();
+            lblRefreshRangeSeparator = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)webView).BeginInit();
             SuspendLayout();
             // 
@@ -41,25 +49,25 @@ namespace EdgeSearch.UI
             webView.DefaultBackgroundColor = System.Drawing.Color.White;
             webView.Location = new System.Drawing.Point(12, 41);
             webView.Name = "webView";
-            webView.Size = new System.Drawing.Size(1106, 450);
-            webView.TabIndex = 0;
+            webView.Size = new System.Drawing.Size(1106, 429);
+            webView.TabIndex = 3;
             webView.ZoomFactor = 1D;
             // 
             // progressBar
             // 
             progressBar.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            progressBar.Location = new System.Drawing.Point(168, 525);
+            progressBar.Location = new System.Drawing.Point(220, 504);
             progressBar.Name = "progressBar";
-            progressBar.Size = new System.Drawing.Size(869, 23);
-            progressBar.TabIndex = 1;
+            progressBar.Size = new System.Drawing.Size(838, 23);
+            progressBar.TabIndex = 11;
             // 
             // btnPlay
             // 
             btnPlay.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            btnPlay.Location = new System.Drawing.Point(1043, 525);
+            btnPlay.Location = new System.Drawing.Point(1064, 504);
             btnPlay.Name = "btnPlay";
-            btnPlay.Size = new System.Drawing.Size(75, 23);
-            btnPlay.TabIndex = 2;
+            btnPlay.Size = new System.Drawing.Size(54, 23);
+            btnPlay.TabIndex = 13;
             btnPlay.Text = "Play";
             btnPlay.UseVisualStyleBackColor = true;
             // 
@@ -67,11 +75,12 @@ namespace EdgeSearch.UI
             // 
             lblRange.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             lblRange.AutoSize = true;
-            lblRange.Location = new System.Drawing.Point(12, 529);
+            lblRange.Location = new System.Drawing.Point(12, 508);
             lblRange.Name = "lblRange";
-            lblRange.Size = new System.Drawing.Size(136, 15);
-            lblRange.TabIndex = 4;
-            lblRange.Text = "Refresh range (segs): 0/0";
+            lblRange.Size = new System.Drawing.Size(116, 15);
+            lblRange.TabIndex = 8;
+            lblRange.Text = "Refresh range (segs):";
+            lblRange.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblProgress
             // 
@@ -79,10 +88,10 @@ namespace EdgeSearch.UI
             lblProgress.AutoSize = true;
             lblProgress.BackColor = System.Drawing.Color.Transparent;
             lblProgress.ForeColor = System.Drawing.Color.Black;
-            lblProgress.Location = new System.Drawing.Point(604, 529);
+            lblProgress.Location = new System.Drawing.Point(604, 508);
             lblProgress.Name = "lblProgress";
             lblProgress.Size = new System.Drawing.Size(24, 15);
-            lblProgress.TabIndex = 5;
+            lblProgress.TabIndex = 12;
             lblProgress.Text = "0/0";
             lblProgress.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -92,7 +101,7 @@ namespace EdgeSearch.UI
             txtURL.Location = new System.Drawing.Point(12, 12);
             txtURL.Name = "txtURL";
             txtURL.Size = new System.Drawing.Size(965, 23);
-            txtURL.TabIndex = 6;
+            txtURL.TabIndex = 0;
             // 
             // btnOpen
             // 
@@ -100,39 +109,29 @@ namespace EdgeSearch.UI
             btnOpen.Location = new System.Drawing.Point(983, 12);
             btnOpen.Name = "btnOpen";
             btnOpen.Size = new System.Drawing.Size(75, 23);
-            btnOpen.TabIndex = 2;
+            btnOpen.TabIndex = 1;
             btnOpen.Text = "Open";
             btnOpen.UseVisualStyleBackColor = true;
-            // 
-            // lblResumen
-            // 
-            lblResumen.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            lblResumen.BackColor = System.Drawing.Color.Transparent;
-            lblResumen.Location = new System.Drawing.Point(831, 529);
-            lblResumen.Name = "lblResumen";
-            lblResumen.Size = new System.Drawing.Size(203, 15);
-            lblResumen.TabIndex = 7;
-            lblResumen.Text = "searches: 0 | points: 0/90";
-            lblResumen.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // lblNextSearch
             // 
             lblNextSearch.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            lblNextSearch.Location = new System.Drawing.Point(12, 501);
+            lblNextSearch.Location = new System.Drawing.Point(12, 478);
             lblNextSearch.Name = "lblNextSearch";
-            lblNextSearch.Size = new System.Drawing.Size(863, 15);
+            lblNextSearch.Size = new System.Drawing.Size(926, 19);
             lblNextSearch.TabIndex = 4;
             lblNextSearch.Text = "Next search:";
+            lblNextSearch.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // btnRefresh
+            // btnNext
             // 
-            btnRefresh.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            btnRefresh.Location = new System.Drawing.Point(1043, 497);
-            btnRefresh.Name = "btnRefresh";
-            btnRefresh.Size = new System.Drawing.Size(75, 23);
-            btnRefresh.TabIndex = 2;
-            btnRefresh.Text = "Refresh";
-            btnRefresh.UseVisualStyleBackColor = true;
+            btnNext.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            btnNext.Location = new System.Drawing.Point(1064, 476);
+            btnNext.Name = "btnNext";
+            btnNext.Size = new System.Drawing.Size(54, 23);
+            btnNext.TabIndex = 7;
+            btnNext.Text = "Next";
+            btnNext.UseVisualStyleBackColor = true;
             // 
             // chkMobile
             // 
@@ -142,48 +141,141 @@ namespace EdgeSearch.UI
             chkMobile.Location = new System.Drawing.Point(1064, 10);
             chkMobile.Name = "chkMobile";
             chkMobile.Size = new System.Drawing.Size(54, 25);
-            chkMobile.TabIndex = 8;
+            chkMobile.TabIndex = 2;
             chkMobile.Text = "Mobile";
             chkMobile.UseVisualStyleBackColor = true;
             // 
             // btnForce
             // 
             btnForce.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            btnForce.Location = new System.Drawing.Point(962, 497);
+            btnForce.Location = new System.Drawing.Point(1004, 476);
             btnForce.Name = "btnForce";
-            btnForce.Size = new System.Drawing.Size(75, 23);
-            btnForce.TabIndex = 2;
+            btnForce.Size = new System.Drawing.Size(54, 23);
+            btnForce.TabIndex = 6;
             btnForce.Text = "Force";
             btnForce.UseVisualStyleBackColor = true;
             // 
             // btnCopy
             // 
             btnCopy.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            btnCopy.Location = new System.Drawing.Point(881, 497);
+            btnCopy.Location = new System.Drawing.Point(944, 476);
             btnCopy.Name = "btnCopy";
-            btnCopy.Size = new System.Drawing.Size(75, 23);
-            btnCopy.TabIndex = 2;
+            btnCopy.Size = new System.Drawing.Size(54, 23);
+            btnCopy.TabIndex = 5;
             btnCopy.Text = "Copy";
             btnCopy.UseVisualStyleBackColor = true;
+            // 
+            // txtUpperLimit
+            // 
+            txtUpperLimit.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            txtUpperLimit.Location = new System.Drawing.Point(186, 504);
+            txtUpperLimit.Name = "txtUpperLimit";
+            txtUpperLimit.Size = new System.Drawing.Size(28, 23);
+            txtUpperLimit.TabIndex = 10;
+            // 
+            // txtLoweLimit
+            // 
+            txtLoweLimit.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            txtLoweLimit.Location = new System.Drawing.Point(134, 504);
+            txtLoweLimit.Name = "txtLoweLimit";
+            txtLoweLimit.Size = new System.Drawing.Size(28, 23);
+            txtLoweLimit.TabIndex = 9;
+            // 
+            // lblSearches
+            // 
+            lblSearches.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            lblSearches.AutoSize = true;
+            lblSearches.Location = new System.Drawing.Point(12, 536);
+            lblSearches.Name = "lblSearches";
+            lblSearches.Size = new System.Drawing.Size(56, 15);
+            lblSearches.TabIndex = 14;
+            lblSearches.Text = "Searches:";
+            lblSearches.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // txtSearches
+            // 
+            txtSearches.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            txtSearches.Location = new System.Drawing.Point(74, 533);
+            txtSearches.Name = "txtSearches";
+            txtSearches.Size = new System.Drawing.Size(28, 23);
+            txtSearches.TabIndex = 15;
+            // 
+            // lblPoints
+            // 
+            lblPoints.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            lblPoints.AutoSize = true;
+            lblPoints.Location = new System.Drawing.Point(134, 536);
+            lblPoints.Name = "lblPoints";
+            lblPoints.Size = new System.Drawing.Size(43, 15);
+            lblPoints.TabIndex = 16;
+            lblPoints.Text = "Points:";
+            lblPoints.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // txtCurrentPoints
+            // 
+            txtCurrentPoints.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            txtCurrentPoints.Location = new System.Drawing.Point(183, 533);
+            txtCurrentPoints.Name = "txtCurrentPoints";
+            txtCurrentPoints.Size = new System.Drawing.Size(28, 23);
+            txtCurrentPoints.TabIndex = 17;
+            // 
+            // txtPointsLimit
+            // 
+            txtPointsLimit.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            txtPointsLimit.Location = new System.Drawing.Point(235, 533);
+            txtPointsLimit.Name = "txtPointsLimit";
+            txtPointsLimit.Size = new System.Drawing.Size(28, 23);
+            txtPointsLimit.TabIndex = 18;
+            // 
+            // lblPointsSeparator
+            // 
+            lblPointsSeparator.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            lblPointsSeparator.AutoSize = true;
+            lblPointsSeparator.Location = new System.Drawing.Point(217, 536);
+            lblPointsSeparator.Name = "lblPointsSeparator";
+            lblPointsSeparator.Size = new System.Drawing.Size(12, 15);
+            lblPointsSeparator.TabIndex = 14;
+            lblPointsSeparator.Text = "/";
+            lblPointsSeparator.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblRefreshRangeSeparator
+            // 
+            lblRefreshRangeSeparator.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            lblRefreshRangeSeparator.AutoSize = true;
+            lblRefreshRangeSeparator.Location = new System.Drawing.Point(168, 508);
+            lblRefreshRangeSeparator.Name = "lblRefreshRangeSeparator";
+            lblRefreshRangeSeparator.Size = new System.Drawing.Size(12, 15);
+            lblRefreshRangeSeparator.TabIndex = 14;
+            lblRefreshRangeSeparator.Text = "-";
+            lblRefreshRangeSeparator.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1130, 560);
+            ClientSize = new System.Drawing.Size(1130, 570);
+            Controls.Add(txtSearches);
+            Controls.Add(txtCurrentPoints);
+            Controls.Add(txtLoweLimit);
+            Controls.Add(txtPointsLimit);
+            Controls.Add(txtUpperLimit);
             Controls.Add(chkMobile);
-            Controls.Add(lblResumen);
             Controls.Add(txtURL);
             Controls.Add(lblProgress);
             Controls.Add(lblNextSearch);
+            Controls.Add(lblPoints);
+            Controls.Add(lblRefreshRangeSeparator);
+            Controls.Add(lblPointsSeparator);
+            Controls.Add(lblSearches);
             Controls.Add(lblRange);
             Controls.Add(btnOpen);
             Controls.Add(btnCopy);
             Controls.Add(btnForce);
-            Controls.Add(btnRefresh);
+            Controls.Add(btnNext);
             Controls.Add(btnPlay);
             Controls.Add(progressBar);
             Controls.Add(webView);
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";
             Text = "Edge search";
@@ -201,12 +293,20 @@ namespace EdgeSearch.UI
         private System.Windows.Forms.Label lblProgress;
         private System.Windows.Forms.TextBox txtURL;
         private System.Windows.Forms.Button btnOpen;
-        private System.Windows.Forms.Label lblResumen;
         private System.Windows.Forms.Label lblNextSearch;
-        private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.Button btnNext;
         private System.Windows.Forms.CheckBox chkMobile;
         private System.Windows.Forms.Button btnForce;
         private System.Windows.Forms.Button btnCopy;
+        private System.Windows.Forms.TextBox txtUpperLimit;
+        private System.Windows.Forms.TextBox txtLoweLimit;
+        private System.Windows.Forms.Label lblSearches;
+        private System.Windows.Forms.TextBox txtSearches;
+        private System.Windows.Forms.Label lblPoints;
+        private System.Windows.Forms.TextBox txtCurrentPoints;
+        private System.Windows.Forms.TextBox txtPointsLimit;
+        private System.Windows.Forms.Label lblPointsSeparator;
+        private System.Windows.Forms.Label lblRefreshRangeSeparator;
     }
 }
 

@@ -25,14 +25,12 @@ namespace EdgeSearch.Business
         #endregion
 
         #region Constructors and destructor
-        public MainPresenter(MainForm mainForm, Search search)
+        public MainPresenter(MainForm mainForm, Search search, Preferences preferences)
         {
             _mainForm = mainForm;
             _search = search;
+            _preferences = preferences;
             _random = new Random();
-
-            // Carga las preferencias
-            _preferences = new Preferences("config.json");
 
             LoadSearchesFromFile("searches.xml"); // Carga las búsquedas desde el archivo
 
@@ -70,7 +68,7 @@ namespace EdgeSearch.Business
         private void RefreshNextSearch()
         {
             _search.NextSearch = CreateSearch();
-            _mainForm.UpdateInterface(_search, _preferences);
+            _mainForm.UpdateInterface(_search);
         }
 
         private void DoSearch()
@@ -88,7 +86,7 @@ namespace EdgeSearch.Business
             else
                 _search.DesktopSearchesCount++;
 
-            _mainForm.UpdateInterface(_search, _preferences);
+            _mainForm.UpdateInterface(_search);
         }
 
         private void LoadSearchesFromFile(string filePath)
@@ -145,7 +143,7 @@ namespace EdgeSearch.Business
         {
             _search.ElapsedSeconds++;
 
-            if (_search.ElapsedSeconds >= _search.RefreshSeconds)
+            if (_search.ElapsedSeconds >= _search.SecondsToRefresh)
             {
                 if (_search.ToSearch.Count == 0)
                 {
@@ -153,8 +151,8 @@ namespace EdgeSearch.Business
                     return;
                 }
 
-                bool desktopPointsReached = (Search.DesktopSearchesCount * 3) >= _preferences.DesktopTotalPoints;
-                bool MobilePointsReached = (Search.MobileSearchesCount * 3) >= _preferences.MobileTotalPoints;
+                bool desktopPointsReached = (_search.DesktopSearchesCount * 3) >= _search.DesktopTotalPoints;
+                bool MobilePointsReached = (_search.MobileSearchesCount * 3) >= _search.MobileTotalPoints;
                 if (!Search.IsMobile && desktopPointsReached)
                 {
                     if (!MobilePointsReached)
@@ -181,9 +179,10 @@ namespace EdgeSearch.Business
                 }
 
                 DoSearch();
+                RestartLimits();
             }
 
-            _mainForm.UpdateInterface(_search, _preferences); ;
+            _mainForm.UpdateInterface(_search);
         }
 
         private async System.Threading.Tasks.Task ChangeMobileMode(Preferences.Mode mode, bool reloadWeb)
@@ -196,7 +195,7 @@ namespace EdgeSearch.Business
         {
             if (!_search.IsPlaying)
             {
-                UpdateLimits();
+                RestartLimits();
                 _refreshTimer.Start(); // Inicia el temporizador cuando se presiona el botón
                 _search.IsPlaying = true;
             }
@@ -206,33 +205,33 @@ namespace EdgeSearch.Business
                 _search.IsPlaying = false;
             }
 
-            _mainForm.UpdateInterface(_search, _preferences);
+            _mainForm.UpdateInterface(_search);
         }
 
-        public void UpdateLimits()
+        public void RestartLimits()
         {
-            _search.RefreshSeconds = _random.Next(_preferences.LowerLimit, _preferences.UpperLimit + 1);
+            _search.SecondsToRefresh = _random.Next(_search.LowerLimit, _search.UpperLimit + 1);
             _search.ElapsedSeconds = 0;
 
-            _mainForm.UpdateInterface(_search, _preferences);
+            _mainForm.UpdateInterface(_search);
         }
 
         private async System.Threading.Tasks.Task RefreshMobileMode(bool reloadWeb)
         {
             _preferences.LastMode = _search.CurrentMode;
+            _preferences.Save();
+
             if (_search.IsMobile)
                 _mainForm.SetUserAgent(_search.MobileUserAgent);
             else
                 _mainForm.SetUserAgent(_search.DesktopUserAgent);
-
-            _preferences.Save();
 
             await _mainForm.DeleteSessionCookies();
 
             if (reloadWeb)
                 _mainForm.ReloadWeb();
 
-            _mainForm.UpdateInterface(_search, _preferences);
+            _mainForm.UpdateInterface(_search);
         }
 
         private string GetSaga() => _search.Sagas[_random.Next(0, _search.Sagas.Count)];
@@ -265,7 +264,7 @@ namespace EdgeSearch.Business
             await _mainForm.EnsureCoreWebView2Async();
             _search.URL = new Uri("https://www.bing.es/");
             _mainForm.SetURL(_search.URL);
-            _mainForm.UpdateInterface(_search, _preferences);
+            _mainForm.UpdateInterface(_search);
 
             _mainForm.BindFields(_search);
 
@@ -284,8 +283,6 @@ namespace EdgeSearch.Business
 
         private async void _mainForm_MobileChanged(object sender, EventArgs e)
         {
-            _search.CurrentMode = _search.IsMobile ? Preferences.Mode.Desktop : Preferences.Mode.Mobile;
-
             await RefreshMobileMode(true);
         }
 

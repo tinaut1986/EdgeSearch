@@ -2,6 +2,7 @@
 using EdgeSearch.Models;
 using Microsoft.Web.WebView2.Core;
 using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -52,10 +53,25 @@ namespace EdgeSearch.UI
         public void BindFields(Search search)
         {
             txtURL.DataBindings.Clear();
-            txtURL.DataBindings.Add("Text", search, nameof(search.URL));
+            txtURL.DataBindings.Add(nameof(txtURL.Text), search, nameof(search.URL));
 
             chkMobile.DataBindings.Clear();
-            chkMobile.DataBindings.Add("Checked", search, nameof(search.IsMobile));
+            chkMobile.DataBindings.Add(nameof(chkMobile.Checked), search, nameof(search.IsMobile));
+
+            txtLoweLimit.DataBindings.Clear();
+            txtLoweLimit.DataBindings.Add(nameof(txtLoweLimit.Text), search, nameof(search.LowerLimit));
+
+            txtUpperLimit.DataBindings.Clear();
+            txtUpperLimit.DataBindings.Add(nameof(txtUpperLimit.Text), search, nameof(search.UpperLimit));
+
+            txtSearches.DataBindings.Clear();
+            txtSearches.DataBindings.Add(nameof(txtSearches.Text), search, nameof(search.SearchesCount));
+
+            txtCurrentPoints.DataBindings.Clear();
+            txtCurrentPoints.DataBindings.Add(nameof(txtCurrentPoints.Text), search, nameof(search.CurrentPoints));
+
+            txtPointsLimit.DataBindings.Clear();
+            txtPointsLimit.DataBindings.Add(nameof(txtPointsLimit.Text), search, nameof(search.PointsLimit));
         }
 
         private void InitializeEvents()
@@ -64,7 +80,7 @@ namespace EdgeSearch.UI
             btnPlay.Click += btnPlay_Click;
             btnForce.Click += btnForce_Click;
             btnCopy.Click += btnCopy_Click;
-            btnRefresh.Click += btnRefresh_Click;
+            btnNext.Click += btnNext_Click;
             chkMobile.CheckedChanged += chkMobile_CheckedChanged;
             btnOpen.Click += btnOpen_Click;
             txtURL.KeyPress += txtURL_KeyPress;
@@ -76,7 +92,7 @@ namespace EdgeSearch.UI
             btnPlay.Click -= btnPlay_Click;
             btnForce.Click -= btnForce_Click;
             btnCopy.Click -= btnCopy_Click;
-            btnRefresh.Click -= btnRefresh_Click;
+            btnNext.Click -= btnNext_Click;
             chkMobile.CheckedChanged -= chkMobile_CheckedChanged;
             btnOpen.Click -= btnOpen_Click;
             txtURL.KeyPress -= txtURL_KeyPress;
@@ -113,7 +129,7 @@ namespace EdgeSearch.UI
             Controls.Add(progressBar);
         }
 
-        public void UpdateInterface(Search search, Preferences preferences)
+        public void UpdateInterface(Search search)
         {
             if (!search.IsPlaying)
                 btnPlay.Text = "Play";
@@ -125,18 +141,15 @@ namespace EdgeSearch.UI
             txtURL.Text = webView.Source.AbsoluteUri;
 
             progressBar.Minimum = 0;
-            progressBar.Maximum = search.RefreshSeconds; // Número de segundos para la recarga
+            progressBar.Maximum = search.SecondsToRefresh; // Número de segundos para la recarga
             progressBar.Value = progressBar.Maximum; // Establece el valor inicial como el máximo para empezar lleno
 
-            int searchesCount = search.CurrentMode == Preferences.Mode.Mobile ? search.MobileSearchesCount : search.DesktopSearchesCount;
-            int pointsLimit = search.CurrentMode == Preferences.Mode.Mobile ? preferences.MobileTotalPoints : preferences.DesktopTotalPoints;
-            lblResumen.Text = $"searches: {searchesCount} | points: {searchesCount * 3}/{pointsLimit}";
-
             lblNextSearch.Text = $"Next search: {search.NextSearch}";
-            lblRange.Text = $"Refresh range (segs): {preferences.LowerLimit}/{preferences.UpperLimit}";
 
-            progressBar.Value = progressBar.Maximum - search.ElapsedSeconds; // Calcula el progreso actual basado en los segundos transcurridos
-            lblProgress.Text = $"{search.ElapsedSeconds}/{search.RefreshSeconds} segs"; // Actualiza el texto del Label
+            progressBar.Value = Math.Max(progressBar.Maximum - search.ElapsedSeconds, 0); // Calcula el progreso actual basado en los segundos transcurridos
+            lblProgress.Text = $"{search.ElapsedSeconds}/{search.SecondsToRefresh} segs"; // Actualiza el texto del Label
+
+            BindFields(search);
         }
 
         public void ReloadWeb()
@@ -180,7 +193,7 @@ namespace EdgeSearch.UI
                 btnOpen_Click(null, null);
         }
 
-        private void btnRefresh_Click(object sender, EventArgs e)
+        private void btnNext_Click(object sender, EventArgs e)
         {
             NextSearchClicked?.Invoke(sender, e);
         }

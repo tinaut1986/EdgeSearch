@@ -1,4 +1,5 @@
 using EdgeSearch.Business;
+using EdgeSearch.models;
 using EdgeSearch.Models;
 using EdgeSearch.UI;
 using System;
@@ -22,9 +23,11 @@ namespace EdgeSearch
 
         private static MainForm NewMethod()
         {
-            Search search = new Search();
+            Preferences preferences = new Preferences("config.json");
+            Search search = new Search(preferences);
             MainForm mainForm = new MainForm();
-            MainPresenter presenter = new MainPresenter(mainForm, search);
+            // Carga las preferencias
+            MainPresenter presenter = new MainPresenter(mainForm, search, preferences);
             return mainForm;
         }
     }
