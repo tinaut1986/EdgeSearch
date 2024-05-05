@@ -58,8 +58,8 @@ namespace EdgeSearch.UI
             chkMobile.DataBindings.Clear();
             chkMobile.DataBindings.Add(nameof(chkMobile.Checked), search, nameof(search.IsMobile));
 
-            txtLoweLimit.DataBindings.Clear();
-            txtLoweLimit.DataBindings.Add(nameof(txtLoweLimit.Text), search, nameof(search.LowerLimit));
+            txtLowerLimit.DataBindings.Clear();
+            txtLowerLimit.DataBindings.Add(nameof(txtLowerLimit.Text), search, nameof(search.LowerLimit));
 
             txtUpperLimit.DataBindings.Clear();
             txtUpperLimit.DataBindings.Add(nameof(txtUpperLimit.Text), search, nameof(search.UpperLimit));
@@ -84,7 +84,7 @@ namespace EdgeSearch.UI
             btnPlay.Click += btnPlay_Click;
             btnForce.Click += btnForce_Click;
             btnNext.Click += btnNext_Click;
-            chkMobile.CheckedChanged += chkMobile_CheckedChanged;
+            chkMobile.Click += ChkMobile_Click;
             btnOpen.Click += btnOpen_Click;
             txtURL.KeyPress += txtURL_KeyPress;
         }
@@ -95,7 +95,7 @@ namespace EdgeSearch.UI
             btnPlay.Click -= btnPlay_Click;
             btnForce.Click -= btnForce_Click;
             btnNext.Click -= btnNext_Click;
-            chkMobile.CheckedChanged -= chkMobile_CheckedChanged;
+            chkMobile.Click -= ChkMobile_Click;
             btnOpen.Click -= btnOpen_Click;
             txtURL.KeyPress -= txtURL_KeyPress;
         }
@@ -191,7 +191,7 @@ namespace EdgeSearch.UI
             NextSearchClicked?.Invoke(sender, e);
         }
 
-        private void chkMobile_CheckedChanged(object sender, EventArgs e)
+        private void ChkMobile_Click(object sender, EventArgs e)
         {
             MobileChanged?.Invoke(sender, e);
         }

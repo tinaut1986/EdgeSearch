@@ -179,7 +179,7 @@ namespace EdgeSearch.Models
             get => CurrentMode == Mode.Mobile;
             set
             {
-                CurrentMode = true ? Mode.Mobile : Mode.Desktop;
+                CurrentMode = value ? Mode.Mobile : Mode.Desktop;
                 NotifyPropertyChanged();
             }
         }

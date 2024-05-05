@@ -282,6 +282,7 @@ namespace EdgeSearch.Business
 
         private async void _mainForm_MobileChanged(object sender, EventArgs e)
         {
+            _search.IsMobile = !_search.IsMobile;
             await RefreshMobileMode(true);
         }
 

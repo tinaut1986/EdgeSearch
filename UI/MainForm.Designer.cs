@@ -29,7 +29,7 @@ namespace EdgeSearch.UI
             chkMobile = new System.Windows.Forms.CheckBox();
             btnForce = new System.Windows.Forms.Button();
             txtUpperLimit = new System.Windows.Forms.TextBox();
-            txtLoweLimit = new System.Windows.Forms.TextBox();
+            txtLowerLimit = new System.Windows.Forms.TextBox();
             lblSearches = new System.Windows.Forms.Label();
             txtSearches = new System.Windows.Forms.TextBox();
             lblPoints = new System.Windows.Forms.Label();
@@ -163,13 +163,13 @@ namespace EdgeSearch.UI
             txtUpperLimit.Size = new System.Drawing.Size(28, 23);
             txtUpperLimit.TabIndex = 10;
             // 
-            // txtLoweLimit
+            // txtLowerLimit
             // 
-            txtLoweLimit.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            txtLoweLimit.Location = new System.Drawing.Point(134, 504);
-            txtLoweLimit.Name = "txtLoweLimit";
-            txtLoweLimit.Size = new System.Drawing.Size(28, 23);
-            txtLoweLimit.TabIndex = 9;
+            txtLowerLimit.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            txtLowerLimit.Location = new System.Drawing.Point(134, 504);
+            txtLowerLimit.Name = "txtLowerLimit";
+            txtLowerLimit.Size = new System.Drawing.Size(28, 23);
+            txtLowerLimit.TabIndex = 9;
             // 
             // lblSearches
             // 
@@ -255,7 +255,7 @@ namespace EdgeSearch.UI
             Controls.Add(txtSearches);
             Controls.Add(txtCurrentPoints);
             Controls.Add(txtNextSearch);
-            Controls.Add(txtLoweLimit);
+            Controls.Add(txtLowerLimit);
             Controls.Add(txtPointsLimit);
             Controls.Add(txtUpperLimit);
             Controls.Add(chkMobile);
@@ -296,7 +296,7 @@ namespace EdgeSearch.UI
         private System.Windows.Forms.CheckBox chkMobile;
         private System.Windows.Forms.Button btnForce;
         private System.Windows.Forms.TextBox txtUpperLimit;
-        private System.Windows.Forms.TextBox txtLoweLimit;
+        private System.Windows.Forms.TextBox txtLowerLimit;
         private System.Windows.Forms.Label lblSearches;
         private System.Windows.Forms.TextBox txtSearches;
         private System.Windows.Forms.Label lblPoints;
