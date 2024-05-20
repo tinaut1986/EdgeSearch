@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Xml.Linq;
 
@@ -18,6 +19,7 @@ namespace EdgeSearch.Business
         private Random _random;
         private Preferences _preferences;
         private Timer _refreshTimer;
+        private Awaker _awaker;
         #endregion
 
         #region Properties
@@ -30,6 +32,7 @@ namespace EdgeSearch.Business
             _mainForm = mainForm;
             _search = search;
             _preferences = preferences;
+            _awaker = new Awaker();
             _random = new Random();
 
             LoadSearchesFromFile("searches.xml"); // Carga las búsquedas desde el archivo
@@ -54,7 +57,7 @@ namespace EdgeSearch.Business
 
         private void _mainForm_OpenClicked(object sender, EventArgs e)
         {
-            _mainForm.SetURL(_search.URL);
+            _mainForm.SetSearchsURL(_search.URL);
         }
 
         private void SetupRefreshTimer()
@@ -72,13 +75,16 @@ namespace EdgeSearch.Business
 
         private void DoSearch()
         {
-            string currentSearch = Search.NextSearch;
+            if (!CanDoSearch())
+                Stop();
+
+            string currentSearch = _search.NextSearch;
             RefreshNextSearch();
-            Search.URL = new Uri($"https://www.bing.com/search?q={currentSearch}&form=QBLH&sp=-1&ghc=1&lq=0&pq={currentSearch}");
+            _search.URL = new Uri($"https://www.bing.com/search?q={currentSearch}&form=QBLH&sp=-1&ghc=1&lq=0&pq={currentSearch}");
 
-            _mainForm.SetURL(_search.URL);
+            _mainForm.SetSearchsURL(_search.URL);
 
-            _search.UsedSearchs.Add(currentSearch);
+            AddHistoricSearch(currentSearch);
 
             if (_search.IsMobile)
                 _search.MobileSearchesCount++;
@@ -86,6 +92,16 @@ namespace EdgeSearch.Business
                 _search.DesktopSearchesCount++;
 
             _mainForm.UpdateInterface(_search);
+        }
+
+        private void AddHistoricSearch(string currentSearch)
+        {
+            _search.UsedSearchs.Add(new Tuple<DateTime, Preferences.Mode, string>(DateTime.Now, _search.CurrentMode, currentSearch));
+        }
+
+        private bool CanDoSearch()
+        {
+            return _search.UsedSearchs.Count(x => Math.Abs((x.Item1 - DateTime.Now).TotalSeconds) < 10) < 3;
         }
 
         private void LoadSearchesFromFile(string filePath)
@@ -133,7 +149,7 @@ namespace EdgeSearch.Business
                 if (search.Contains("%company%"))
                     search = search.Replace("%company%", GetCompany());
             }
-            while (_search.UsedSearchs.Contains(search));
+            while (_search.UsedSearchs.Any(x => x.Item3 == search));
 
             return search;
         }
@@ -193,18 +209,27 @@ namespace EdgeSearch.Business
         private void PlayAndStop()
         {
             if (!_search.IsPlaying)
-            {
-                RestartLimits();
-                _refreshTimer.Start(); // Inicia el temporizador cuando se presiona el botón
-                _search.IsPlaying = true;
-            }
+                Play();
             else
-            {
-                _refreshTimer.Stop(); // Detiene el temporizador si ya está activo
-                _search.IsPlaying = false;
-            }
+                Stop();
 
             _mainForm.UpdateInterface(_search);
+        }
+
+        private void Stop()
+        {
+            _refreshTimer.Stop(); // Detiene el temporizador si ya está activo
+            _search.IsPlaying = false;
+
+            _awaker.Stop();
+        }
+
+        private void Play()
+        {
+            RestartLimits();
+            _refreshTimer.Start(); // Inicia el temporizador cuando se presiona el botón
+            _search.IsPlaying = true;
+            _awaker.Start();
         }
 
         public void RestartLimits()
@@ -227,8 +252,17 @@ namespace EdgeSearch.Business
 
             await _mainForm.DeleteSessionCookies();
 
+            if (!CanDoSearch())
+            {
+                Stop();
+                return;
+            }
+
             if (reloadWeb)
-                _mainForm.ReloadWeb();
+            {
+                AddHistoricSearch(_search.URL.ToString());
+                _mainForm.ReloadSearchsWeb();
+            }
 
             _mainForm.UpdateInterface(_search);
         }
@@ -262,7 +296,10 @@ namespace EdgeSearch.Business
         {
             await _mainForm.EnsureCoreWebView2Async();
             _search.URL = new Uri("https://www.bing.es/");
-            _mainForm.SetURL(_search.URL);
+            _mainForm.SetSearchsURL(_search.URL);
+            //_mainForm.SetMissionsURL(new Uri("https://rewards.bing.com/pointsbreakdown"));
+            _mainForm.SetMissionsURL(new Uri("https://rewards.bing.com/"));
+
             _mainForm.UpdateInterface(_search);
 
             _mainForm.BindFields(_search);

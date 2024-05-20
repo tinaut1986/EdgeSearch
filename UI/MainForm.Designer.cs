@@ -17,7 +17,7 @@ namespace EdgeSearch.UI
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            webView = new Microsoft.Web.WebView2.WinForms.WebView2();
+            wvSearchs = new Microsoft.Web.WebView2.WinForms.WebView2();
             progressBar = new System.Windows.Forms.ProgressBar();
             btnPlay = new System.Windows.Forms.Button();
             lblRange = new System.Windows.Forms.Label();
@@ -38,20 +38,28 @@ namespace EdgeSearch.UI
             lblPointsSeparator = new System.Windows.Forms.Label();
             lblRefreshRangeSeparator = new System.Windows.Forms.Label();
             txtNextSearch = new System.Windows.Forms.TextBox();
-            ((System.ComponentModel.ISupportInitialize)webView).BeginInit();
+            tabControl1 = new System.Windows.Forms.TabControl();
+            tpSearchs = new System.Windows.Forms.TabPage();
+            tpMissions = new System.Windows.Forms.TabPage();
+            wvMissions = new Microsoft.Web.WebView2.WinForms.WebView2();
+            ((System.ComponentModel.ISupportInitialize)wvSearchs).BeginInit();
+            tabControl1.SuspendLayout();
+            tpSearchs.SuspendLayout();
+            tpMissions.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)wvMissions).BeginInit();
             SuspendLayout();
             // 
-            // webView
+            // wvSearchs
             // 
-            webView.AllowExternalDrop = true;
-            webView.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            webView.CreationProperties = null;
-            webView.DefaultBackgroundColor = System.Drawing.Color.White;
-            webView.Location = new System.Drawing.Point(12, 41);
-            webView.Name = "webView";
-            webView.Size = new System.Drawing.Size(1106, 429);
-            webView.TabIndex = 3;
-            webView.ZoomFactor = 1D;
+            wvSearchs.AllowExternalDrop = true;
+            wvSearchs.CreationProperties = null;
+            wvSearchs.DefaultBackgroundColor = System.Drawing.Color.White;
+            wvSearchs.Dock = System.Windows.Forms.DockStyle.Fill;
+            wvSearchs.Location = new System.Drawing.Point(3, 3);
+            wvSearchs.Name = "wvSearchs";
+            wvSearchs.Size = new System.Drawing.Size(1102, 436);
+            wvSearchs.TabIndex = 3;
+            wvSearchs.ZoomFactor = 1D;
             // 
             // progressBar
             // 
@@ -247,11 +255,57 @@ namespace EdgeSearch.UI
             txtNextSearch.Size = new System.Drawing.Size(902, 23);
             txtNextSearch.TabIndex = 9;
             // 
+            // tabControl1
+            // 
+            tabControl1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            tabControl1.Controls.Add(tpSearchs);
+            tabControl1.Controls.Add(tpMissions);
+            tabControl1.Location = new System.Drawing.Point(2, 0);
+            tabControl1.Name = "tabControl1";
+            tabControl1.SelectedIndex = 0;
+            tabControl1.Size = new System.Drawing.Size(1116, 470);
+            tabControl1.TabIndex = 19;
+            // 
+            // tpSearchs
+            // 
+            tpSearchs.Controls.Add(wvSearchs);
+            tpSearchs.Location = new System.Drawing.Point(4, 24);
+            tpSearchs.Name = "tpSearchs";
+            tpSearchs.Padding = new System.Windows.Forms.Padding(3);
+            tpSearchs.Size = new System.Drawing.Size(1108, 442);
+            tpSearchs.TabIndex = 0;
+            tpSearchs.Text = "Searchs";
+            tpSearchs.UseVisualStyleBackColor = true;
+            // 
+            // tpMissions
+            // 
+            tpMissions.Controls.Add(wvMissions);
+            tpMissions.Location = new System.Drawing.Point(4, 24);
+            tpMissions.Name = "tpMissions";
+            tpMissions.Padding = new System.Windows.Forms.Padding(3);
+            tpMissions.Size = new System.Drawing.Size(1108, 442);
+            tpMissions.TabIndex = 1;
+            tpMissions.Text = "Missions";
+            tpMissions.UseVisualStyleBackColor = true;
+            // 
+            // wvMissions
+            // 
+            wvMissions.AllowExternalDrop = true;
+            wvMissions.CreationProperties = null;
+            wvMissions.DefaultBackgroundColor = System.Drawing.Color.White;
+            wvMissions.Dock = System.Windows.Forms.DockStyle.Fill;
+            wvMissions.Location = new System.Drawing.Point(3, 3);
+            wvMissions.Name = "wvMissions";
+            wvMissions.Size = new System.Drawing.Size(1102, 436);
+            wvMissions.TabIndex = 0;
+            wvMissions.ZoomFactor = 1D;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1130, 570);
+            Controls.Add(tabControl1);
             Controls.Add(txtSearches);
             Controls.Add(txtCurrentPoints);
             Controls.Add(txtNextSearch);
@@ -272,19 +326,22 @@ namespace EdgeSearch.UI
             Controls.Add(btnNext);
             Controls.Add(btnPlay);
             Controls.Add(progressBar);
-            Controls.Add(webView);
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";
             Text = "Edge search";
-            ((System.ComponentModel.ISupportInitialize)webView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)wvSearchs).EndInit();
+            tabControl1.ResumeLayout(false);
+            tpSearchs.ResumeLayout(false);
+            tpMissions.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)wvMissions).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private Microsoft.Web.WebView2.WinForms.WebView2 webView;
+        private Microsoft.Web.WebView2.WinForms.WebView2 wvSearchs;
         private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.Button btnPlay;
         private System.Windows.Forms.Label lblRange;
@@ -305,6 +362,10 @@ namespace EdgeSearch.UI
         private System.Windows.Forms.Label lblPointsSeparator;
         private System.Windows.Forms.Label lblRefreshRangeSeparator;
         private System.Windows.Forms.TextBox txtNextSearch;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tpSearchs;
+        private System.Windows.Forms.TabPage tpMissions;
+        private Microsoft.Web.WebView2.WinForms.WebView2 wvMissions;
     }
 }
 

@@ -173,7 +173,7 @@ namespace EdgeSearch.Models
         public List<string> Retro { get; set; } = new List<string>();
         public List<string> Games { get; set; } = new List<string>();
         public List<string> Companies { get; set; } = new List<string>();
-        public List<string> UsedSearchs { get; set; } = new List<string>();
+        public List<Tuple<DateTime, Mode, string>> UsedSearchs { get; set; } = new List<Tuple<DateTime, Mode, string>>();
         public bool IsMobile
         {
             get => CurrentMode == Mode.Mobile;

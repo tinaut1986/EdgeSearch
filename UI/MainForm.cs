@@ -15,7 +15,8 @@ namespace EdgeSearch.UI
         public event EventHandler OpenClicked;
         public event EventHandler NextSearchClicked;
         public event EventHandler MobileChanged;
-        public event EventHandler<CoreWebView2InitializationCompletedEventArgs> CoreWebView2InitializationCompleted;
+        public event EventHandler<CoreWebView2InitializationCompletedEventArgs> SearchesCoreWebView2InitializationCompleted;
+        public event EventHandler<CoreWebView2InitializationCompletedEventArgs> MissionCoreWebView2InitializationCompleted;
         #endregion
 
         #region Constructors & destructor
@@ -80,7 +81,9 @@ namespace EdgeSearch.UI
 
         private void InitializeEvents()
         {
-            webView.CoreWebView2InitializationCompleted += WebView_CoreWebView2InitializationCompleted;
+            //wvSearchs.CoreWebView2InitializationCompleted += WvSearchs_CoreWebView2InitializationCompleted;
+            //wvMissions.CoreWebView2InitializationCompleted += WvMissions_CoreWebView2InitializationCompleted;
+
             btnPlay.Click += btnPlay_Click;
             btnForce.Click += btnForce_Click;
             btnNext.Click += btnNext_Click;
@@ -91,7 +94,9 @@ namespace EdgeSearch.UI
 
         private void FinalizeEvents()
         {
-            webView.CoreWebView2InitializationCompleted -= WebView_CoreWebView2InitializationCompleted;
+            //wvSearchs.CoreWebView2InitializationCompleted -= WvSearchs_CoreWebView2InitializationCompleted;
+            //wvMissions.CoreWebView2InitializationCompleted -= WvMissions_CoreWebView2InitializationCompleted;
+
             btnPlay.Click -= btnPlay_Click;
             btnForce.Click -= btnForce_Click;
             btnNext.Click -= btnNext_Click;
@@ -102,28 +107,40 @@ namespace EdgeSearch.UI
 
         public void SetUserAgent(string userAgent)
         {
-            if (webView.CoreWebView2?.Settings != null)
-                webView.CoreWebView2.Settings.UserAgent = userAgent;
+            if (wvSearchs.CoreWebView2?.Settings != null)
+                wvSearchs.CoreWebView2.Settings.UserAgent = userAgent;
         }
 
         public async Task EnsureCoreWebView2Async()
         {
-            await webView.EnsureCoreWebView2Async(null);
+            await wvSearchs.EnsureCoreWebView2Async(null);
+            await wvMissions.EnsureCoreWebView2Async(null);
         }
 
         private async void InitializeWebView()
         {
-            Controls.Add(webView);
+            //Controls.Add(wvSearchs);
 
-            await webView.EnsureCoreWebView2Async();
+            await wvSearchs.EnsureCoreWebView2Async();
+            await wvMissions.EnsureCoreWebView2Async();
         }
 
-        public void SetURL(Uri url)
+        public void SetSearchsURL(Uri url)
         {
-            if (webView.Source != url)
-                webView.Source = url;
+            if (wvSearchs.Source != url)
+                wvSearchs.Source = url;
             else
-                ReloadWeb();
+                ReloadSearchsWeb();
+        }
+
+        public void SetMissionsURL(Uri url)
+        {
+            if (wvMissions.Source != url)
+                wvMissions.Source = url;
+            else
+                ReloadSearchsWeb();
+
+
         }
 
         private void InitializeProgressBar()
@@ -140,35 +157,46 @@ namespace EdgeSearch.UI
 
             btnOpen.Enabled = !search.IsPlaying;
             txtURL.ReadOnly = search.IsPlaying;
-            txtURL.Text = webView.Source.AbsoluteUri;
+            txtURL.Text = wvSearchs.Source.AbsoluteUri;
 
             lblProgress.Text = $"{search.ElapsedSeconds}/{search.SecondsToRefresh} segs";
         }
 
-        public void ReloadWeb()
+        public void ReloadSearchsWeb()
         {
-            if (webView.Source != null)
-                webView.Reload();
+            if (wvSearchs.Source != null)
+                wvSearchs.Reload();
+        }
+
+        public void ReloadMissionsWeb()
+        {
+            if (wvMissions.Source != null)
+                wvMissions.Reload();
         }
 
         public async System.Threading.Tasks.Task DeleteSessionCookies()
         {
-            if (webView.CoreWebView2?.Settings != null)
+            if (wvSearchs.CoreWebView2?.Settings != null)
             {
-                foreach (CoreWebView2Cookie cookie in (await webView.CoreWebView2.CookieManager.GetCookiesAsync(null)).ToList())
+                foreach (CoreWebView2Cookie cookie in (await wvSearchs.CoreWebView2.CookieManager.GetCookiesAsync(null)).ToList())
                 {
                     if (cookie.IsSession)
-                        webView.CoreWebView2.CookieManager.DeleteCookie(cookie);
+                        wvSearchs.CoreWebView2.CookieManager.DeleteCookie(cookie);
                 }
             }
         }
         #endregion
 
         #region Events
-        private void WebView_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
+        private void WvSearchs_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
         {
-            CoreWebView2InitializationCompleted?.Invoke(sender, e);
+            SearchesCoreWebView2InitializationCompleted?.Invoke(sender, e);
         }
+
+        private void WvMissions_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
+        {
+            MissionCoreWebView2InitializationCompleted?.Invoke(sender, e);
+        }        
 
         private void btnPlay_Click(object sender, EventArgs e)
         {
