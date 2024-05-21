@@ -57,7 +57,7 @@ namespace EdgeSearch.UI
             wvSearchs.Dock = System.Windows.Forms.DockStyle.Fill;
             wvSearchs.Location = new System.Drawing.Point(3, 3);
             wvSearchs.Name = "wvSearchs";
-            wvSearchs.Size = new System.Drawing.Size(1102, 436);
+            wvSearchs.Size = new System.Drawing.Size(1102, 394);
             wvSearchs.TabIndex = 3;
             wvSearchs.ZoomFactor = 1D;
             // 
@@ -260,10 +260,10 @@ namespace EdgeSearch.UI
             tabControl1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             tabControl1.Controls.Add(tpSearchs);
             tabControl1.Controls.Add(tpMissions);
-            tabControl1.Location = new System.Drawing.Point(2, 0);
+            tabControl1.Location = new System.Drawing.Point(2, 42);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new System.Drawing.Size(1116, 470);
+            tabControl1.Size = new System.Drawing.Size(1116, 428);
             tabControl1.TabIndex = 19;
             // 
             // tpSearchs
@@ -272,7 +272,7 @@ namespace EdgeSearch.UI
             tpSearchs.Location = new System.Drawing.Point(4, 24);
             tpSearchs.Name = "tpSearchs";
             tpSearchs.Padding = new System.Windows.Forms.Padding(3);
-            tpSearchs.Size = new System.Drawing.Size(1108, 442);
+            tpSearchs.Size = new System.Drawing.Size(1108, 400);
             tpSearchs.TabIndex = 0;
             tpSearchs.Text = "Searchs";
             tpSearchs.UseVisualStyleBackColor = true;
