@@ -27,7 +27,7 @@ namespace EdgeSearch.UI
             lblNextSearch = new System.Windows.Forms.Label();
             btnNext = new System.Windows.Forms.Button();
             chkMobile = new System.Windows.Forms.CheckBox();
-            btnForce = new System.Windows.Forms.Button();
+            btnSearch = new System.Windows.Forms.Button();
             txtUpperLimit = new System.Windows.Forms.TextBox();
             txtLowerLimit = new System.Windows.Forms.TextBox();
             lblSearches = new System.Windows.Forms.Label();
@@ -52,27 +52,27 @@ namespace EdgeSearch.UI
             // wvSearchs
             // 
             wvSearchs.AllowExternalDrop = true;
+            wvSearchs.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             wvSearchs.CreationProperties = null;
             wvSearchs.DefaultBackgroundColor = System.Drawing.Color.White;
-            wvSearchs.Dock = System.Windows.Forms.DockStyle.Fill;
-            wvSearchs.Location = new System.Drawing.Point(3, 3);
+            wvSearchs.Location = new System.Drawing.Point(6, 35);
             wvSearchs.Name = "wvSearchs";
-            wvSearchs.Size = new System.Drawing.Size(1102, 394);
+            wvSearchs.Size = new System.Drawing.Size(1199, 424);
             wvSearchs.TabIndex = 3;
             wvSearchs.ZoomFactor = 1D;
             // 
             // progressBar
             // 
             progressBar.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            progressBar.Location = new System.Drawing.Point(220, 504);
+            progressBar.Location = new System.Drawing.Point(445, 494);
             progressBar.Name = "progressBar";
-            progressBar.Size = new System.Drawing.Size(838, 23);
+            progressBar.Size = new System.Drawing.Size(700, 23);
             progressBar.TabIndex = 11;
             // 
             // btnPlay
             // 
             btnPlay.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            btnPlay.Location = new System.Drawing.Point(1064, 504);
+            btnPlay.Location = new System.Drawing.Point(1151, 494);
             btnPlay.Name = "btnPlay";
             btnPlay.Size = new System.Drawing.Size(54, 23);
             btnPlay.TabIndex = 13;
@@ -83,7 +83,7 @@ namespace EdgeSearch.UI
             // 
             lblRange.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             lblRange.AutoSize = true;
-            lblRange.Location = new System.Drawing.Point(12, 508);
+            lblRange.Location = new System.Drawing.Point(237, 498);
             lblRange.Name = "lblRange";
             lblRange.Size = new System.Drawing.Size(116, 15);
             lblRange.TabIndex = 8;
@@ -96,7 +96,7 @@ namespace EdgeSearch.UI
             lblProgress.AutoSize = true;
             lblProgress.BackColor = System.Drawing.Color.Transparent;
             lblProgress.ForeColor = System.Drawing.Color.Black;
-            lblProgress.Location = new System.Drawing.Point(604, 508);
+            lblProgress.Location = new System.Drawing.Point(782, 498);
             lblProgress.Name = "lblProgress";
             lblProgress.Size = new System.Drawing.Size(24, 15);
             lblProgress.TabIndex = 12;
@@ -106,15 +106,15 @@ namespace EdgeSearch.UI
             // txtURL
             // 
             txtURL.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            txtURL.Location = new System.Drawing.Point(12, 12);
+            txtURL.Location = new System.Drawing.Point(6, 6);
             txtURL.Name = "txtURL";
-            txtURL.Size = new System.Drawing.Size(965, 23);
+            txtURL.Size = new System.Drawing.Size(1058, 23);
             txtURL.TabIndex = 0;
             // 
             // btnOpen
             // 
             btnOpen.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            btnOpen.Location = new System.Drawing.Point(983, 12);
+            btnOpen.Location = new System.Drawing.Point(1070, 6);
             btnOpen.Name = "btnOpen";
             btnOpen.Size = new System.Drawing.Size(75, 23);
             btnOpen.TabIndex = 1;
@@ -124,7 +124,7 @@ namespace EdgeSearch.UI
             // lblNextSearch
             // 
             lblNextSearch.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            lblNextSearch.Location = new System.Drawing.Point(12, 478);
+            lblNextSearch.Location = new System.Drawing.Point(6, 467);
             lblNextSearch.Name = "lblNextSearch";
             lblNextSearch.Size = new System.Drawing.Size(78, 19);
             lblNextSearch.TabIndex = 4;
@@ -134,7 +134,7 @@ namespace EdgeSearch.UI
             // btnNext
             // 
             btnNext.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            btnNext.Location = new System.Drawing.Point(1064, 476);
+            btnNext.Location = new System.Drawing.Point(1089, 465);
             btnNext.Name = "btnNext";
             btnNext.Size = new System.Drawing.Size(54, 23);
             btnNext.TabIndex = 7;
@@ -146,27 +146,27 @@ namespace EdgeSearch.UI
             chkMobile.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             chkMobile.Appearance = System.Windows.Forms.Appearance.Button;
             chkMobile.AutoSize = true;
-            chkMobile.Location = new System.Drawing.Point(1064, 11);
+            chkMobile.Location = new System.Drawing.Point(1151, 6);
             chkMobile.Name = "chkMobile";
             chkMobile.Size = new System.Drawing.Size(54, 25);
             chkMobile.TabIndex = 2;
             chkMobile.Text = "Mobile";
             chkMobile.UseVisualStyleBackColor = true;
             // 
-            // btnForce
+            // btnSearch
             // 
-            btnForce.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            btnForce.Location = new System.Drawing.Point(1004, 476);
-            btnForce.Name = "btnForce";
-            btnForce.Size = new System.Drawing.Size(54, 23);
-            btnForce.TabIndex = 6;
-            btnForce.Text = "Force";
-            btnForce.UseVisualStyleBackColor = true;
+            btnSearch.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            btnSearch.Location = new System.Drawing.Point(1149, 465);
+            btnSearch.Name = "btnSearch";
+            btnSearch.Size = new System.Drawing.Size(54, 23);
+            btnSearch.TabIndex = 6;
+            btnSearch.Text = "Search";
+            btnSearch.UseVisualStyleBackColor = true;
             // 
             // txtUpperLimit
             // 
             txtUpperLimit.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            txtUpperLimit.Location = new System.Drawing.Point(186, 504);
+            txtUpperLimit.Location = new System.Drawing.Point(411, 494);
             txtUpperLimit.Name = "txtUpperLimit";
             txtUpperLimit.Size = new System.Drawing.Size(28, 23);
             txtUpperLimit.TabIndex = 10;
@@ -174,7 +174,7 @@ namespace EdgeSearch.UI
             // txtLowerLimit
             // 
             txtLowerLimit.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            txtLowerLimit.Location = new System.Drawing.Point(134, 504);
+            txtLowerLimit.Location = new System.Drawing.Point(359, 494);
             txtLowerLimit.Name = "txtLowerLimit";
             txtLowerLimit.Size = new System.Drawing.Size(28, 23);
             txtLowerLimit.TabIndex = 9;
@@ -183,7 +183,7 @@ namespace EdgeSearch.UI
             // 
             lblSearches.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             lblSearches.AutoSize = true;
-            lblSearches.Location = new System.Drawing.Point(12, 537);
+            lblSearches.Location = new System.Drawing.Point(6, 498);
             lblSearches.Name = "lblSearches";
             lblSearches.Size = new System.Drawing.Size(56, 15);
             lblSearches.TabIndex = 14;
@@ -193,7 +193,7 @@ namespace EdgeSearch.UI
             // txtSearches
             // 
             txtSearches.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            txtSearches.Location = new System.Drawing.Point(74, 533);
+            txtSearches.Location = new System.Drawing.Point(68, 494);
             txtSearches.Name = "txtSearches";
             txtSearches.Size = new System.Drawing.Size(28, 23);
             txtSearches.TabIndex = 15;
@@ -202,7 +202,7 @@ namespace EdgeSearch.UI
             // 
             lblPoints.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             lblPoints.AutoSize = true;
-            lblPoints.Location = new System.Drawing.Point(134, 537);
+            lblPoints.Location = new System.Drawing.Point(102, 498);
             lblPoints.Name = "lblPoints";
             lblPoints.Size = new System.Drawing.Size(43, 15);
             lblPoints.TabIndex = 16;
@@ -212,7 +212,7 @@ namespace EdgeSearch.UI
             // txtCurrentPoints
             // 
             txtCurrentPoints.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            txtCurrentPoints.Location = new System.Drawing.Point(183, 533);
+            txtCurrentPoints.Location = new System.Drawing.Point(151, 494);
             txtCurrentPoints.Name = "txtCurrentPoints";
             txtCurrentPoints.Size = new System.Drawing.Size(28, 23);
             txtCurrentPoints.TabIndex = 17;
@@ -220,7 +220,7 @@ namespace EdgeSearch.UI
             // txtPointsLimit
             // 
             txtPointsLimit.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            txtPointsLimit.Location = new System.Drawing.Point(235, 533);
+            txtPointsLimit.Location = new System.Drawing.Point(203, 494);
             txtPointsLimit.Name = "txtPointsLimit";
             txtPointsLimit.Size = new System.Drawing.Size(28, 23);
             txtPointsLimit.TabIndex = 18;
@@ -229,7 +229,7 @@ namespace EdgeSearch.UI
             // 
             lblPointsSeparator.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             lblPointsSeparator.AutoSize = true;
-            lblPointsSeparator.Location = new System.Drawing.Point(217, 537);
+            lblPointsSeparator.Location = new System.Drawing.Point(185, 498);
             lblPointsSeparator.Name = "lblPointsSeparator";
             lblPointsSeparator.Size = new System.Drawing.Size(12, 15);
             lblPointsSeparator.TabIndex = 14;
@@ -240,7 +240,7 @@ namespace EdgeSearch.UI
             // 
             lblRefreshRangeSeparator.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             lblRefreshRangeSeparator.AutoSize = true;
-            lblRefreshRangeSeparator.Location = new System.Drawing.Point(168, 508);
+            lblRefreshRangeSeparator.Location = new System.Drawing.Point(393, 498);
             lblRefreshRangeSeparator.Name = "lblRefreshRangeSeparator";
             lblRefreshRangeSeparator.Size = new System.Drawing.Size(12, 15);
             lblRefreshRangeSeparator.TabIndex = 14;
@@ -249,30 +249,50 @@ namespace EdgeSearch.UI
             // 
             // txtNextSearch
             // 
-            txtNextSearch.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            txtNextSearch.Location = new System.Drawing.Point(96, 476);
+            txtNextSearch.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            txtNextSearch.Location = new System.Drawing.Point(90, 465);
             txtNextSearch.Name = "txtNextSearch";
-            txtNextSearch.Size = new System.Drawing.Size(902, 23);
+            txtNextSearch.Size = new System.Drawing.Size(993, 23);
             txtNextSearch.TabIndex = 9;
             // 
             // tabControl1
             // 
-            tabControl1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             tabControl1.Controls.Add(tpSearchs);
             tabControl1.Controls.Add(tpMissions);
-            tabControl1.Location = new System.Drawing.Point(2, 42);
+            tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            tabControl1.Location = new System.Drawing.Point(0, 0);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new System.Drawing.Size(1116, 428);
+            tabControl1.Size = new System.Drawing.Size(1219, 551);
             tabControl1.TabIndex = 19;
             // 
             // tpSearchs
             // 
+            tpSearchs.Controls.Add(lblProgress);
+            tpSearchs.Controls.Add(progressBar);
             tpSearchs.Controls.Add(wvSearchs);
+            tpSearchs.Controls.Add(txtSearches);
+            tpSearchs.Controls.Add(txtURL);
+            tpSearchs.Controls.Add(txtCurrentPoints);
+            tpSearchs.Controls.Add(chkMobile);
+            tpSearchs.Controls.Add(txtNextSearch);
+            tpSearchs.Controls.Add(btnOpen);
+            tpSearchs.Controls.Add(txtLowerLimit);
+            tpSearchs.Controls.Add(lblNextSearch);
+            tpSearchs.Controls.Add(txtPointsLimit);
+            tpSearchs.Controls.Add(txtUpperLimit);
+            tpSearchs.Controls.Add(btnPlay);
+            tpSearchs.Controls.Add(btnNext);
+            tpSearchs.Controls.Add(btnSearch);
+            tpSearchs.Controls.Add(lblPoints);
+            tpSearchs.Controls.Add(lblRange);
+            tpSearchs.Controls.Add(lblRefreshRangeSeparator);
+            tpSearchs.Controls.Add(lblSearches);
+            tpSearchs.Controls.Add(lblPointsSeparator);
             tpSearchs.Location = new System.Drawing.Point(4, 24);
             tpSearchs.Name = "tpSearchs";
             tpSearchs.Padding = new System.Windows.Forms.Padding(3);
-            tpSearchs.Size = new System.Drawing.Size(1108, 400);
+            tpSearchs.Size = new System.Drawing.Size(1211, 523);
             tpSearchs.TabIndex = 0;
             tpSearchs.Text = "Searchs";
             tpSearchs.UseVisualStyleBackColor = true;
@@ -283,7 +303,7 @@ namespace EdgeSearch.UI
             tpMissions.Location = new System.Drawing.Point(4, 24);
             tpMissions.Name = "tpMissions";
             tpMissions.Padding = new System.Windows.Forms.Padding(3);
-            tpMissions.Size = new System.Drawing.Size(1108, 442);
+            tpMissions.Size = new System.Drawing.Size(1122, 542);
             tpMissions.TabIndex = 1;
             tpMissions.Text = "Missions";
             tpMissions.UseVisualStyleBackColor = true;
@@ -296,7 +316,7 @@ namespace EdgeSearch.UI
             wvMissions.Dock = System.Windows.Forms.DockStyle.Fill;
             wvMissions.Location = new System.Drawing.Point(3, 3);
             wvMissions.Name = "wvMissions";
-            wvMissions.Size = new System.Drawing.Size(1102, 436);
+            wvMissions.Size = new System.Drawing.Size(1116, 536);
             wvMissions.TabIndex = 0;
             wvMissions.ZoomFactor = 1D;
             // 
@@ -304,28 +324,8 @@ namespace EdgeSearch.UI
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1130, 570);
+            ClientSize = new System.Drawing.Size(1219, 551);
             Controls.Add(tabControl1);
-            Controls.Add(txtSearches);
-            Controls.Add(txtCurrentPoints);
-            Controls.Add(txtNextSearch);
-            Controls.Add(txtLowerLimit);
-            Controls.Add(txtPointsLimit);
-            Controls.Add(txtUpperLimit);
-            Controls.Add(chkMobile);
-            Controls.Add(txtURL);
-            Controls.Add(lblProgress);
-            Controls.Add(lblNextSearch);
-            Controls.Add(lblPoints);
-            Controls.Add(lblRefreshRangeSeparator);
-            Controls.Add(lblPointsSeparator);
-            Controls.Add(lblSearches);
-            Controls.Add(lblRange);
-            Controls.Add(btnOpen);
-            Controls.Add(btnForce);
-            Controls.Add(btnNext);
-            Controls.Add(btnPlay);
-            Controls.Add(progressBar);
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";
@@ -333,10 +333,10 @@ namespace EdgeSearch.UI
             ((System.ComponentModel.ISupportInitialize)wvSearchs).EndInit();
             tabControl1.ResumeLayout(false);
             tpSearchs.ResumeLayout(false);
+            tpSearchs.PerformLayout();
             tpMissions.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)wvMissions).EndInit();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
@@ -351,7 +351,7 @@ namespace EdgeSearch.UI
         private System.Windows.Forms.Label lblNextSearch;
         private System.Windows.Forms.Button btnNext;
         private System.Windows.Forms.CheckBox chkMobile;
-        private System.Windows.Forms.Button btnForce;
+        private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.TextBox txtUpperLimit;
         private System.Windows.Forms.TextBox txtLowerLimit;
         private System.Windows.Forms.Label lblSearches;

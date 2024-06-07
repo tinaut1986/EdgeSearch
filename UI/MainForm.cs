@@ -25,7 +25,6 @@ namespace EdgeSearch.UI
             InitializeComponent();
 
             InitializeWebView();
-            InitializeProgressBar();
 
             InitializeEvents();
         }
@@ -85,7 +84,7 @@ namespace EdgeSearch.UI
             //wvMissions.CoreWebView2InitializationCompleted += WvMissions_CoreWebView2InitializationCompleted;
 
             btnPlay.Click += btnPlay_Click;
-            btnForce.Click += btnForce_Click;
+            btnSearch.Click += btnForce_Click;
             btnNext.Click += btnNext_Click;
             chkMobile.Click += ChkMobile_Click;
             btnOpen.Click += btnOpen_Click;
@@ -98,7 +97,7 @@ namespace EdgeSearch.UI
             //wvMissions.CoreWebView2InitializationCompleted -= WvMissions_CoreWebView2InitializationCompleted;
 
             btnPlay.Click -= btnPlay_Click;
-            btnForce.Click -= btnForce_Click;
+            btnSearch.Click -= btnForce_Click;
             btnNext.Click -= btnNext_Click;
             chkMobile.Click -= ChkMobile_Click;
             btnOpen.Click -= btnOpen_Click;
@@ -141,11 +140,6 @@ namespace EdgeSearch.UI
                 ReloadSearchsWeb();
 
 
-        }
-
-        private void InitializeProgressBar()
-        {
-            Controls.Add(progressBar);
         }
 
         public void UpdateInterface(Search search)
