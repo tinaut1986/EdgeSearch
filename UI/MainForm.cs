@@ -11,12 +11,16 @@ namespace EdgeSearch.UI
     {
         #region Members
         public event EventHandler PlayClicked;
+        public event EventHandler FullPlayClicked;
         public event EventHandler ForceClicked;
         public event EventHandler OpenClicked;
+        public event EventHandler ResetClicked;
+        public event EventHandler OpenRewardsClicked;
         public event EventHandler NextSearchClicked;
         public event EventHandler MobileChanged;
         public event EventHandler<CoreWebView2InitializationCompletedEventArgs> SearchesCoreWebView2InitializationCompleted;
-        public event EventHandler<CoreWebView2InitializationCompletedEventArgs> MissionCoreWebView2InitializationCompleted;
+        public event EventHandler<CoreWebView2InitializationCompletedEventArgs> RewardsCoreWebView2InitializationCompleted;
+        public event EventHandler<CoreWebView2NewWindowRequestedEventArgs> RewardsNewWindowRequested;
         #endregion
 
         #region Constructors & destructor
@@ -80,8 +84,11 @@ namespace EdgeSearch.UI
 
         private void InitializeEvents()
         {
-            //wvSearchs.CoreWebView2InitializationCompleted += WvSearchs_CoreWebView2InitializationCompleted;
-            //wvMissions.CoreWebView2InitializationCompleted += WvMissions_CoreWebView2InitializationCompleted;
+            wvSearches.CoreWebView2InitializationCompleted += WvSearches_CoreWebView2InitializationCompleted;
+            wvRewards.CoreWebView2InitializationCompleted += WvRewards_CoreWebView2InitializationCompleted;
+            tsmiOpenRewards.Click += TsmiOpenRewards_Click;
+            tsmiPlay.Click += TsmiPlay_Click;
+            tsmiReset.Click += TsmiReset_Click;
 
             btnPlay.Click += btnPlay_Click;
             btnSearch.Click += btnForce_Click;
@@ -93,8 +100,11 @@ namespace EdgeSearch.UI
 
         private void FinalizeEvents()
         {
-            //wvSearchs.CoreWebView2InitializationCompleted -= WvSearchs_CoreWebView2InitializationCompleted;
-            //wvMissions.CoreWebView2InitializationCompleted -= WvMissions_CoreWebView2InitializationCompleted;
+            wvSearches.CoreWebView2InitializationCompleted -= WvSearches_CoreWebView2InitializationCompleted;
+            wvRewards.CoreWebView2InitializationCompleted -= WvRewards_CoreWebView2InitializationCompleted;
+            tsmiOpenRewards.Click -= TsmiOpenRewards_Click;
+            tsmiPlay.Click -= TsmiPlay_Click;
+            tsmiReset.Click -= TsmiReset_Click;
 
             btnPlay.Click -= btnPlay_Click;
             btnSearch.Click -= btnForce_Click;
@@ -106,91 +116,148 @@ namespace EdgeSearch.UI
 
         public void SetUserAgent(string userAgent)
         {
-            if (wvSearchs.CoreWebView2?.Settings != null)
-                wvSearchs.CoreWebView2.Settings.UserAgent = userAgent;
+            if (wvSearches.CoreWebView2?.Settings != null)
+                wvSearches.CoreWebView2.Settings.UserAgent = userAgent;
         }
 
         public async Task EnsureCoreWebView2Async()
         {
-            await wvSearchs.EnsureCoreWebView2Async(null);
-            await wvMissions.EnsureCoreWebView2Async(null);
+            await wvSearches.EnsureCoreWebView2Async(null);
+            await wvRewards.EnsureCoreWebView2Async(null);
+
+            wvRewards.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
         }
 
         private async void InitializeWebView()
         {
             //Controls.Add(wvSearchs);
 
-            await wvSearchs.EnsureCoreWebView2Async();
-            await wvMissions.EnsureCoreWebView2Async();
+            await wvSearches.EnsureCoreWebView2Async();
+            await wvRewards.EnsureCoreWebView2Async();
         }
 
         public void SetSearchsURL(Uri url)
         {
-            if (wvSearchs.Source != url)
-                wvSearchs.Source = url;
+            if (wvSearches.Source != url)
+                wvSearches.Source = url;
             else
                 ReloadSearchsWeb();
         }
 
         public void SetMissionsURL(Uri url)
         {
-            if (wvMissions.Source != url)
-                wvMissions.Source = url;
+            if (wvRewards.Source != url)
+                wvRewards.Source = url;
             else
                 ReloadSearchsWeb();
+        }
 
+        public async void OpenRewards()
+        {
+            // Ejecutar código JavaScript para simular el clic en el botón
+            await wvRewards.ExecuteScriptAsync(@"
+                (async function() {
+                    // Obtener una referencia a los botones por su clase CSS
+                    var buttons = document.getElementsByClassName('mee-icon-AddMedium');
+                    //var buttons = document.getElementsByClassName('mee-icon-SkypeCircleCheck');
 
+                    // Verificar si hay elementos con esa clase
+                    if (buttons.length > 0) {
+                        // Mostrar en la consola el número de elementos encontrados
+                        console.log('Elementos encontrados con la clase mee-icon-AddMedium: ' + buttons.length);
+
+                        // Mostrar información de cada elemento encontrado
+                        for (var i = 0; i < buttons.length; i++) {
+                            console.log('Elemento ' + i + ': ' + buttons[i].outerHTML);
+                        
+                            // Simular el clic en el primer botón encontrado
+                            buttons[i].click();
+                            await new Promise(resolve => setTimeout(resolve, 5000)); // Pausa de 5 segundos
+                        }
+                        // Refrescar la página después de que el bucle haya terminado
+                        location.reload();
+                    } else {
+                        console.log('No se encontraron elementos con la clase mee-icon-AddMedium');
+                    }
+                })();
+            ");
         }
 
         public void UpdateInterface(Search search)
         {
             if (!search.IsPlaying)
+            {
                 btnPlay.Text = "Play";
+                tsmiPlay.Text = "Play";
+            }
             else
+            {
                 btnPlay.Text = "Stop";
+                tsmiPlay.Text = "Stop";
+            }
 
             btnOpen.Enabled = !search.IsPlaying;
             txtURL.ReadOnly = search.IsPlaying;
-            txtURL.Text = wvSearchs.Source.AbsoluteUri;
+            txtURL.Text = wvSearches.Source.AbsoluteUri;
 
             lblProgress.Text = $"{search.ElapsedSeconds}/{search.SecondsToRefresh} segs";
         }
 
         public void ReloadSearchsWeb()
         {
-            if (wvSearchs.Source != null)
-                wvSearchs.Reload();
+            if (wvSearches.Source != null)
+                wvSearches.Reload();
         }
 
         public void ReloadMissionsWeb()
         {
-            if (wvMissions.Source != null)
-                wvMissions.Reload();
+            if (wvRewards.Source != null)
+                wvRewards.Reload();
         }
 
-        public async System.Threading.Tasks.Task DeleteSessionCookies()
+        public async Task DeleteSessionCookies()
         {
-            if (wvSearchs.CoreWebView2?.Settings != null)
+            if (wvSearches.CoreWebView2?.Settings != null)
             {
-                foreach (CoreWebView2Cookie cookie in (await wvSearchs.CoreWebView2.CookieManager.GetCookiesAsync(null)).ToList())
+                foreach (CoreWebView2Cookie cookie in (await wvSearches.CoreWebView2.CookieManager.GetCookiesAsync(null)).ToList())
                 {
                     if (cookie.IsSession)
-                        wvSearchs.CoreWebView2.CookieManager.DeleteCookie(cookie);
+                        wvSearches.CoreWebView2.CookieManager.DeleteCookie(cookie);
                 }
             }
         }
         #endregion
 
         #region Events
-        private void WvSearchs_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
+        private void WvSearches_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
         {
             SearchesCoreWebView2InitializationCompleted?.Invoke(sender, e);
         }
 
-        private void WvMissions_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
+        private void WvRewards_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
         {
-            MissionCoreWebView2InitializationCompleted?.Invoke(sender, e);
-        }        
+            RewardsCoreWebView2InitializationCompleted?.Invoke(sender, e);
+        }
+
+        private void CoreWebView2_NewWindowRequested(object sender, CoreWebView2NewWindowRequestedEventArgs e)
+        {
+            RewardsNewWindowRequested?.Invoke(sender, e);
+        }
+
+        private void TsmiOpenRewards_Click(object sender, EventArgs e)
+        {
+            OpenRewardsClicked?.Invoke(sender, e);
+        }
+
+        private void TsmiPlay_Click(object sender, EventArgs e)
+        {
+            FullPlayClicked?.Invoke(sender, e);
+        }
+
+        private void TsmiReset_Click(object sender, EventArgs e)
+        {
+            ResetClicked?.Invoke(sender, e);
+        }
 
         private void btnPlay_Click(object sender, EventArgs e)
         {

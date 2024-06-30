@@ -5,7 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 
@@ -18,7 +19,7 @@ namespace EdgeSearch.Business
         private Search _search;
         private Random _random;
         private Preferences _preferences;
-        private Timer _refreshTimer;
+        private System.Windows.Forms.Timer _refreshTimer;
         private Awaker _awaker;
         #endregion
 
@@ -50,9 +51,50 @@ namespace EdgeSearch.Business
             _mainForm.Load += _mainForm_Load;
             _mainForm.ForceClicked += _mainForm_ForceClicked;
             _mainForm.OpenClicked += _mainForm_OpenClicked;
+            _mainForm.OpenRewardsClicked += _mainForm_OpenRewardsClicked;
             _mainForm.NextSearchClicked += _mainForm_NextSearchClicked;
             _mainForm.MobileChanged += _mainForm_MobileChanged;
             _mainForm.PlayClicked += _mainForm_PlayClicked;
+            _mainForm.FullPlayClicked += _mainForm_FullPlayClicked;
+            _mainForm.ResetClicked += _mainForm_ResetClicked;
+            _mainForm.RewardsNewWindowRequested += _mainForm_RewardsNewWindowRequested;
+        }
+
+        /// <summary>
+        /// This function handle new windows manually, but without opening the web in a new window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void _mainForm_RewardsNewWindowRequested(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NewWindowRequestedEventArgs e)
+        {
+            // Obtener el contexto de sincronización de la UI
+            var uiContext = SynchronizationContext.Current;
+
+            // Cancelar la creación de una nueva ventana
+            e.Handled = true;
+
+            // Crear una nueva instancia de WebView2 para la nueva ventana
+            var newWebView = new Microsoft.Web.WebView2.WinForms.WebView2 { Dock = DockStyle.Fill };
+
+            uiContext.Post(async _ =>
+            {
+                await newWebView.EnsureCoreWebView2Async();
+
+                // Navegar a la URI solicitada
+                newWebView.Source = new Uri(e.Uri);
+
+                // Esperar hasta que la nueva ventana esté completamente cargada
+                newWebView.CoreWebView2.NavigationCompleted += async (s, args) =>
+                {
+                    // Cerrar la nueva ventana después de que se haya cargado completamente
+                    if (args.IsSuccess)
+                    {
+                        await Task.Delay(1000); // Ajusta el tiempo según sea necesario
+                        newWebView.Dispose();
+                    }
+                };
+
+            }, null);
         }
 
         private void _mainForm_OpenClicked(object sender, EventArgs e)
@@ -60,9 +102,14 @@ namespace EdgeSearch.Business
             _mainForm.SetSearchsURL(_search.URL);
         }
 
+        private void _mainForm_OpenRewardsClicked(object sender, EventArgs e)
+        {
+            _mainForm.OpenRewards();
+        }
+
         private void SetupRefreshTimer()
         {
-            _refreshTimer = new Timer();
+            _refreshTimer = new System.Windows.Forms.Timer();
             _refreshTimer.Interval = 1000; // Intervalo de actualización cada segundo
             _refreshTimer.Tick += RefreshTimer_Tick;
         }
@@ -162,7 +209,7 @@ namespace EdgeSearch.Business
             {
                 if (_search.ToSearch.Count == 0)
                 {
-                    PlayAndStop();
+                    PlayAndStop(false);
                     return;
                 }
 
@@ -176,7 +223,7 @@ namespace EdgeSearch.Business
                     }
                     else
                     {
-                        PlayAndStop();
+                        PlayAndStop(false);
                         return;
                     }
                 }
@@ -188,7 +235,7 @@ namespace EdgeSearch.Business
                     }
                     else
                     {
-                        PlayAndStop();
+                        PlayAndStop(false);
                         return;
                     }
                 }
@@ -200,16 +247,21 @@ namespace EdgeSearch.Business
             _mainForm.UpdateInterface(_search);
         }
 
-        private async System.Threading.Tasks.Task ChangeMobileMode(Preferences.Mode mode, bool reloadWeb)
+        private async Task ChangeMobileMode(Preferences.Mode mode, bool reloadWeb)
         {
             _search.CurrentMode = mode;
             await RefreshMobileMode(reloadWeb);
         }
 
-        private void PlayAndStop()
+        private void PlayAndStop(bool openRewards)
         {
             if (!_search.IsPlaying)
+            {
                 Play();
+
+                if (openRewards)
+                    _mainForm.OpenRewards();
+            }
             else
                 Stop();
 
@@ -227,6 +279,7 @@ namespace EdgeSearch.Business
         private void Play()
         {
             RestartLimits();
+
             _refreshTimer.Start(); // Inicia el temporizador cuando se presiona el botón
             _search.IsPlaying = true;
             _awaker.Start();
@@ -297,8 +350,8 @@ namespace EdgeSearch.Business
             await _mainForm.EnsureCoreWebView2Async();
             _search.URL = new Uri("https://www.bing.es/");
             _mainForm.SetSearchsURL(_search.URL);
-            //_mainForm.SetMissionsURL(new Uri("https://rewards.bing.com/pointsbreakdown"));
-            _mainForm.SetMissionsURL(new Uri("https://rewards.bing.com/"));
+            _mainForm.SetMissionsURL(new Uri("https://rewards.bing.com/pointsbreakdown"));
+            //_mainForm.SetMissionsURL(new Uri("https://rewards.bing.com/"));
 
             _mainForm.UpdateInterface(_search);
 
@@ -325,7 +378,19 @@ namespace EdgeSearch.Business
 
         private void _mainForm_PlayClicked(object sender, EventArgs e)
         {
-            PlayAndStop();
+            PlayAndStop(false);
+        }
+
+        private void _mainForm_FullPlayClicked(object sender, EventArgs e)
+        {
+            PlayAndStop(true);
+        }
+
+        private void _mainForm_ResetClicked(object sender, EventArgs e)
+        {
+            _search.MobileSearchesCount = 0;
+            _search.DesktopSearchesCount = 0;
+            _search.CurrentMode = Preferences.Mode.Desktop;
         }
 
         #endregion
