@@ -20,7 +20,9 @@ namespace EdgeSearch.UI
         public event EventHandler MobileChanged;
         public event EventHandler<CoreWebView2InitializationCompletedEventArgs> SearchesCoreWebView2InitializationCompleted;
         public event EventHandler<CoreWebView2InitializationCompletedEventArgs> RewardsCoreWebView2InitializationCompleted;
+        public event EventHandler<CoreWebView2InitializationCompletedEventArgs> AmbassadorsCoreWebView2InitializationCompleted;
         public event EventHandler<CoreWebView2NewWindowRequestedEventArgs> RewardsNewWindowRequested;
+        public event EventHandler<CoreWebView2NewWindowRequestedEventArgs> AmbassadorsNewWindowRequested;
         #endregion
 
         #region Constructors & destructor
@@ -86,6 +88,7 @@ namespace EdgeSearch.UI
         {
             wvSearches.CoreWebView2InitializationCompleted += WvSearches_CoreWebView2InitializationCompleted;
             wvRewards.CoreWebView2InitializationCompleted += WvRewards_CoreWebView2InitializationCompleted;
+            wvAmbassadors.CoreWebView2InitializationCompleted += WvAmbassadors_CoreWebView2InitializationCompleted;
             tsmiOpenRewards.Click += TsmiOpenRewards_Click;
             tsmiPlay.Click += TsmiPlay_Click;
             tsmiReset.Click += TsmiReset_Click;
@@ -102,6 +105,7 @@ namespace EdgeSearch.UI
         {
             wvSearches.CoreWebView2InitializationCompleted -= WvSearches_CoreWebView2InitializationCompleted;
             wvRewards.CoreWebView2InitializationCompleted -= WvRewards_CoreWebView2InitializationCompleted;
+            wvAmbassadors.CoreWebView2InitializationCompleted -= WvAmbassadors_CoreWebView2InitializationCompleted;
             tsmiOpenRewards.Click -= TsmiOpenRewards_Click;
             tsmiPlay.Click -= TsmiPlay_Click;
             tsmiReset.Click -= TsmiReset_Click;
@@ -124,8 +128,10 @@ namespace EdgeSearch.UI
         {
             await wvSearches.EnsureCoreWebView2Async(null);
             await wvRewards.EnsureCoreWebView2Async(null);
+            await wvAmbassadors.EnsureCoreWebView2Async(null);
 
-            wvRewards.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
+            wvRewards.CoreWebView2.NewWindowRequested += Rewards_CoreWebView2_NewWindowRequested;
+            wvAmbassadors.CoreWebView2.NewWindowRequested += Ambassadors_CoreWebView2_NewWindowRequested;
         }
 
         private async void InitializeWebView()
@@ -134,6 +140,7 @@ namespace EdgeSearch.UI
 
             await wvSearches.EnsureCoreWebView2Async();
             await wvRewards.EnsureCoreWebView2Async();
+            await wvAmbassadors.EnsureCoreWebView2Async();
         }
 
         public void SetSearchsURL(Uri url)
@@ -144,43 +151,77 @@ namespace EdgeSearch.UI
                 ReloadSearchsWeb();
         }
 
-        public void SetMissionsURL(Uri url)
+        public void SetRewardsURL(Uri url)
         {
             if (wvRewards.Source != url)
                 wvRewards.Source = url;
             else
-                ReloadSearchsWeb();
+                ReloadRewardsWeb();
+        }
+
+        public void SetAmbassadorsURL(Uri url)
+        {
+            if (wvAmbassadors.Source != url)
+                wvAmbassadors.Source = url;
+            else
+                ReloadAmbassadorsWeb();
         }
 
         public async void OpenRewards()
         {
-            // Ejecutar código JavaScript para simular el clic en el botón
-            await wvRewards.ExecuteScriptAsync(@"
-                (async function() {
-                    // Obtener una referencia a los botones por su clase CSS
-                    var buttons = document.getElementsByClassName('mee-icon-AddMedium');
-                    //var buttons = document.getElementsByClassName('mee-icon-SkypeCircleCheck');
+            // Definir la clase CSS que se va a usar
+            string className = "mee-icon-AddMedium";
 
-                    // Verificar si hay elementos con esa clase
-                    if (buttons.length > 0) {
-                        // Mostrar en la consola el número de elementos encontrados
-                        console.log('Elementos encontrados con la clase mee-icon-AddMedium: ' + buttons.length);
+            while (true)
+            {
+                // Definir el script de JavaScript para ejecutar en la página usando string.Format
+                string script = string.Format(@"
+                    (function() {{
+                        // Obtener una referencia a los botones por su clase CSS
+                        var buttons = document.getElementsByClassName('{0}');
 
-                        // Mostrar información de cada elemento encontrado
-                        for (var i = 0; i < buttons.length; i++) {
-                            console.log('Elemento ' + i + ': ' + buttons[i].outerHTML);
-                        
+                        // Verificar si hay elementos con esa clase
+                        if (buttons.length > 0) {{
+                            // Mostrar en la consola el número de elementos encontrados
+                            console.log('Elementos encontrados con la clase {0}: ' + buttons.length);
+
                             // Simular el clic en el primer botón encontrado
-                            buttons[i].click();
-                            await new Promise(resolve => setTimeout(resolve, 5000)); // Pausa de 5 segundos
-                        }
-                        // Refrescar la página después de que el bucle haya terminado
-                        location.reload();
-                    } else {
-                        console.log('No se encontraron elementos con la clase mee-icon-AddMedium');
-                    }
-                })();
-            ");
+                            buttons[0].click();
+
+                            // Esperar 5 segundos antes de recargar
+                            setTimeout(function() {{
+                                // Refrescar la página después de que el bucle haya terminado
+                                location.reload();
+                            }}, 5000);
+
+                            // Guardar el resultado en window para accederlo más tarde
+                            window.scriptResult = true;
+                        }} else {{
+                            console.log('No se encontraron elementos con la clase {0}');
+                            // Guardar el resultado en window para accederlo más tarde
+                            window.scriptResult = false;
+                        }}
+                    }})();
+                ", className);
+
+                // Ejecutar el script
+                await wvRewards.ExecuteScriptAsync(script);
+
+                // Esperar un breve momento para asegurarse de que el script se ejecuta
+                await Task.Delay(100);
+
+                // Recuperar el resultado almacenado en window.scriptResult
+                var result = await wvRewards.ExecuteScriptAsync("window.scriptResult");
+
+                // Verificar el resultado y volver a llamar a la función si es necesario
+                if (result == null || result.ToString().ToLower() != "true")
+                {
+                    Console.WriteLine("No quedan más botones para pulsar.");
+                    break;
+
+                }
+                await Task.Delay(6000); // Espera 6 segundos antes de volver a ejecutar la función
+            }
         }
 
         public void UpdateInterface(Search search)
@@ -209,10 +250,16 @@ namespace EdgeSearch.UI
                 wvSearches.Reload();
         }
 
-        public void ReloadMissionsWeb()
+        public void ReloadRewardsWeb()
         {
             if (wvRewards.Source != null)
                 wvRewards.Reload();
+        }
+
+        public void ReloadAmbassadorsWeb()
+        {
+            if (wvAmbassadors.Source != null)
+                wvAmbassadors.Reload();
         }
 
         public async Task DeleteSessionCookies()
@@ -225,6 +272,11 @@ namespace EdgeSearch.UI
                         wvSearches.CoreWebView2.CookieManager.DeleteCookie(cookie);
                 }
             }
+        }
+
+        public void SetRewardProgressBar(ProgressBarStyle style)
+        {
+            pbRewards.Style = style;
         }
         #endregion
 
@@ -239,9 +291,19 @@ namespace EdgeSearch.UI
             RewardsCoreWebView2InitializationCompleted?.Invoke(sender, e);
         }
 
-        private void CoreWebView2_NewWindowRequested(object sender, CoreWebView2NewWindowRequestedEventArgs e)
+        private void WvAmbassadors_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
+        {
+            AmbassadorsCoreWebView2InitializationCompleted?.Invoke(sender, e);
+        }
+
+        private void Rewards_CoreWebView2_NewWindowRequested(object sender, CoreWebView2NewWindowRequestedEventArgs e)
         {
             RewardsNewWindowRequested?.Invoke(sender, e);
+        }
+
+        private void Ambassadors_CoreWebView2_NewWindowRequested(object sender, CoreWebView2NewWindowRequestedEventArgs e)
+        {
+            AmbassadorsNewWindowRequested?.Invoke(sender, e);
         }
 
         private void TsmiOpenRewards_Click(object sender, EventArgs e)

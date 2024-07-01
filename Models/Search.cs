@@ -10,18 +10,18 @@ namespace EdgeSearch.Models
     public class Search : INotifyPropertyChanged
     {
         private const int _pointsPerSearch = 3;
-        private int mobileTotalPoints;
-        private int desktopTotalPoints;
-        private int desktopSearchesCount;
-        private int mobileSearchesCount;
-        private Mode currentMode;
-        private int elapsedSeconds;
-        private int secondsToRefresh;
-        private bool isPlaying;
-        private string nextSearch;
-        private Uri uRL;
-        private int upperLimit;
-        private int lowerLimit;
+        private int _mobileTotalPoints;
+        private int _desktopTotalPoints;
+        private int _desktopSearchesCount;
+        private int _mobileSearchesCount;
+        private Mode _currentMode;
+        private int _elapsedSeconds;
+        private int _secondsToRefresh;
+        private bool _isPlaying;
+        private string _nextSearch;
+        private Uri _url;
+        private int _upperLimit;
+        private int _lowerLimit;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -56,19 +56,19 @@ namespace EdgeSearch.Models
 
         public int LowerLimit
         {
-            get => lowerLimit;
+            get => _lowerLimit;
             set
             {
-                lowerLimit = value;
+                _lowerLimit = value;
                 NotifyPropertyChanged();
             }
         }
         public int UpperLimit
         {
-            get => upperLimit;
+            get => _upperLimit;
             set
             {
-                upperLimit = value;
+                _upperLimit = value;
                 NotifyPropertyChanged();
             }
         }
@@ -77,92 +77,92 @@ namespace EdgeSearch.Models
 
         public int MobileTotalPoints
         {
-            get => mobileTotalPoints;
+            get => _mobileTotalPoints;
             set
             {
-                mobileTotalPoints = value;
+                _mobileTotalPoints = value;
                 NotifyPropertyChanged();
             }
         }
 
         public int DesktopTotalPoints
         {
-            get => desktopTotalPoints;
+            get => _desktopTotalPoints;
             set
             {
-                desktopTotalPoints = value;
+                _desktopTotalPoints = value;
                 NotifyPropertyChanged();
             }
         }
         public int DesktopSearchesCount
         {
-            get => desktopSearchesCount;
+            get => _desktopSearchesCount;
             set
             {
-                desktopSearchesCount = value;
+                _desktopSearchesCount = value;
                 NotifyPropertyChanged();
             }
         }
         public int MobileSearchesCount
         {
-            get => mobileSearchesCount;
+            get => _mobileSearchesCount;
             set
             {
-                mobileSearchesCount = value;
+                _mobileSearchesCount = value;
                 NotifyPropertyChanged();
             }
         }
         public Mode CurrentMode
         {
-            get => currentMode;
+            get => _currentMode;
             set
             {
-                currentMode = value;
+                _currentMode = value;
                 NotifyPropertyChanged();
             }
         }
         public int ElapsedSeconds
         {
-            get => elapsedSeconds;
+            get => _elapsedSeconds;
             set
             {
-                elapsedSeconds = value;
+                _elapsedSeconds = value;
                 NotifyPropertyChanged();
             }
         }
         public int SecondsToRefresh
         {
-            get => secondsToRefresh;
+            get => _secondsToRefresh;
             set
             {
-                secondsToRefresh = value;
+                _secondsToRefresh = value;
                 NotifyPropertyChanged();
             }
         }
         public bool IsPlaying
         {
-            get => isPlaying;
+            get => _isPlaying;
             set
             {
-                isPlaying = value;
+                _isPlaying = value;
                 NotifyPropertyChanged();
             }
         }
         public string NextSearch
         {
-            get => nextSearch;
+            get => _nextSearch;
             set
             {
-                nextSearch = value;
+                _nextSearch = value;
                 NotifyPropertyChanged();
             }
         }
         public Uri URL
         {
-            get => uRL;
+            get => _url;
             set
             {
-                uRL = value;
+                _url = value;
                 NotifyPropertyChanged();
             }
         }

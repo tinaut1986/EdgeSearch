@@ -17,7 +17,7 @@ namespace EdgeSearch.Business
         public Awaker()
         {
             _awakeTimer = new Timer();
-            _awakeTimer.Interval = 60000; // Intervalo de actualización cada segundo
+            _awakeTimer.Interval = 60000; // Intervalo de actualización cada minuto
             _awakeTimer.Tick += RefreshTimer_Tick;
         }
 

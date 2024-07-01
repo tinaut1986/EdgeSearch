@@ -82,6 +82,7 @@ namespace EdgeSearch.Business
 
                 // Navegar a la URI solicitada
                 newWebView.Source = new Uri(e.Uri);
+                _mainForm.SetRewardProgressBar(ProgressBarStyle.Marquee);
 
                 // Esperar hasta que la nueva ventana esté completamente cargada
                 newWebView.CoreWebView2.NavigationCompleted += async (s, args) =>
@@ -89,9 +90,11 @@ namespace EdgeSearch.Business
                     // Cerrar la nueva ventana después de que se haya cargado completamente
                     if (args.IsSuccess)
                     {
-                        await Task.Delay(1000); // Ajusta el tiempo según sea necesario
+                        await Task.Delay(3000); // Ajusta el tiempo según sea necesario
                         newWebView.Dispose();
                     }
+
+                    _mainForm.SetRewardProgressBar(ProgressBarStyle.Blocks);
                 };
 
             }, null);
@@ -350,8 +353,8 @@ namespace EdgeSearch.Business
             await _mainForm.EnsureCoreWebView2Async();
             _search.URL = new Uri("https://www.bing.es/");
             _mainForm.SetSearchsURL(_search.URL);
-            _mainForm.SetMissionsURL(new Uri("https://rewards.bing.com/pointsbreakdown"));
-            //_mainForm.SetMissionsURL(new Uri("https://rewards.bing.com/"));
+            _mainForm.SetRewardsURL(new Uri("https://rewards.bing.com/pointsbreakdown"));
+            _mainForm.SetAmbassadorsURL(new Uri("https://ambassadors.microsoft.com/xbox/quests"));
 
             _mainForm.UpdateInterface(_search);
 

@@ -41,6 +41,8 @@ namespace EdgeSearch.UI
             tabControl1 = new System.Windows.Forms.TabControl();
             tpSearches = new System.Windows.Forms.TabPage();
             tpRewards = new System.Windows.Forms.TabPage();
+            pbRewards = new System.Windows.Forms.ProgressBar();
+            lblRewards = new System.Windows.Forms.Label();
             wvRewards = new Microsoft.Web.WebView2.WinForms.WebView2();
             menuStrip1 = new System.Windows.Forms.MenuStrip();
             fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,12 +51,18 @@ namespace EdgeSearch.UI
             searchesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             rewardsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             tsmiOpenRewards = new System.Windows.Forms.ToolStripMenuItem();
+            tpAmbassadors = new System.Windows.Forms.TabPage();
+            wvAmbassadors = new Microsoft.Web.WebView2.WinForms.WebView2();
+            pbAmbassadors = new System.Windows.Forms.ProgressBar();
+            lblAmbassadors = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)wvSearches).BeginInit();
             tabControl1.SuspendLayout();
             tpSearches.SuspendLayout();
             tpRewards.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)wvRewards).BeginInit();
             menuStrip1.SuspendLayout();
+            tpAmbassadors.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)wvAmbassadors).BeginInit();
             SuspendLayout();
             // 
             // wvSearches
@@ -267,6 +275,7 @@ namespace EdgeSearch.UI
             // 
             tabControl1.Controls.Add(tpSearches);
             tabControl1.Controls.Add(tpRewards);
+            tabControl1.Controls.Add(tpAmbassadors);
             tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             tabControl1.Location = new System.Drawing.Point(0, 24);
             tabControl1.Name = "tabControl1";
@@ -307,6 +316,8 @@ namespace EdgeSearch.UI
             // 
             // tpRewards
             // 
+            tpRewards.Controls.Add(pbRewards);
+            tpRewards.Controls.Add(lblRewards);
             tpRewards.Controls.Add(wvRewards);
             tpRewards.Location = new System.Drawing.Point(4, 24);
             tpRewards.Name = "tpRewards";
@@ -316,15 +327,34 @@ namespace EdgeSearch.UI
             tpRewards.Text = "Rewards";
             tpRewards.UseVisualStyleBackColor = true;
             // 
+            // pbRewards
+            // 
+            pbRewards.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            pbRewards.Location = new System.Drawing.Point(112, 470);
+            pbRewards.Name = "pbRewards";
+            pbRewards.Size = new System.Drawing.Size(1096, 23);
+            pbRewards.TabIndex = 6;
+            // 
+            // lblRewards
+            // 
+            lblRewards.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            lblRewards.AutoSize = true;
+            lblRewards.Location = new System.Drawing.Point(6, 474);
+            lblRewards.Name = "lblRewards";
+            lblRewards.Size = new System.Drawing.Size(92, 15);
+            lblRewards.TabIndex = 5;
+            lblRewards.Text = "Opening reward";
+            lblRewards.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // wvRewards
             // 
             wvRewards.AllowExternalDrop = true;
+            wvRewards.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             wvRewards.CreationProperties = null;
             wvRewards.DefaultBackgroundColor = System.Drawing.Color.White;
-            wvRewards.Dock = System.Windows.Forms.DockStyle.Fill;
             wvRewards.Location = new System.Drawing.Point(3, 3);
             wvRewards.Name = "wvRewards";
-            wvRewards.Size = new System.Drawing.Size(1205, 493);
+            wvRewards.Size = new System.Drawing.Size(1205, 461);
             wvRewards.TabIndex = 0;
             wvRewards.ZoomFactor = 1D;
             // 
@@ -347,13 +377,13 @@ namespace EdgeSearch.UI
             // tsmiPlay
             // 
             tsmiPlay.Name = "tsmiPlay";
-            tsmiPlay.Size = new System.Drawing.Size(180, 22);
+            tsmiPlay.Size = new System.Drawing.Size(102, 22);
             tsmiPlay.Text = "Play";
             // 
             // tsmiReset
             // 
             tsmiReset.Name = "tsmiReset";
-            tsmiReset.Size = new System.Drawing.Size(180, 22);
+            tsmiReset.Size = new System.Drawing.Size(102, 22);
             tsmiReset.Text = "Reset";
             // 
             // searchesToolStripMenuItem
@@ -375,6 +405,50 @@ namespace EdgeSearch.UI
             tsmiOpenRewards.Size = new System.Drawing.Size(147, 22);
             tsmiOpenRewards.Text = "Open rewards";
             // 
+            // tpAmbassadors
+            // 
+            tpAmbassadors.Controls.Add(pbAmbassadors);
+            tpAmbassadors.Controls.Add(lblAmbassadors);
+            tpAmbassadors.Controls.Add(wvAmbassadors);
+            tpAmbassadors.Location = new System.Drawing.Point(4, 24);
+            tpAmbassadors.Name = "tpAmbassadors";
+            tpAmbassadors.Padding = new System.Windows.Forms.Padding(3);
+            tpAmbassadors.Size = new System.Drawing.Size(1211, 499);
+            tpAmbassadors.TabIndex = 2;
+            tpAmbassadors.Text = "Ambassadors";
+            tpAmbassadors.UseVisualStyleBackColor = true;
+            // 
+            // wvAmbassadors
+            // 
+            wvAmbassadors.AllowExternalDrop = true;
+            wvAmbassadors.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            wvAmbassadors.CreationProperties = null;
+            wvAmbassadors.DefaultBackgroundColor = System.Drawing.Color.White;
+            wvAmbassadors.Location = new System.Drawing.Point(3, 3);
+            wvAmbassadors.Name = "wvAmbassadors";
+            wvAmbassadors.Size = new System.Drawing.Size(1205, 461);
+            wvAmbassadors.TabIndex = 1;
+            wvAmbassadors.ZoomFactor = 1D;
+            // 
+            // pbAmbassadors
+            // 
+            pbAmbassadors.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            pbAmbassadors.Location = new System.Drawing.Point(137, 470);
+            pbAmbassadors.Name = "pbAmbassadors";
+            pbAmbassadors.Size = new System.Drawing.Size(1071, 23);
+            pbAmbassadors.TabIndex = 8;
+            // 
+            // lblAmbassadors
+            // 
+            lblAmbassadors.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            lblAmbassadors.AutoSize = true;
+            lblAmbassadors.Location = new System.Drawing.Point(6, 474);
+            lblAmbassadors.Name = "lblAmbassadors";
+            lblAmbassadors.Size = new System.Drawing.Size(120, 15);
+            lblAmbassadors.TabIndex = 7;
+            lblAmbassadors.Text = "Opening ambassador";
+            lblAmbassadors.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -382,7 +456,6 @@ namespace EdgeSearch.UI
             ClientSize = new System.Drawing.Size(1219, 551);
             Controls.Add(tabControl1);
             Controls.Add(menuStrip1);
-            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip1;
             Name = "MainForm";
@@ -392,9 +465,13 @@ namespace EdgeSearch.UI
             tpSearches.ResumeLayout(false);
             tpSearches.PerformLayout();
             tpRewards.ResumeLayout(false);
+            tpRewards.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)wvRewards).EndInit();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
+            tpAmbassadors.ResumeLayout(false);
+            tpAmbassadors.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)wvAmbassadors).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -433,6 +510,12 @@ namespace EdgeSearch.UI
         private System.Windows.Forms.ToolStripMenuItem searchesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rewardsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tsmiOpenRewards;
+        private System.Windows.Forms.Label lblRewards;
+        private System.Windows.Forms.ProgressBar pbRewards;
+        private System.Windows.Forms.TabPage tpAmbassadors;
+        private Microsoft.Web.WebView2.WinForms.WebView2 wvAmbassadors;
+        private System.Windows.Forms.ProgressBar pbAmbassadors;
+        private System.Windows.Forms.Label lblAmbassadors;
     }
 }
 
