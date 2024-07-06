@@ -16,6 +16,7 @@ namespace EdgeSearch.UI
         public event EventHandler OpenClicked;
         public event EventHandler ResetClicked;
         public event EventHandler OpenRewardsClicked;
+        public event EventHandler OpenAmbassadorsClicked;
         public event EventHandler NextSearchClicked;
         public event EventHandler MobileChanged;
         public event EventHandler<CoreWebView2InitializationCompletedEventArgs> SearchesCoreWebView2InitializationCompleted;
@@ -89,7 +90,10 @@ namespace EdgeSearch.UI
             wvSearches.CoreWebView2InitializationCompleted += WvSearches_CoreWebView2InitializationCompleted;
             wvRewards.CoreWebView2InitializationCompleted += WvRewards_CoreWebView2InitializationCompleted;
             wvAmbassadors.CoreWebView2InitializationCompleted += WvAmbassadors_CoreWebView2InitializationCompleted;
+
             tsmiOpenRewards.Click += TsmiOpenRewards_Click;
+            tsmiOpenAmbassadors.Click += TsmiOpenAmbassadors_Click;
+
             tsmiPlay.Click += TsmiPlay_Click;
             tsmiReset.Click += TsmiReset_Click;
 
@@ -107,6 +111,8 @@ namespace EdgeSearch.UI
             wvRewards.CoreWebView2InitializationCompleted -= WvRewards_CoreWebView2InitializationCompleted;
             wvAmbassadors.CoreWebView2InitializationCompleted -= WvAmbassadors_CoreWebView2InitializationCompleted;
             tsmiOpenRewards.Click -= TsmiOpenRewards_Click;
+            tsmiOpenAmbassadors.Click -= TsmiOpenAmbassadors_Click;
+
             tsmiPlay.Click -= TsmiPlay_Click;
             tsmiReset.Click -= TsmiReset_Click;
 
@@ -167,8 +173,13 @@ namespace EdgeSearch.UI
                 ReloadAmbassadorsWeb();
         }
 
-        public async void OpenRewards()
+        public async void OpenRewards(Search search)
         {
+            if (search.RewardsPlayed)
+                return;
+
+            search.RewardsPlayed = true;
+
             // Definir la clase CSS que se va a usar
             string className = "mee-icon-AddMedium";
 
@@ -213,7 +224,7 @@ namespace EdgeSearch.UI
                 // Recuperar el resultado almacenado en window.scriptResult
                 var result = await wvRewards.ExecuteScriptAsync("window.scriptResult");
 
-                // Verificar el resultado y volver a llamar a la función si es necesario
+                // Verificar el resultado y salir si ya no quedan mas elementos
                 if (result == null || result.ToString().ToLower() != "true")
                 {
                     Console.WriteLine("No quedan más botones para pulsar.");
@@ -222,6 +233,105 @@ namespace EdgeSearch.UI
                 }
                 await Task.Delay(6000); // Espera 6 segundos antes de volver a ejecutar la función
             }
+
+            search.RewardsPlayed = false;
+        }
+
+        public async void OpenAmbassadors(Search search)
+        {
+            if (search.AmbassadorsPlayed)
+                return;
+
+            search.AmbassadorsPlayed = true;
+
+            while (true)
+            {
+                // Definir el script de JavaScript para ejecutar en la página usando string.Format
+                string script = @"
+                    // Selecciona todos los elementos con la clase ""mission-category""
+                    var categories = document.querySelectorAll('.mission-category');
+
+                    // Bandera para indicar si se encontró al menos un elemento válido
+                    window.scriptResult = false;
+
+                    // Función para crear una pausa
+                    function delay(ms) {{
+                        console.log('pausa ' + ms + 'ms');
+                        return new Promise(resolve => setTimeout(resolve, ms));
+                    }}
+
+                    // Función asíncrona para procesar cada categoría
+                    async function processCategory(category) {{
+	                    // Selecciona el elemento con la clase ""category-title"" dentro del elemento actual
+	                    var title = category.querySelector('.category-title');
+
+	                    if (!title) {{
+		                    return;
+	                    }}
+
+	                    // Verifica si el texto del elemento ""category-title"" es ""Survey""
+	                    if (title.textContent !== 'Surveys' && title.textContent !== 'Xbox Community Quests') {{
+		                    // Selecciona todos los elementos con la clase ""card-cta"" dentro del elemento actual
+		                    var cards = category.querySelectorAll('a.c-button.f-primary');
+
+		                    // Recorre cada elemento de la clase ""card-cta""
+		                    for (var i = 0; i < cards.length; i++) {{
+			                    // Establece la bandera en true si se encontró al menos un elemento válido
+			                    window.scriptResult = true;
+
+			                    // Haz lo que necesites con cada elemento ""card-cta""
+			                    console.log(cards[i].textContent);
+
+			                    // Simular el clic en el primer botón encontrado
+			                    cards[i].click();
+                                console.log('click en ' + cards[i].textContent);
+			
+			                    // Pausa de un número aleatorio de segundos entre 5 y 10 antes de procesar el siguiente elemento
+			                    var randomDelay = Math.floor(Math.random() * 6) + 5; // Número aleatorio entre 5 y 10
+
+			                    await delay(randomDelay  * 1000);
+
+			                    // Mostrar en la consola el número de elementos encontrados
+			                    console.log('Elemento encontrado en la categoria ' + title.textContent);
+		                    }}
+	                    }}
+                    }}
+
+                    // Procesar cada categoría de forma asíncrona
+                    (async function() {{
+                        for (var i = 0; i < categories.length; i++) {{
+                            await processCategory(categories[i]);
+                        }}
+                        
+                        if (window.scriptResult) {{
+                            var randomDelay = Math.floor(Math.random() * 6) + 5; // Número aleatorio entre 5 y 10
+                            console.log('Refrescando la pagina en ' + randomDelay + 'segs');
+                            await delay(randomDelay  * 1000);
+                            location.reload();
+                        }}
+                    }})();
+                ";
+
+                // Ejecutar el script
+                await wvAmbassadors.ExecuteScriptAsync(script);
+
+                // Esperar un breve momento para asegurarse de que el script se ejecuta
+                await Task.Delay(100);
+
+                // Recuperar el resultado almacenado en window.scriptResult
+                var result = await wvAmbassadors.ExecuteScriptAsync("window.scriptResult");
+
+                // Verificar el resultado y salir si ya no quedan mas elementos
+                if (result == null || result.ToString().ToLower() != "true")
+                {
+                    Console.WriteLine("No quedan más botones para pulsar.");
+                    break;
+
+                }
+                await Task.Delay(300000); // Espera 5 minutos antes de volver a ejecutar la función
+            }
+
+            search.AmbassadorsPlayed = false;
         }
 
         public void UpdateInterface(Search search)
@@ -278,6 +388,11 @@ namespace EdgeSearch.UI
         {
             pbRewards.Style = style;
         }
+
+        public void SetAmbassadorProgressBar(ProgressBarStyle style)
+        {
+            pbAmbassadors.Style = style;
+        }
         #endregion
 
         #region Events
@@ -309,6 +424,11 @@ namespace EdgeSearch.UI
         private void TsmiOpenRewards_Click(object sender, EventArgs e)
         {
             OpenRewardsClicked?.Invoke(sender, e);
+        }
+
+        private void TsmiOpenAmbassadors_Click(object sender, EventArgs e)
+        {
+            OpenAmbassadorsClicked?.Invoke(sender, e);
         }
 
         private void TsmiPlay_Click(object sender, EventArgs e)

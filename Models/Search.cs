@@ -22,6 +22,8 @@ namespace EdgeSearch.Models
         private Uri _url;
         private int _upperLimit;
         private int _lowerLimit;
+        private bool _ambassadorsPlayed;
+        private bool _rewardsPlayed;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -228,6 +230,17 @@ namespace EdgeSearch.Models
                     DesktopTotalPoints = value;
                 NotifyPropertyChanged();
             }
+        }
+
+        public bool AmbassadorsPlayed
+        {
+            get => _ambassadorsPlayed;
+            set => _ambassadorsPlayed = value;
+        }
+        public bool RewardsPlayed
+        {
+            get => _rewardsPlayed;
+            set => _rewardsPlayed = value;
         }
     }
 }

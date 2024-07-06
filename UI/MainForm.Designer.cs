@@ -44,6 +44,10 @@ namespace EdgeSearch.UI
             pbRewards = new System.Windows.Forms.ProgressBar();
             lblRewards = new System.Windows.Forms.Label();
             wvRewards = new Microsoft.Web.WebView2.WinForms.WebView2();
+            tpAmbassadors = new System.Windows.Forms.TabPage();
+            pbAmbassadors = new System.Windows.Forms.ProgressBar();
+            lblAmbassadors = new System.Windows.Forms.Label();
+            wvAmbassadors = new Microsoft.Web.WebView2.WinForms.WebView2();
             menuStrip1 = new System.Windows.Forms.MenuStrip();
             fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             tsmiPlay = new System.Windows.Forms.ToolStripMenuItem();
@@ -51,18 +55,16 @@ namespace EdgeSearch.UI
             searchesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             rewardsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             tsmiOpenRewards = new System.Windows.Forms.ToolStripMenuItem();
-            tpAmbassadors = new System.Windows.Forms.TabPage();
-            wvAmbassadors = new Microsoft.Web.WebView2.WinForms.WebView2();
-            pbAmbassadors = new System.Windows.Forms.ProgressBar();
-            lblAmbassadors = new System.Windows.Forms.Label();
+            ambassadorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            tsmiOpenAmbassadors = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)wvSearches).BeginInit();
             tabControl1.SuspendLayout();
             tpSearches.SuspendLayout();
             tpRewards.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)wvRewards).BeginInit();
-            menuStrip1.SuspendLayout();
             tpAmbassadors.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)wvAmbassadors).BeginInit();
+            menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // wvSearches
@@ -358,9 +360,53 @@ namespace EdgeSearch.UI
             wvRewards.TabIndex = 0;
             wvRewards.ZoomFactor = 1D;
             // 
+            // tpAmbassadors
+            // 
+            tpAmbassadors.Controls.Add(pbAmbassadors);
+            tpAmbassadors.Controls.Add(lblAmbassadors);
+            tpAmbassadors.Controls.Add(wvAmbassadors);
+            tpAmbassadors.Location = new System.Drawing.Point(4, 24);
+            tpAmbassadors.Name = "tpAmbassadors";
+            tpAmbassadors.Padding = new System.Windows.Forms.Padding(3);
+            tpAmbassadors.Size = new System.Drawing.Size(1211, 499);
+            tpAmbassadors.TabIndex = 2;
+            tpAmbassadors.Text = "Ambassadors";
+            tpAmbassadors.UseVisualStyleBackColor = true;
+            // 
+            // pbAmbassadors
+            // 
+            pbAmbassadors.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            pbAmbassadors.Location = new System.Drawing.Point(137, 470);
+            pbAmbassadors.Name = "pbAmbassadors";
+            pbAmbassadors.Size = new System.Drawing.Size(1071, 23);
+            pbAmbassadors.TabIndex = 8;
+            // 
+            // lblAmbassadors
+            // 
+            lblAmbassadors.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            lblAmbassadors.AutoSize = true;
+            lblAmbassadors.Location = new System.Drawing.Point(6, 474);
+            lblAmbassadors.Name = "lblAmbassadors";
+            lblAmbassadors.Size = new System.Drawing.Size(120, 15);
+            lblAmbassadors.TabIndex = 7;
+            lblAmbassadors.Text = "Opening ambassador";
+            lblAmbassadors.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // wvAmbassadors
+            // 
+            wvAmbassadors.AllowExternalDrop = true;
+            wvAmbassadors.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            wvAmbassadors.CreationProperties = null;
+            wvAmbassadors.DefaultBackgroundColor = System.Drawing.Color.White;
+            wvAmbassadors.Location = new System.Drawing.Point(3, 3);
+            wvAmbassadors.Name = "wvAmbassadors";
+            wvAmbassadors.Size = new System.Drawing.Size(1205, 461);
+            wvAmbassadors.TabIndex = 1;
+            wvAmbassadors.ZoomFactor = 1D;
+            // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, searchesToolStripMenuItem, rewardsToolStripMenuItem });
+            menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, searchesToolStripMenuItem, rewardsToolStripMenuItem, ambassadorsToolStripMenuItem });
             menuStrip1.Location = new System.Drawing.Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new System.Drawing.Size(1219, 24);
@@ -405,49 +451,18 @@ namespace EdgeSearch.UI
             tsmiOpenRewards.Size = new System.Drawing.Size(147, 22);
             tsmiOpenRewards.Text = "Open rewards";
             // 
-            // tpAmbassadors
+            // ambassadorsToolStripMenuItem
             // 
-            tpAmbassadors.Controls.Add(pbAmbassadors);
-            tpAmbassadors.Controls.Add(lblAmbassadors);
-            tpAmbassadors.Controls.Add(wvAmbassadors);
-            tpAmbassadors.Location = new System.Drawing.Point(4, 24);
-            tpAmbassadors.Name = "tpAmbassadors";
-            tpAmbassadors.Padding = new System.Windows.Forms.Padding(3);
-            tpAmbassadors.Size = new System.Drawing.Size(1211, 499);
-            tpAmbassadors.TabIndex = 2;
-            tpAmbassadors.Text = "Ambassadors";
-            tpAmbassadors.UseVisualStyleBackColor = true;
+            ambassadorsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { tsmiOpenAmbassadors });
+            ambassadorsToolStripMenuItem.Name = "ambassadorsToolStripMenuItem";
+            ambassadorsToolStripMenuItem.Size = new System.Drawing.Size(90, 20);
+            ambassadorsToolStripMenuItem.Text = "Ambassadors";
             // 
-            // wvAmbassadors
+            // tsmiOpenAmbassadors
             // 
-            wvAmbassadors.AllowExternalDrop = true;
-            wvAmbassadors.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            wvAmbassadors.CreationProperties = null;
-            wvAmbassadors.DefaultBackgroundColor = System.Drawing.Color.White;
-            wvAmbassadors.Location = new System.Drawing.Point(3, 3);
-            wvAmbassadors.Name = "wvAmbassadors";
-            wvAmbassadors.Size = new System.Drawing.Size(1205, 461);
-            wvAmbassadors.TabIndex = 1;
-            wvAmbassadors.ZoomFactor = 1D;
-            // 
-            // pbAmbassadors
-            // 
-            pbAmbassadors.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            pbAmbassadors.Location = new System.Drawing.Point(137, 470);
-            pbAmbassadors.Name = "pbAmbassadors";
-            pbAmbassadors.Size = new System.Drawing.Size(1071, 23);
-            pbAmbassadors.TabIndex = 8;
-            // 
-            // lblAmbassadors
-            // 
-            lblAmbassadors.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            lblAmbassadors.AutoSize = true;
-            lblAmbassadors.Location = new System.Drawing.Point(6, 474);
-            lblAmbassadors.Name = "lblAmbassadors";
-            lblAmbassadors.Size = new System.Drawing.Size(120, 15);
-            lblAmbassadors.TabIndex = 7;
-            lblAmbassadors.Text = "Opening ambassador";
-            lblAmbassadors.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            tsmiOpenAmbassadors.Name = "tsmiOpenAmbassadors";
+            tsmiOpenAmbassadors.Size = new System.Drawing.Size(180, 22);
+            tsmiOpenAmbassadors.Text = "Open ambassadors";
             // 
             // MainForm
             // 
@@ -467,11 +482,11 @@ namespace EdgeSearch.UI
             tpRewards.ResumeLayout(false);
             tpRewards.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)wvRewards).EndInit();
-            menuStrip1.ResumeLayout(false);
-            menuStrip1.PerformLayout();
             tpAmbassadors.ResumeLayout(false);
             tpAmbassadors.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)wvAmbassadors).EndInit();
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -516,6 +531,8 @@ namespace EdgeSearch.UI
         private Microsoft.Web.WebView2.WinForms.WebView2 wvAmbassadors;
         private System.Windows.Forms.ProgressBar pbAmbassadors;
         private System.Windows.Forms.Label lblAmbassadors;
+        private System.Windows.Forms.ToolStripMenuItem ambassadorsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tsmiOpenAmbassadors;
     }
 }
 

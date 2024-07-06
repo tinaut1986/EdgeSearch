@@ -52,12 +52,14 @@ namespace EdgeSearch.Business
             _mainForm.ForceClicked += _mainForm_ForceClicked;
             _mainForm.OpenClicked += _mainForm_OpenClicked;
             _mainForm.OpenRewardsClicked += _mainForm_OpenRewardsClicked;
+            _mainForm.OpenAmbassadorsClicked += _mainForm_OpenAmbassadorsClicked;
             _mainForm.NextSearchClicked += _mainForm_NextSearchClicked;
             _mainForm.MobileChanged += _mainForm_MobileChanged;
             _mainForm.PlayClicked += _mainForm_PlayClicked;
             _mainForm.FullPlayClicked += _mainForm_FullPlayClicked;
             _mainForm.ResetClicked += _mainForm_ResetClicked;
             _mainForm.RewardsNewWindowRequested += _mainForm_RewardsNewWindowRequested;
+            _mainForm.AmbassadorsNewWindowRequested += _mainForm_AmbassadorsNewWindowRequested;
         }
 
         /// <summary>
@@ -100,6 +102,45 @@ namespace EdgeSearch.Business
             }, null);
         }
 
+        private void _mainForm_AmbassadorsNewWindowRequested(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NewWindowRequestedEventArgs e)
+        {
+            int count = 0;
+            // Obtener el contexto de sincronización de la UI
+            var uiContext = SynchronizationContext.Current;
+
+            // Cancelar la creación de una nueva ventana
+            e.Handled = true;
+
+            // Crear una nueva instancia de WebView2 para la nueva ventana
+            var newWebView = new Microsoft.Web.WebView2.WinForms.WebView2 { Dock = DockStyle.Fill };
+
+            uiContext.Post(async _ =>
+            {
+                await newWebView.EnsureCoreWebView2Async();
+
+                // Navegar a la URI solicitada
+                newWebView.Source = new Uri(e.Uri);
+                _mainForm.SetAmbassadorProgressBar(ProgressBarStyle.Marquee);
+                count++;
+
+                // Esperar hasta que la nueva ventana esté completamente cargada
+                newWebView.CoreWebView2.NavigationCompleted += async (s, args) =>
+                {
+                    // Cerrar la nueva ventana después de que se haya cargado completamente
+                    if (args.IsSuccess)
+                    {
+                        await Task.Delay(10000); // Ajusta el tiempo según sea necesario
+                        newWebView.Dispose();
+                    }
+
+                    count--;
+                    if (count == 0)
+                        _mainForm.SetAmbassadorProgressBar(ProgressBarStyle.Blocks);
+                };
+
+            }, null);
+        }
+
         private void _mainForm_OpenClicked(object sender, EventArgs e)
         {
             _mainForm.SetSearchsURL(_search.URL);
@@ -107,7 +148,14 @@ namespace EdgeSearch.Business
 
         private void _mainForm_OpenRewardsClicked(object sender, EventArgs e)
         {
-            _mainForm.OpenRewards();
+            if (!_search.RewardsPlayed)
+                _mainForm.OpenRewards(_search);
+        }
+
+        private void _mainForm_OpenAmbassadorsClicked(object sender, EventArgs e)
+        {
+            if (!_search.AmbassadorsPlayed)
+                _mainForm.OpenAmbassadors(_search);
         }
 
         private void SetupRefreshTimer()
@@ -212,7 +260,7 @@ namespace EdgeSearch.Business
             {
                 if (_search.ToSearch.Count == 0)
                 {
-                    PlayAndStop(false);
+                    PlayAndStop(false, false);
                     return;
                 }
 
@@ -226,7 +274,7 @@ namespace EdgeSearch.Business
                     }
                     else
                     {
-                        PlayAndStop(false);
+                        PlayAndStop(false, false);
                         return;
                     }
                 }
@@ -238,7 +286,7 @@ namespace EdgeSearch.Business
                     }
                     else
                     {
-                        PlayAndStop(false);
+                        PlayAndStop(false, false);
                         return;
                     }
                 }
@@ -256,14 +304,17 @@ namespace EdgeSearch.Business
             await RefreshMobileMode(reloadWeb);
         }
 
-        private void PlayAndStop(bool openRewards)
+        private void PlayAndStop(bool openRewards, bool openAmbassadors)
         {
             if (!_search.IsPlaying)
             {
                 Play();
 
                 if (openRewards)
-                    _mainForm.OpenRewards();
+                    _mainForm.OpenRewards(_search);
+
+                if (openAmbassadors)
+                    _mainForm.OpenAmbassadors(_search);
             }
             else
                 Stop();
@@ -296,7 +347,7 @@ namespace EdgeSearch.Business
             _mainForm.UpdateInterface(_search);
         }
 
-        private async System.Threading.Tasks.Task RefreshMobileMode(bool reloadWeb)
+        private async Task RefreshMobileMode(bool reloadWeb)
         {
             _preferences.LastMode = _search.CurrentMode;
             _preferences.Save();
@@ -381,12 +432,12 @@ namespace EdgeSearch.Business
 
         private void _mainForm_PlayClicked(object sender, EventArgs e)
         {
-            PlayAndStop(false);
+            PlayAndStop(false, false);
         }
 
         private void _mainForm_FullPlayClicked(object sender, EventArgs e)
         {
-            PlayAndStop(true);
+            PlayAndStop(true, true);
         }
 
         private void _mainForm_ResetClicked(object sender, EventArgs e)
