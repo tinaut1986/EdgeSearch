@@ -84,7 +84,8 @@ namespace EdgeSearch.Business
 
                 // Navegar a la URI solicitada
                 newWebView.Source = new Uri(e.Uri);
-                _mainForm.SetRewardProgressBar(ProgressBarStyle.Marquee);
+                _mainForm.SetRewardProgressBarStyle(ProgressBarStyle.Marquee);
+                _mainForm.SetRewardProgressBarText("Opening reward");
 
                 // Esperar hasta que la nueva ventana esté completamente cargada
                 newWebView.CoreWebView2.NavigationCompleted += async (s, args) =>
@@ -96,7 +97,8 @@ namespace EdgeSearch.Business
                         newWebView.Dispose();
                     }
 
-                    _mainForm.SetRewardProgressBar(ProgressBarStyle.Blocks);
+                    _mainForm.SetRewardProgressBarStyle(ProgressBarStyle.Blocks);
+                    _mainForm.SetRewardProgressBarText("");
                 };
 
             }, null);
@@ -120,7 +122,8 @@ namespace EdgeSearch.Business
 
                 // Navegar a la URI solicitada
                 newWebView.Source = new Uri(e.Uri);
-                _mainForm.SetAmbassadorProgressBar(ProgressBarStyle.Marquee);
+                _mainForm.SetAmbassadorProgressBarStyle(ProgressBarStyle.Marquee);
+                _mainForm.SetAmbassadorProgressBarText("Opening card");
                 count++;
 
                 // Esperar hasta que la nueva ventana esté completamente cargada
@@ -135,7 +138,10 @@ namespace EdgeSearch.Business
 
                     count--;
                     if (count == 0)
-                        _mainForm.SetAmbassadorProgressBar(ProgressBarStyle.Blocks);
+                    {
+                        _mainForm.SetAmbassadorProgressBarStyle(ProgressBarStyle.Blocks);
+                        _mainForm.SetAmbassadorProgressBarText("");
+                    }
                 };
 
             }, null);

@@ -273,7 +273,7 @@ namespace EdgeSearch.UI
 	                    if (title.textContent !== 'Xbox Community Quests') {{
 		                    // Selecciona todos los elementos con la clase ""card-cta"" dentro del elemento actual
 		                    var cards = Array.from(category.querySelectorAll('a.c-button.f-primary'))
-                                             .filter(card => card.textContent.includes('knowledge check'));
+                                             .filter(card => !card.textContent.includes('knowledge check'));
 
 		                    // Recorre cada elemento de la clase ""card-cta""
 		                    for (var i = 0; i < cards.length; i++) {{
@@ -392,14 +392,24 @@ namespace EdgeSearch.UI
             }
         }
 
-        public void SetRewardProgressBar(ProgressBarStyle style)
+        public void SetRewardProgressBarStyle(ProgressBarStyle style)
         {
             pbRewards.Style = style;
         }
 
-        public void SetAmbassadorProgressBar(ProgressBarStyle style)
+        public void SetRewardProgressBarText(string text)
+        {
+            pbRewards.Text = text;
+        }
+
+        public void SetAmbassadorProgressBarStyle(ProgressBarStyle style)
         {
             pbAmbassadors.Style = style;
+        }
+
+        public void SetAmbassadorProgressBarText(string text)
+        {
+            pbAmbassadors.Text = text;
         }
         #endregion
 
