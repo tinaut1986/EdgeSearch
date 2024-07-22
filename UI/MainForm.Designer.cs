@@ -18,10 +18,8 @@ namespace EdgeSearch.UI
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             wvSearches = new Microsoft.Web.WebView2.WinForms.WebView2();
-            progressBar = new System.Windows.Forms.ProgressBar();
             btnPlay = new System.Windows.Forms.Button();
             lblRange = new System.Windows.Forms.Label();
-            lblProgress = new System.Windows.Forms.Label();
             txtURL = new System.Windows.Forms.TextBox();
             btnOpen = new System.Windows.Forms.Button();
             lblNextSearch = new System.Windows.Forms.Label();
@@ -40,12 +38,13 @@ namespace EdgeSearch.UI
             txtNextSearch = new System.Windows.Forms.TextBox();
             tabControl1 = new System.Windows.Forms.TabControl();
             tpSearches = new System.Windows.Forms.TabPage();
+            pbSearches = new CustomProgressBar();
             tpRewards = new System.Windows.Forms.TabPage();
-            pbRewards = new System.Windows.Forms.ProgressBar();
+            pbRewards = new CustomProgressBar();
             lblRewards = new System.Windows.Forms.Label();
             wvRewards = new Microsoft.Web.WebView2.WinForms.WebView2();
             tpAmbassadors = new System.Windows.Forms.TabPage();
-            pbAmbassadors = new System.Windows.Forms.ProgressBar();
+            pbAmbassadors = new CustomProgressBar();
             lblAmbassadors = new System.Windows.Forms.Label();
             wvAmbassadors = new Microsoft.Web.WebView2.WinForms.WebView2();
             menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -73,19 +72,11 @@ namespace EdgeSearch.UI
             wvSearches.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             wvSearches.CreationProperties = null;
             wvSearches.DefaultBackgroundColor = System.Drawing.Color.White;
-            wvSearches.Location = new System.Drawing.Point(6, 35);
+            wvSearches.Location = new System.Drawing.Point(12, 35);
             wvSearches.Name = "wvSearches";
             wvSearches.Size = new System.Drawing.Size(1199, 400);
             wvSearches.TabIndex = 3;
             wvSearches.ZoomFactor = 1D;
-            // 
-            // progressBar
-            // 
-            progressBar.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            progressBar.Location = new System.Drawing.Point(445, 470);
-            progressBar.Name = "progressBar";
-            progressBar.Size = new System.Drawing.Size(700, 23);
-            progressBar.TabIndex = 11;
             // 
             // btnPlay
             // 
@@ -107,19 +98,6 @@ namespace EdgeSearch.UI
             lblRange.TabIndex = 8;
             lblRange.Text = "Refresh range (segs):";
             lblRange.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // lblProgress
-            // 
-            lblProgress.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            lblProgress.AutoSize = true;
-            lblProgress.BackColor = System.Drawing.Color.Transparent;
-            lblProgress.ForeColor = System.Drawing.Color.Black;
-            lblProgress.Location = new System.Drawing.Point(782, 474);
-            lblProgress.Name = "lblProgress";
-            lblProgress.Size = new System.Drawing.Size(24, 15);
-            lblProgress.TabIndex = 12;
-            lblProgress.Text = "0/0";
-            lblProgress.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // txtURL
             // 
@@ -287,8 +265,7 @@ namespace EdgeSearch.UI
             // 
             // tpSearches
             // 
-            tpSearches.Controls.Add(lblProgress);
-            tpSearches.Controls.Add(progressBar);
+            tpSearches.Controls.Add(pbSearches);
             tpSearches.Controls.Add(wvSearches);
             tpSearches.Controls.Add(txtSearches);
             tpSearches.Controls.Add(txtURL);
@@ -316,6 +293,17 @@ namespace EdgeSearch.UI
             tpSearches.Text = "Searches";
             tpSearches.UseVisualStyleBackColor = true;
             // 
+            // pbSearches
+            // 
+            pbSearches.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            pbSearches.ForeColor = System.Drawing.Color.Black;
+            pbSearches.Location = new System.Drawing.Point(445, 470);
+            pbSearches.Name = "pbSearches";
+            pbSearches.PaintedColor = System.Drawing.Color.Green;
+            pbSearches.PaintedForeColor = System.Drawing.Color.White;
+            pbSearches.Size = new System.Drawing.Size(700, 23);
+            pbSearches.TabIndex = 19;
+            // 
             // tpRewards
             // 
             tpRewards.Controls.Add(pbRewards);
@@ -332,10 +320,13 @@ namespace EdgeSearch.UI
             // pbRewards
             // 
             pbRewards.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            pbRewards.Location = new System.Drawing.Point(112, 470);
+            pbRewards.ForeColor = System.Drawing.Color.Black;
+            pbRewards.Location = new System.Drawing.Point(104, 470);
             pbRewards.Name = "pbRewards";
-            pbRewards.Size = new System.Drawing.Size(1096, 23);
-            pbRewards.TabIndex = 6;
+            pbRewards.PaintedColor = System.Drawing.Color.Green;
+            pbRewards.PaintedForeColor = System.Drawing.Color.White;
+            pbRewards.Size = new System.Drawing.Size(1104, 23);
+            pbRewards.TabIndex = 7;
             // 
             // lblRewards
             // 
@@ -376,10 +367,13 @@ namespace EdgeSearch.UI
             // pbAmbassadors
             // 
             pbAmbassadors.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            pbAmbassadors.Location = new System.Drawing.Point(137, 470);
+            pbAmbassadors.ForeColor = System.Drawing.Color.Black;
+            pbAmbassadors.Location = new System.Drawing.Point(132, 470);
             pbAmbassadors.Name = "pbAmbassadors";
-            pbAmbassadors.Size = new System.Drawing.Size(1071, 23);
-            pbAmbassadors.TabIndex = 8;
+            pbAmbassadors.PaintedColor = System.Drawing.Color.Green;
+            pbAmbassadors.PaintedForeColor = System.Drawing.Color.White;
+            pbAmbassadors.Size = new System.Drawing.Size(1076, 23);
+            pbAmbassadors.TabIndex = 9;
             // 
             // lblAmbassadors
             // 
@@ -461,7 +455,7 @@ namespace EdgeSearch.UI
             // tsmiOpenAmbassadors
             // 
             tsmiOpenAmbassadors.Name = "tsmiOpenAmbassadors";
-            tsmiOpenAmbassadors.Size = new System.Drawing.Size(180, 22);
+            tsmiOpenAmbassadors.Size = new System.Drawing.Size(175, 22);
             tsmiOpenAmbassadors.Text = "Open ambassadors";
             // 
             // MainForm
@@ -494,10 +488,8 @@ namespace EdgeSearch.UI
         #endregion
 
         private Microsoft.Web.WebView2.WinForms.WebView2 wvSearches;
-        private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.Button btnPlay;
         private System.Windows.Forms.Label lblRange;
-        private System.Windows.Forms.Label lblProgress;
         private System.Windows.Forms.TextBox txtURL;
         private System.Windows.Forms.Button btnOpen;
         private System.Windows.Forms.Label lblNextSearch;
@@ -526,13 +518,14 @@ namespace EdgeSearch.UI
         private System.Windows.Forms.ToolStripMenuItem rewardsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tsmiOpenRewards;
         private System.Windows.Forms.Label lblRewards;
-        private System.Windows.Forms.ProgressBar pbRewards;
         private System.Windows.Forms.TabPage tpAmbassadors;
         private Microsoft.Web.WebView2.WinForms.WebView2 wvAmbassadors;
-        private System.Windows.Forms.ProgressBar pbAmbassadors;
         private System.Windows.Forms.Label lblAmbassadors;
         private System.Windows.Forms.ToolStripMenuItem ambassadorsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tsmiOpenAmbassadors;
+        private CustomProgressBar pbSearches;
+        private CustomProgressBar pbRewards;
+        private CustomProgressBar pbAmbassadors;
     }
 }
 

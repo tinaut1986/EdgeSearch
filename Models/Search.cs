@@ -24,6 +24,11 @@ namespace EdgeSearch.Models
         private int _lowerLimit;
         private bool _ambassadorsPlayed;
         private bool _rewardsPlayed;
+        private int _strikeCount;
+        private int _totalStrikeCount;
+        private DateTime? _strikeTime;
+        private int _strikeDelay;
+        private int _pointsPersearch;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -53,6 +58,9 @@ namespace EdgeSearch.Models
             DesktopUserAgent = preferences.DesktopUserAgent;
             MobileTotalPoints = preferences.MobileTotalPoints;
             MobileUserAgent = preferences.MobileUserAgent;
+            StrikeDelay = preferences.StrikeDelay;
+            TotalStrikeCount = preferences.StrikeAmount;
+            PointsPersearch = preferences.PointsPersearch;
         }
         #endregion
 
@@ -123,6 +131,7 @@ namespace EdgeSearch.Models
                 NotifyPropertyChanged();
             }
         }
+
         public int ElapsedSeconds
         {
             get => _elapsedSeconds;
@@ -139,6 +148,73 @@ namespace EdgeSearch.Models
             {
                 _secondsToRefresh = value;
                 NotifyPropertyChanged();
+            }
+        }
+        public DateTime? StrikeTime
+        {
+            get => _strikeTime;
+            set
+            {
+                _strikeTime = value;
+                NotifyPropertyChanged();
+            }
+        }
+        public int StrikeDelay
+        {
+            get => _strikeDelay;
+            set
+            {
+                _strikeDelay = value;
+                NotifyPropertyChanged();
+            }
+        }
+        public int StrikeCount
+        {
+            get => _strikeCount;
+            set
+            {
+                _strikeCount = value;
+                NotifyPropertyChanged();
+            }
+        }
+        public int TotalStrikeCount
+        {
+            get => _totalStrikeCount;
+            set
+            {
+                _totalStrikeCount = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public int PointsPersearch
+        {
+            get => _pointsPersearch;
+            set
+            {
+                _pointsPersearch = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public int TotalProgressBar
+        {
+            get
+            {
+                if (StrikeCount < TotalStrikeCount)
+                    return SecondsToRefresh;
+                else
+                    return StrikeDelay;
+            }
+        }
+        public int CurrentProgressBar
+        {
+            get
+            {
+                if (StrikeCount < TotalStrikeCount)
+                    return SecondsToRefresh;
+                else
+                    return StrikeDelay;
             }
         }
         public bool IsPlaying

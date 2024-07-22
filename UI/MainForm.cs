@@ -80,9 +80,9 @@ namespace EdgeSearch.UI
             txtPointsLimit.DataBindings.Clear();
             txtPointsLimit.DataBindings.Add(nameof(txtPointsLimit.Text), search, nameof(search.PointsLimit));
 
-            progressBar.DataBindings.Clear();
-            progressBar.DataBindings.Add(nameof(progressBar.Maximum), search, nameof(search.SecondsToRefresh));
-            progressBar.DataBindings.Add(nameof(progressBar.Value), search, nameof(search.ElapsedSeconds));
+            pbSearches.DataBindings.Clear();
+            pbSearches.DataBindings.Add(nameof(pbSearches.Maximum), search, nameof(search.SecondsToRefresh));
+            pbSearches.DataBindings.Add(nameof(pbSearches.Value), search, nameof(search.ElapsedSeconds));
         }
 
         private void InitializeEvents()
@@ -269,10 +269,11 @@ namespace EdgeSearch.UI
 		                    return;
 	                    }}
 
-	                    // Verifica si el texto del elemento ""category-title"" es ""Survey""
-	                    if (title.textContent !== 'Surveys' && title.textContent !== 'Xbox Community Quests') {{
+	                    // Verifica si el texto del elemento ""category-title"" es ""Xbox Community Quests""
+	                    if (title.textContent !== 'Xbox Community Quests') {{
 		                    // Selecciona todos los elementos con la clase ""card-cta"" dentro del elemento actual
-		                    var cards = category.querySelectorAll('a.c-button.f-primary');
+		                    var cards = Array.from(category.querySelectorAll('a.c-button.f-primary'))
+                                             .filter(card => card.textContent.includes('knowledge check'));
 
 		                    // Recorre cada elemento de la clase ""card-cta""
 		                    for (var i = 0; i < cards.length; i++) {{
@@ -286,10 +287,10 @@ namespace EdgeSearch.UI
 			                    cards[i].click();
                                 console.log('click en ' + cards[i].textContent);
 			
-			                    // Pausa de un número aleatorio de segundos entre 5 y 10 antes de procesar el siguiente elemento
-			                    var randomDelay = Math.floor(Math.random() * 6) + 5; // Número aleatorio entre 5 y 10
+			                    // Pausa de un número aleatorio de segundos entre 15 y 20 antes de procesar el siguiente elemento
+			                    var randomDelay = Math.floor(Math.random() * 16) + 5; // Número aleatorio entre 15 y 20
 
-			                    await delay(randomDelay  * 1000);
+			                    await delay(randomDelay * 1000);
 
 			                    // Mostrar en la consola el número de elementos encontrados
 			                    console.log('Elemento encontrado en la categoria ' + title.textContent);
@@ -328,7 +329,7 @@ namespace EdgeSearch.UI
                     break;
 
                 }
-                await Task.Delay(300000); // Espera 5 minutos antes de volver a ejecutar la función
+                await Task.Delay(600000); // Espera 10 minutos antes de volver a ejecutar la función
             }
 
             search.AmbassadorsPlayed = false;
@@ -351,7 +352,14 @@ namespace EdgeSearch.UI
             txtURL.ReadOnly = search.IsPlaying;
             txtURL.Text = wvSearches.Source.AbsoluteUri;
 
-            lblProgress.Text = $"{search.ElapsedSeconds}/{search.SecondsToRefresh} segs";
+            DateTime now = DateTime.Now;
+            DateTime strikeTime = (search.StrikeTime ?? now);
+
+            string strikeCount = $"{search.StrikeCount}/{search.TotalStrikeCount}";
+            string strikeSeconds = $"{Convert.ToInt32((now - strikeTime).TotalSeconds)}/{search.StrikeDelay} secs";
+            string searchsSeconds = $"{search.ElapsedSeconds}/{search.SecondsToRefresh} segs";
+
+            pbSearches.Text = $"{strikeCount} ({strikeSeconds}) - {searchsSeconds}";
         }
 
         public void ReloadSearchsWeb()

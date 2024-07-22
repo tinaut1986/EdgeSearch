@@ -36,7 +36,7 @@ namespace EdgeSearch.Business
             _awaker = new Awaker();
             _random = new Random();
 
-            LoadSearchesFromFile("searches.xml"); // Carga las búsquedas desde el archivo
+            LoadSearchesFromFile("Config\\searches.xml"); // Carga las búsquedas desde el archivo
 
             SetupRefreshTimer();
             InitializeEvents();
@@ -92,7 +92,7 @@ namespace EdgeSearch.Business
                     // Cerrar la nueva ventana después de que se haya cargado completamente
                     if (args.IsSuccess)
                     {
-                        await Task.Delay(3000); // Ajusta el tiempo según sea necesario
+                        await Task.Delay(15000); // Espera 15 segundos antes de cerrar la ventana
                         newWebView.Dispose();
                     }
 
@@ -129,7 +129,7 @@ namespace EdgeSearch.Business
                     // Cerrar la nueva ventana después de que se haya cargado completamente
                     if (args.IsSuccess)
                     {
-                        await Task.Delay(10000); // Ajusta el tiempo según sea necesario
+                        await Task.Delay(15000); // Espera 15 segundos antes de cerrar la ventana
                         newWebView.Dispose();
                     }
 
@@ -254,6 +254,28 @@ namespace EdgeSearch.Business
 
         private async void RefreshTimer_Tick(object sender, EventArgs e)
         {
+            if (_preferences.StrikeAmount > 0)
+            {
+                if (_search.StrikeCount >= _preferences.StrikeAmount)
+                {
+                    DateTime now = DateTime.Now;
+
+                    if (_search.StrikeTime == null)
+                        _search.StrikeTime = now;
+
+                    if (Convert.ToInt32((now - _search.StrikeTime.Value).TotalSeconds) > _preferences.StrikeDelay)
+                    {
+                        _search.StrikeCount = 0;
+                        _search.StrikeTime = null;
+                    }
+                    else
+                    {
+                        _mainForm.UpdateInterface(_search);
+                        return;
+                    }
+                }
+            }
+
             _search.ElapsedSeconds++;
 
             if (_search.ElapsedSeconds >= _search.SecondsToRefresh)
@@ -264,11 +286,11 @@ namespace EdgeSearch.Business
                     return;
                 }
 
-                bool desktopPointsReached = (_search.DesktopSearchesCount * 3) >= _search.DesktopTotalPoints;
-                bool MobilePointsReached = (_search.MobileSearchesCount * 3) >= _search.MobileTotalPoints;
+                bool desktopPointsReached = (_search.DesktopSearchesCount * _search.PointsPersearch) >= _search.DesktopTotalPoints;
+                bool mobilePointsReached = (_search.MobileSearchesCount * _search.PointsPersearch) >= _search.MobileTotalPoints;
                 if (!Search.IsMobile && desktopPointsReached)
                 {
-                    if (!MobilePointsReached)
+                    if (!mobilePointsReached)
                     {
                         await ChangeMobileMode(Preferences.Mode.Mobile, false);
                     }
@@ -278,7 +300,7 @@ namespace EdgeSearch.Business
                         return;
                     }
                 }
-                else if (Search.IsMobile && MobilePointsReached)
+                else if (Search.IsMobile && mobilePointsReached)
                 {
                     if (!desktopPointsReached)
                     {
@@ -293,6 +315,9 @@ namespace EdgeSearch.Business
 
                 DoSearch();
                 RestartLimits();
+
+                if (_preferences.StrikeAmount > 0)
+                    _search.StrikeCount++;
             }
 
             _mainForm.UpdateInterface(_search);
@@ -326,6 +351,9 @@ namespace EdgeSearch.Business
         {
             _refreshTimer.Stop(); // Detiene el temporizador si ya está activo
             _search.IsPlaying = false;
+            _search.StrikeCount = 0;
+            _search.StrikeTime = null;
+            _search.ElapsedSeconds = 0;
 
             _awaker.Stop();
         }
@@ -349,7 +377,6 @@ namespace EdgeSearch.Business
 
         private async Task RefreshMobileMode(bool reloadWeb)
         {
-            _preferences.LastMode = _search.CurrentMode;
             _preferences.Save();
 
             if (_search.IsMobile)
@@ -444,7 +471,8 @@ namespace EdgeSearch.Business
         {
             _search.MobileSearchesCount = 0;
             _search.DesktopSearchesCount = 0;
-            _search.CurrentMode = Preferences.Mode.Desktop;
+            ChangeMobileMode(Preferences.Mode.Desktop, true);
+            _mainForm.UpdateInterface(_search);
         }
 
         #endregion
