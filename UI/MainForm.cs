@@ -1,9 +1,12 @@
 ﻿using EdgeSearch.Models;
+using EdgeSearch.Properties;
+using EdgeSearch.Utils;
 using Microsoft.Web.WebView2.Core;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace EdgeSearch.UI
 {
@@ -15,10 +18,12 @@ namespace EdgeSearch.UI
         public event EventHandler ForceClicked;
         public event EventHandler OpenClicked;
         public event EventHandler ResetClicked;
-        public event EventHandler OpenRewardsClicked;
-        public event EventHandler OpenAmbassadorsClicked;
+        public event EventHandler PlaySearchesClicked;
+        public event EventHandler PlayRewardsClicked;
+        public event EventHandler PlayAmbassadorsClicked;
         public event EventHandler NextSearchClicked;
         public event EventHandler MobileChanged;
+        public event EventHandler PbSearchesMouseMove;
         public event EventHandler<CoreWebView2InitializationCompletedEventArgs> SearchesCoreWebView2InitializationCompleted;
         public event EventHandler<CoreWebView2InitializationCompletedEventArgs> RewardsCoreWebView2InitializationCompleted;
         public event EventHandler<CoreWebView2InitializationCompletedEventArgs> AmbassadorsCoreWebView2InitializationCompleted;
@@ -30,6 +35,8 @@ namespace EdgeSearch.UI
         public MainForm()
         {
             InitializeComponent();
+
+            FixButtons();
 
             InitializeWebView();
 
@@ -53,6 +60,15 @@ namespace EdgeSearch.UI
         #endregion
 
         #region Methods
+
+        private void FixButtons()
+        {
+            btnPlay.FitImage();
+            chkMobile.FitImage();
+            btnOpen.FitImage();
+            btnSearch.FitImage();
+            btnNext.FitImage();
+        }
 
         public void BindFields(Search search)
         {
@@ -83,6 +99,12 @@ namespace EdgeSearch.UI
             pbSearches.DataBindings.Clear();
             pbSearches.DataBindings.Add(nameof(pbSearches.Maximum), search, nameof(search.SecondsToRefresh));
             pbSearches.DataBindings.Add(nameof(pbSearches.Value), search, nameof(search.ElapsedSeconds));
+
+            lblAmbassadorsPB.DataBindings.Clear();
+            lblAmbassadorsPB.DataBindings.Add(nameof(lblAmbassadorsPB.Text), search, nameof(search.AmbassadorsString));
+
+            lblRewardsPB.DataBindings.Clear();
+            lblRewardsPB.DataBindings.Add(nameof(lblRewardsPB.Text), search, nameof(search.RewardsString));
         }
 
         private void InitializeEvents()
@@ -91,8 +113,9 @@ namespace EdgeSearch.UI
             wvRewards.CoreWebView2InitializationCompleted += WvRewards_CoreWebView2InitializationCompleted;
             wvAmbassadors.CoreWebView2InitializationCompleted += WvAmbassadors_CoreWebView2InitializationCompleted;
 
-            tsmiOpenRewards.Click += TsmiOpenRewards_Click;
-            tsmiOpenAmbassadors.Click += TsmiOpenAmbassadors_Click;
+            tsmiPlayRewards.Click += TsmiPlayRewards_Click;
+            tsmiPlayAmbassadors.Click += TsmiPlayAmbassadors_Click;
+            tsmiPlaySearches.Click += TsmiPlaySearches_Click;
 
             tsmiPlay.Click += TsmiPlay_Click;
             tsmiReset.Click += TsmiReset_Click;
@@ -103,6 +126,8 @@ namespace EdgeSearch.UI
             chkMobile.Click += ChkMobile_Click;
             btnOpen.Click += btnOpen_Click;
             txtURL.KeyPress += txtURL_KeyPress;
+
+            pbSearches.MouseMove += PbSearches_MouseMove;
         }
 
         private void FinalizeEvents()
@@ -110,8 +135,9 @@ namespace EdgeSearch.UI
             wvSearches.CoreWebView2InitializationCompleted -= WvSearches_CoreWebView2InitializationCompleted;
             wvRewards.CoreWebView2InitializationCompleted -= WvRewards_CoreWebView2InitializationCompleted;
             wvAmbassadors.CoreWebView2InitializationCompleted -= WvAmbassadors_CoreWebView2InitializationCompleted;
-            tsmiOpenRewards.Click -= TsmiOpenRewards_Click;
-            tsmiOpenAmbassadors.Click -= TsmiOpenAmbassadors_Click;
+            tsmiPlayRewards.Click -= TsmiPlayRewards_Click;
+            tsmiPlayAmbassadors.Click -= TsmiPlayAmbassadors_Click;
+            tsmiPlaySearches.Click -= TsmiPlaySearches_Click;
 
             tsmiPlay.Click -= TsmiPlay_Click;
             tsmiReset.Click -= TsmiReset_Click;
@@ -122,6 +148,8 @@ namespace EdgeSearch.UI
             chkMobile.Click -= ChkMobile_Click;
             btnOpen.Click -= btnOpen_Click;
             txtURL.KeyPress -= txtURL_KeyPress;
+
+            pbSearches.MouseMove -= PbSearches_MouseMove;
         }
 
         public void SetUserAgent(string userAgent)
@@ -339,14 +367,26 @@ namespace EdgeSearch.UI
         {
             if (!search.IsPlaying)
             {
-                btnPlay.Text = "Play";
+                btnPlay.Image = Resources.play;
+
                 tsmiPlay.Text = "Play";
+                tsmiPlay.Image = Resources.play;
+
+                tsmiPlaySearches.Text = "Play searches";
+                tsmiPlaySearches.Image = Resources.play;
             }
             else
             {
-                btnPlay.Text = "Stop";
+                btnPlay.Image = Resources.stop;
+
                 tsmiPlay.Text = "Stop";
+                tsmiPlay.Image = Resources.stop;
+
+                tsmiPlaySearches.Text = "Stop searches";
+                tsmiPlaySearches.Image = Resources.stop;
             }
+
+            btnPlay.FitImage();
 
             btnOpen.Enabled = !search.IsPlaying;
             txtURL.ReadOnly = search.IsPlaying;
@@ -392,25 +432,11 @@ namespace EdgeSearch.UI
             }
         }
 
-        public void SetRewardProgressBarStyle(ProgressBarStyle style)
+        public void SetExecutionExpectedTime(TimeSpan minTime, TimeSpan maxTime)
         {
-            pbRewards.Style = style;
+            toolTip1.SetToolTip(pbSearches, $"Tiempo esperado: {minTime:hh\\:mm\\:ss} - {maxTime:hh\\:mm\\:ss}");
         }
 
-        public void SetRewardProgressBarText(string text)
-        {
-            pbRewards.Text = text;
-        }
-
-        public void SetAmbassadorProgressBarStyle(ProgressBarStyle style)
-        {
-            pbAmbassadors.Style = style;
-        }
-
-        public void SetAmbassadorProgressBarText(string text)
-        {
-            pbAmbassadors.Text = text;
-        }
         #endregion
 
         #region Events
@@ -439,14 +465,19 @@ namespace EdgeSearch.UI
             AmbassadorsNewWindowRequested?.Invoke(sender, e);
         }
 
-        private void TsmiOpenRewards_Click(object sender, EventArgs e)
+        private void TsmiPlayRewards_Click(object sender, EventArgs e)
         {
-            OpenRewardsClicked?.Invoke(sender, e);
+            PlayRewardsClicked?.Invoke(sender, e);
         }
 
-        private void TsmiOpenAmbassadors_Click(object sender, EventArgs e)
+        private void TsmiPlayAmbassadors_Click(object sender, EventArgs e)
         {
-            OpenAmbassadorsClicked?.Invoke(sender, e);
+            PlayAmbassadorsClicked?.Invoke(sender, e);
+        }
+
+        private void TsmiPlaySearches_Click(object sender, EventArgs e)
+        {
+            PlaySearchesClicked?.Invoke(sender, e);
         }
 
         private void TsmiPlay_Click(object sender, EventArgs e)
@@ -461,7 +492,7 @@ namespace EdgeSearch.UI
 
         private void btnPlay_Click(object sender, EventArgs e)
         {
-            PlayClicked?.Invoke(sender, e);
+            FullPlayClicked?.Invoke(sender, e);
         }
 
         private void btnOpen_Click(object sender, EventArgs e)
@@ -473,6 +504,11 @@ namespace EdgeSearch.UI
         {
             if (e.KeyChar == (char)ConsoleKey.Enter)
                 btnOpen_Click(null, null);
+        }
+
+        private void PbSearches_MouseMove(object sender, MouseEventArgs e)
+        {
+            PbSearchesMouseMove?.Invoke(sender, e);
         }
 
         private void btnNext_Click(object sender, EventArgs e)

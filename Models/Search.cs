@@ -30,6 +30,12 @@ namespace EdgeSearch.Models
         private int _strikeDelay;
         private int _pointsPersearch;
 
+        private int _currentRewards;
+        private int _totalRewards;
+
+        private int _currentAmbassadors;
+        private int _totalAmbassadors;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         // This method is called by the Set accessor of each property.  
@@ -313,10 +319,39 @@ namespace EdgeSearch.Models
             get => _ambassadorsPlayed;
             set => _ambassadorsPlayed = value;
         }
+
         public bool RewardsPlayed
         {
             get => _rewardsPlayed;
             set => _rewardsPlayed = value;
         }
+
+        public int CurrentAmbassadors
+        {
+            get => _currentAmbassadors;
+            set => _currentAmbassadors = value;
+        }
+
+        public int TotalAmbassadors
+        {
+            get => _totalAmbassadors;
+            set => _totalAmbassadors = value;
+        }
+
+        public string AmbassadorsString => $"Ambassadors: {CurrentAmbassadors}/{TotalAmbassadors}";
+
+        public int CurrentRewards
+        {
+            get => _currentRewards;
+            set => _currentRewards = value;
+        }
+
+        public int TotalRewards
+        {
+            get => _totalRewards;
+            set => _totalRewards = value;
+        }
+
+        public string RewardsString => $"Rewards: {CurrentRewards}/{TotalRewards}";
     }
 }

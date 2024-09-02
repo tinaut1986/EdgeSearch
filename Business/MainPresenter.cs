@@ -1,6 +1,7 @@
 ﻿using EdgeSearch.models;
 using EdgeSearch.Models;
 using EdgeSearch.UI;
+using EdgeSearch.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -51,10 +52,12 @@ namespace EdgeSearch.Business
             _mainForm.Load += _mainForm_Load;
             _mainForm.ForceClicked += _mainForm_ForceClicked;
             _mainForm.OpenClicked += _mainForm_OpenClicked;
-            _mainForm.OpenRewardsClicked += _mainForm_OpenRewardsClicked;
-            _mainForm.OpenAmbassadorsClicked += _mainForm_OpenAmbassadorsClicked;
+            _mainForm.PlayRewardsClicked += _mainForm_PlayRewardsClicked;
+            _mainForm.PlayAmbassadorsClicked += _mainForm_PlayAmbassadorsClicked;
+            _mainForm.PlaySearchesClicked += _mainForm_PlaySearchesClicked;
             _mainForm.NextSearchClicked += _mainForm_NextSearchClicked;
             _mainForm.MobileChanged += _mainForm_MobileChanged;
+            _mainForm.PbSearchesMouseMove += _mainForm_PbSearchesMouseMove;
             _mainForm.PlayClicked += _mainForm_PlayClicked;
             _mainForm.FullPlayClicked += _mainForm_FullPlayClicked;
             _mainForm.ResetClicked += _mainForm_ResetClicked;
@@ -84,8 +87,8 @@ namespace EdgeSearch.Business
 
                 // Navegar a la URI solicitada
                 newWebView.Source = new Uri(e.Uri);
-                _mainForm.SetRewardProgressBarStyle(ProgressBarStyle.Marquee);
-                _mainForm.SetRewardProgressBarText("Opening reward");
+                _search.CurrentRewards++;
+                _search.TotalRewards++;
 
                 // Esperar hasta que la nueva ventana esté completamente cargada
                 newWebView.CoreWebView2.NavigationCompleted += async (s, args) =>
@@ -97,8 +100,7 @@ namespace EdgeSearch.Business
                         newWebView.Dispose();
                     }
 
-                    _mainForm.SetRewardProgressBarStyle(ProgressBarStyle.Blocks);
-                    _mainForm.SetRewardProgressBarText("");
+                    _search.CurrentRewards--;
                 };
 
             }, null);
@@ -106,7 +108,6 @@ namespace EdgeSearch.Business
 
         private void _mainForm_AmbassadorsNewWindowRequested(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NewWindowRequestedEventArgs e)
         {
-            int count = 0;
             // Obtener el contexto de sincronización de la UI
             var uiContext = SynchronizationContext.Current;
 
@@ -122,9 +123,8 @@ namespace EdgeSearch.Business
 
                 // Navegar a la URI solicitada
                 newWebView.Source = new Uri(e.Uri);
-                _mainForm.SetAmbassadorProgressBarStyle(ProgressBarStyle.Marquee);
-                _mainForm.SetAmbassadorProgressBarText("Opening card");
-                count++;
+                _search.CurrentAmbassadors++;
+                _search.TotalAmbassadors++;
 
                 // Esperar hasta que la nueva ventana esté completamente cargada
                 newWebView.CoreWebView2.NavigationCompleted += async (s, args) =>
@@ -136,12 +136,7 @@ namespace EdgeSearch.Business
                         newWebView.Dispose();
                     }
 
-                    count--;
-                    if (count == 0)
-                    {
-                        _mainForm.SetAmbassadorProgressBarStyle(ProgressBarStyle.Blocks);
-                        _mainForm.SetAmbassadorProgressBarText("");
-                    }
+                    _search.CurrentAmbassadors--;
                 };
 
             }, null);
@@ -152,16 +147,21 @@ namespace EdgeSearch.Business
             _mainForm.SetSearchsURL(_search.URL);
         }
 
-        private void _mainForm_OpenRewardsClicked(object sender, EventArgs e)
+        private void _mainForm_PlayRewardsClicked(object sender, EventArgs e)
         {
             if (!_search.RewardsPlayed)
                 _mainForm.OpenRewards(_search);
         }
 
-        private void _mainForm_OpenAmbassadorsClicked(object sender, EventArgs e)
+        private void _mainForm_PlayAmbassadorsClicked(object sender, EventArgs e)
         {
             if (!_search.AmbassadorsPlayed)
                 _mainForm.OpenAmbassadors(_search);
+        }
+
+        private void _mainForm_PlaySearchesClicked(object sender, EventArgs e)
+        {
+            _mainForm_PlayClicked(sender, e);
         }
 
         private void SetupRefreshTimer()
@@ -461,6 +461,47 @@ namespace EdgeSearch.Business
         {
             _search.IsMobile = !_search.IsMobile;
             await RefreshMobileMode(true);
+        }
+
+        private void _mainForm_PbSearchesMouseMove(object sender, EventArgs e)
+        {
+            TimeSpan desktopMin = ExecutionTimeCalculator.CalculateTotalTime(totalExecutions: (_search.DesktopTotalPoints / _search.PointsPersearch) - (_search.DesktopSearchesCount),
+                                                                             executionsOffset: _preferences.StrikeAmount - _search.StrikeCount,
+                                                                             executionsPerStrike: _preferences.StrikeAmount,
+                                                                             pauseBetweenExecutions: _preferences.LowerLimit,
+                                                                             pauseBetweenStrikes: _search.StrikeDelay,
+                                                                             elapsedSeconds: _search.IsDesktop ? _search.ElapsedSeconds : 0,
+                                                                             currentPause: _search.IsDesktop ? _search.SecondsToRefresh : 0,
+                                                                             playing: _search.IsPlaying && _search.IsDesktop);
+
+            TimeSpan desktopMax = ExecutionTimeCalculator.CalculateTotalTime(totalExecutions: (_search.DesktopTotalPoints / _search.PointsPersearch) - (_search.DesktopSearchesCount),
+                                                                             executionsOffset: _preferences.StrikeAmount - _search.StrikeCount,
+                                                                             executionsPerStrike: _preferences.StrikeAmount,
+                                                                             pauseBetweenExecutions: _preferences.UpperLimit,
+                                                                             pauseBetweenStrikes: _search.StrikeDelay,
+                                                                             elapsedSeconds: _search.IsDesktop ? _search.ElapsedSeconds : 0,
+                                                                             currentPause: _search.IsDesktop ? _search.SecondsToRefresh : 0,
+                                                                             playing: _search.IsPlaying && _search.IsDesktop);
+
+            TimeSpan mobileMin = ExecutionTimeCalculator.CalculateTotalTime(totalExecutions: (_search.MobileTotalPoints / _search.PointsPersearch) - (_search.MobileSearchesCount),
+                                                                            executionsOffset: _preferences.StrikeAmount - _search.StrikeCount,
+                                                                            executionsPerStrike: _preferences.StrikeAmount,
+                                                                            pauseBetweenExecutions: _preferences.LowerLimit,
+                                                                            pauseBetweenStrikes: _search.StrikeDelay,
+                                                                            elapsedSeconds: _search.IsMobile ? _search.ElapsedSeconds : 0,
+                                                                            currentPause: _search.IsMobile ? _search.SecondsToRefresh : 0,
+                                                                            playing: _search.IsPlaying && _search.IsMobile);
+
+            TimeSpan mobileMax = ExecutionTimeCalculator.CalculateTotalTime(totalExecutions: (_search.MobileTotalPoints / _search.PointsPersearch) - (_search.MobileSearchesCount),
+                                                                            executionsOffset: _preferences.StrikeAmount - _search.StrikeCount,
+                                                                            executionsPerStrike: _preferences.StrikeAmount,
+                                                                            pauseBetweenExecutions: _preferences.UpperLimit,
+                                                                            pauseBetweenStrikes: _search.StrikeDelay,
+                                                                            elapsedSeconds: _search.IsMobile ? _search.ElapsedSeconds : 0,
+                                                                            currentPause: _search.IsMobile ? _search.SecondsToRefresh : 0,
+                                                                            playing: _search.IsPlaying && _search.IsMobile);
+
+            _mainForm.SetExecutionExpectedTime(desktopMin + mobileMin, desktopMax + mobileMax);
         }
 
         private void _mainForm_PlayClicked(object sender, EventArgs e)
