@@ -2,6 +2,8 @@
 using EdgeSearch.Models;
 using EdgeSearch.UI;
 using EdgeSearch.Utils;
+using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.WinForms;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -63,6 +65,23 @@ namespace EdgeSearch.Business
             _mainForm.ResetClicked += _mainForm_ResetClicked;
             _mainForm.RewardsNewWindowRequested += _mainForm_RewardsNewWindowRequested;
             _mainForm.AmbassadorsNewWindowRequested += _mainForm_AmbassadorsNewWindowRequested;
+
+            _mainForm.SearchesCoreWebView2InitializationCompleted += _mainForm_SearchesCoreWebView2InitializationCompleted;
+            _mainForm.RewardsCoreWebView2InitializationCompleted += _mainForm_RewardsCoreWebView2InitializationCompleted;
+            _mainForm.AmbassadorsCoreWebView2InitializationCompleted += _mainForm_AmbassadorsCoreWebView2InitializationCompleted;
+        }
+
+        private async void _mainForm_SearchesCoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
+        {
+        }
+
+        private async void _mainForm_AmbassadorsCoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
+        {
+        }
+
+        private async void _mainForm_RewardsCoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
+        {
+            await ExtractPoints();
         }
 
         /// <summary>
@@ -70,7 +89,7 @@ namespace EdgeSearch.Business
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void _mainForm_RewardsNewWindowRequested(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NewWindowRequestedEventArgs e)
+        private void _mainForm_RewardsNewWindowRequested(object sender, CoreWebView2NewWindowRequestedEventArgs e)
         {
             // Obtener el contexto de sincronización de la UI
             var uiContext = SynchronizationContext.Current;
@@ -79,7 +98,7 @@ namespace EdgeSearch.Business
             e.Handled = true;
 
             // Crear una nueva instancia de WebView2 para la nueva ventana
-            var newWebView = new Microsoft.Web.WebView2.WinForms.WebView2 { Dock = DockStyle.Fill };
+            var newWebView = new WebView2 { Dock = DockStyle.Fill };
 
             uiContext.Post(async _ =>
             {
@@ -90,23 +109,32 @@ namespace EdgeSearch.Business
                 _search.CurrentRewards++;
                 _search.TotalRewards++;
 
-                // Esperar hasta que la nueva ventana esté completamente cargada
-                newWebView.CoreWebView2.NavigationCompleted += async (s, args) =>
+                // Asociar el evento de navegación completada
+                EventHandler<CoreWebView2NavigationCompletedEventArgs> handler = null;
+
+                handler = async (s, args) =>
                 {
                     // Cerrar la nueva ventana después de que se haya cargado completamente
                     if (args.IsSuccess)
                     {
                         await Task.Delay(15000); // Espera 15 segundos antes de cerrar la ventana
-                        newWebView.Dispose();
-                    }
 
-                    _search.CurrentRewards--;
+                        // TODO: Por algún motivo, pasa por este codigo más de una vez. Necesito mirar como hacerlo para que no reduzca el contador más veces de la cuenta.
+                        //newWebView.CoreWebView2.NavigationCompleted -= handler; // Desvincular el evento
+
+                        newWebView.Dispose();
+                        _search.CurrentRewards--;
+                    }
                 };
 
+                newWebView.CoreWebView2.NavigationCompleted += handler; // Vincular el evento
+
             }, null);
+
+            _mainForm.BindFields(_search);
         }
 
-        private void _mainForm_AmbassadorsNewWindowRequested(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NewWindowRequestedEventArgs e)
+        private void _mainForm_AmbassadorsNewWindowRequested(object sender, CoreWebView2NewWindowRequestedEventArgs e)
         {
             // Obtener el contexto de sincronización de la UI
             var uiContext = SynchronizationContext.Current;
@@ -115,7 +143,7 @@ namespace EdgeSearch.Business
             e.Handled = true;
 
             // Crear una nueva instancia de WebView2 para la nueva ventana
-            var newWebView = new Microsoft.Web.WebView2.WinForms.WebView2 { Dock = DockStyle.Fill };
+            WebView2 newWebView = new WebView2 { Dock = DockStyle.Fill };
 
             uiContext.Post(async _ =>
             {
@@ -126,25 +154,34 @@ namespace EdgeSearch.Business
                 _search.CurrentAmbassadors++;
                 _search.TotalAmbassadors++;
 
-                // Esperar hasta que la nueva ventana esté completamente cargada
-                newWebView.CoreWebView2.NavigationCompleted += async (s, args) =>
+                // Asociar el evento de navegación completada
+                EventHandler<CoreWebView2NavigationCompletedEventArgs> handler = null;
+
+                handler = async (s, args) =>
                 {
                     // Cerrar la nueva ventana después de que se haya cargado completamente
                     if (args.IsSuccess)
                     {
                         await Task.Delay(15000); // Espera 15 segundos antes de cerrar la ventana
+                        
+                        // TODO: Por algún motivo, pasa por este codigo más de una vez. Necesito mirar como hacerlo para que no reduzca el contador más veces de la cuenta.
+                        //newWebView.CoreWebView2.NavigationCompleted -= handler; // Desvincular el evento
+                        
                         newWebView.Dispose();
+                        _search.CurrentAmbassadors--;
                     }
-
-                    _search.CurrentAmbassadors--;
                 };
 
+                newWebView.CoreWebView2.NavigationCompleted += handler; // Vincular el evento
+
             }, null);
+
+            _mainForm.BindFields(_search);
         }
 
-        private void _mainForm_OpenClicked(object sender, EventArgs e)
+        private async void _mainForm_OpenClicked(object sender, EventArgs e)
         {
-            _mainForm.SetSearchsURL(_search.URL);
+            await _mainForm.SetSearchsURL(_search.URL);
         }
 
         private void _mainForm_PlayRewardsClicked(object sender, EventArgs e)
@@ -177,7 +214,7 @@ namespace EdgeSearch.Business
             _mainForm.UpdateInterface(_search);
         }
 
-        private void DoSearch()
+        private async Task DoSearch()
         {
             if (!CanDoSearch())
                 Stop();
@@ -186,7 +223,7 @@ namespace EdgeSearch.Business
             RefreshNextSearch();
             _search.URL = new Uri($"https://www.bing.com/search?q={currentSearch}&form=QBLH&sp=-1&ghc=1&lq=0&pq={currentSearch}");
 
-            _mainForm.SetSearchsURL(_search.URL);
+            await _mainForm.SetSearchsURL(_search.URL);
 
             AddHistoricSearch(currentSearch);
 
@@ -319,7 +356,8 @@ namespace EdgeSearch.Business
                     }
                 }
 
-                DoSearch();
+                await DoSearch();
+                await ExtractPoints();
                 RestartLimits();
 
                 if (_preferences.StrikeAmount > 0)
@@ -327,6 +365,24 @@ namespace EdgeSearch.Business
             }
 
             _mainForm.UpdateInterface(_search);
+        }
+
+        private async Task ExtractPoints()
+        {
+            await _mainForm.ReloadRewardsWeb();
+            await Task.Delay(2000);
+
+            await _mainForm.WaitForTextToBeVisible("Búsqueda en PC");
+            (int currentPoints, int maxPoints) desktop = await _mainForm.ExtractPoints("Búsqueda en PC");
+            _search.DesktopSearchesCount = desktop.currentPoints / _search.PointsPersearch;
+            _search.DesktopTotalPoints = desktop.maxPoints;
+
+            await _mainForm.WaitForTextToBeVisible("Búsqueda en móviles");
+            (int currentPoints, int maxPoints) mobile = await _mainForm.ExtractPoints("Búsqueda en móviles");
+            _search.MobileSearchesCount = mobile.currentPoints / _search.PointsPersearch;
+            _search.MobileTotalPoints = mobile.maxPoints;
+
+            _mainForm.BindFields(_search);
         }
 
         private async Task ChangeMobileMode(Preferences.Mode mode, bool reloadWeb)
@@ -401,7 +457,7 @@ namespace EdgeSearch.Business
             if (reloadWeb)
             {
                 AddHistoricSearch(_search.URL.ToString());
-                _mainForm.ReloadSearchsWeb();
+                await _mainForm.ReloadSearchsWeb();
             }
 
             _mainForm.UpdateInterface(_search);
@@ -436,9 +492,14 @@ namespace EdgeSearch.Business
         {
             await _mainForm.EnsureCoreWebView2Async();
             _search.URL = new Uri("https://www.bing.es/");
-            _mainForm.SetSearchsURL(_search.URL);
-            _mainForm.SetRewardsURL(new Uri("https://rewards.bing.com/pointsbreakdown"));
-            _mainForm.SetAmbassadorsURL(new Uri("https://ambassadors.microsoft.com/xbox/quests"));
+            await _mainForm.SetSearchsURL(_search.URL);
+            await _mainForm.SetRewardsURL(new Uri("https://rewards.bing.com/pointsbreakdown"));
+            _mainForm.SelectTabAndReturn(Common.TabType.Rewards);
+            await _mainForm.SetAmbassadorsURL(new Uri("https://ambassadors.microsoft.com/xbox/quests"));
+            _mainForm.SelectTabAndReturn(Common.TabType.Ambassadors);
+
+
+            await ExtractPoints();
 
             _mainForm.UpdateInterface(_search);
 
@@ -447,9 +508,10 @@ namespace EdgeSearch.Business
             RefreshNextSearch();
         }
 
-        private void _mainForm_ForceClicked(object sender, EventArgs e)
+        private async void _mainForm_ForceClicked(object sender, EventArgs e)
         {
             DoSearch();
+            await ExtractPoints();
         }
 
         private void _mainForm_NextSearchClicked(object sender, EventArgs e)
@@ -466,39 +528,43 @@ namespace EdgeSearch.Business
         private void _mainForm_PbSearchesMouseMove(object sender, EventArgs e)
         {
             TimeSpan desktopMin = ExecutionTimeCalculator.CalculateTotalTime(totalExecutions: (_search.DesktopTotalPoints / _search.PointsPersearch) - (_search.DesktopSearchesCount),
-                                                                             executionsOffset: _preferences.StrikeAmount - _search.StrikeCount,
-                                                                             executionsPerStrike: _preferences.StrikeAmount,
-                                                                             pauseBetweenExecutions: _preferences.LowerLimit,
+                                                                             executionsOffset: _search.TotalStrikeCount - _search.StrikeCount,
+                                                                             executionsPerStrike: _search.TotalStrikeCount,
+                                                                             pauseBetweenExecutions: _search.LowerLimit,
                                                                              pauseBetweenStrikes: _search.StrikeDelay,
                                                                              elapsedSeconds: _search.IsDesktop ? _search.ElapsedSeconds : 0,
                                                                              currentPause: _search.IsDesktop ? _search.SecondsToRefresh : 0,
+                                                                             strikeTime: _search.StrikeTime,
                                                                              playing: _search.IsPlaying && _search.IsDesktop);
 
             TimeSpan desktopMax = ExecutionTimeCalculator.CalculateTotalTime(totalExecutions: (_search.DesktopTotalPoints / _search.PointsPersearch) - (_search.DesktopSearchesCount),
-                                                                             executionsOffset: _preferences.StrikeAmount - _search.StrikeCount,
-                                                                             executionsPerStrike: _preferences.StrikeAmount,
-                                                                             pauseBetweenExecutions: _preferences.UpperLimit,
+                                                                             executionsOffset: _search.TotalStrikeCount - _search.StrikeCount,
+                                                                             executionsPerStrike: _search.TotalStrikeCount,
+                                                                             pauseBetweenExecutions: _search.UpperLimit,
                                                                              pauseBetweenStrikes: _search.StrikeDelay,
                                                                              elapsedSeconds: _search.IsDesktop ? _search.ElapsedSeconds : 0,
                                                                              currentPause: _search.IsDesktop ? _search.SecondsToRefresh : 0,
+                                                                             strikeTime: _search.StrikeTime,
                                                                              playing: _search.IsPlaying && _search.IsDesktop);
 
             TimeSpan mobileMin = ExecutionTimeCalculator.CalculateTotalTime(totalExecutions: (_search.MobileTotalPoints / _search.PointsPersearch) - (_search.MobileSearchesCount),
-                                                                            executionsOffset: _preferences.StrikeAmount - _search.StrikeCount,
-                                                                            executionsPerStrike: _preferences.StrikeAmount,
-                                                                            pauseBetweenExecutions: _preferences.LowerLimit,
+                                                                            executionsOffset: _search.TotalStrikeCount - _search.StrikeCount,
+                                                                            executionsPerStrike: _search.TotalStrikeCount,
+                                                                            pauseBetweenExecutions: _search.LowerLimit,
                                                                             pauseBetweenStrikes: _search.StrikeDelay,
                                                                             elapsedSeconds: _search.IsMobile ? _search.ElapsedSeconds : 0,
                                                                             currentPause: _search.IsMobile ? _search.SecondsToRefresh : 0,
+                                                                            strikeTime: _search.StrikeTime,
                                                                             playing: _search.IsPlaying && _search.IsMobile);
 
             TimeSpan mobileMax = ExecutionTimeCalculator.CalculateTotalTime(totalExecutions: (_search.MobileTotalPoints / _search.PointsPersearch) - (_search.MobileSearchesCount),
-                                                                            executionsOffset: _preferences.StrikeAmount - _search.StrikeCount,
-                                                                            executionsPerStrike: _preferences.StrikeAmount,
-                                                                            pauseBetweenExecutions: _preferences.UpperLimit,
+                                                                            executionsOffset: _search.TotalStrikeCount - _search.StrikeCount,
+                                                                            executionsPerStrike: _search.TotalStrikeCount,
+                                                                            pauseBetweenExecutions: _search.UpperLimit,
                                                                             pauseBetweenStrikes: _search.StrikeDelay,
                                                                             elapsedSeconds: _search.IsMobile ? _search.ElapsedSeconds : 0,
                                                                             currentPause: _search.IsMobile ? _search.SecondsToRefresh : 0,
+                                                                            strikeTime: _search.StrikeTime,
                                                                             playing: _search.IsPlaying && _search.IsMobile);
 
             _mainForm.SetExecutionExpectedTime(desktopMin + mobileMin, desktopMax + mobileMax);
@@ -514,11 +580,11 @@ namespace EdgeSearch.Business
             PlayAndStop(true, true);
         }
 
-        private void _mainForm_ResetClicked(object sender, EventArgs e)
+        private async void _mainForm_ResetClicked(object sender, EventArgs e)
         {
             _search.MobileSearchesCount = 0;
             _search.DesktopSearchesCount = 0;
-            ChangeMobileMode(Preferences.Mode.Desktop, true);
+            await ChangeMobileMode(Preferences.Mode.Desktop, true);
             _mainForm.UpdateInterface(_search);
         }
 

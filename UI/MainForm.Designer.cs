@@ -202,6 +202,7 @@ namespace EdgeSearch.UI
             txtSearches.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             txtSearches.Location = new System.Drawing.Point(71, 3);
             txtSearches.Name = "txtSearches";
+            txtSearches.ReadOnly = true;
             txtSearches.Size = new System.Drawing.Size(28, 23);
             txtSearches.TabIndex = 15;
             // 
@@ -221,6 +222,7 @@ namespace EdgeSearch.UI
             txtCurrentPoints.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             txtCurrentPoints.Location = new System.Drawing.Point(154, 3);
             txtCurrentPoints.Name = "txtCurrentPoints";
+            txtCurrentPoints.ReadOnly = true;
             txtCurrentPoints.Size = new System.Drawing.Size(28, 23);
             txtCurrentPoints.TabIndex = 17;
             // 
@@ -229,6 +231,7 @@ namespace EdgeSearch.UI
             txtPointsLimit.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             txtPointsLimit.Location = new System.Drawing.Point(206, 3);
             txtPointsLimit.Name = "txtPointsLimit";
+            txtPointsLimit.ReadOnly = true;
             txtPointsLimit.Size = new System.Drawing.Size(28, 23);
             txtPointsLimit.TabIndex = 18;
             // 

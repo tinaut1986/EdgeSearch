@@ -1,4 +1,5 @@
-﻿using EdgeSearch.Models;
+﻿using EdgeSearch.Common;
+using EdgeSearch.Models;
 using EdgeSearch.Properties;
 using EdgeSearch.Utils;
 using Microsoft.Web.WebView2.Core;
@@ -41,6 +42,12 @@ namespace EdgeSearch.UI
             InitializeWebView();
 
             InitializeEvents();
+
+#if DEBUG
+            Icon = Resources.EdgeSearch_dev;
+#else
+            Icon = Resources.EdgeSearch;
+#endif
         }
 
         /// <summary>
@@ -60,6 +67,39 @@ namespace EdgeSearch.UI
         #endregion
 
         #region Methods
+
+
+        public void SelectTab(TabType tabType)
+        {
+            tabControl1.SelectedTab = GetTabPage(tabType);
+        }
+
+        public void SelectTabAndReturn(TabType tabType)
+        {
+            TabPage selectedTab = tabControl1.SelectedTab;
+            TabPage tabPage = GetTabPage(tabType);
+
+            if (selectedTab == tabPage)
+                return;
+
+            SelectTab(tabType);
+            tabControl1.SelectedTab = selectedTab;
+        }
+
+        public TabPage GetTabPage(TabType tabType)
+        {
+            switch (tabType)
+            {
+                case TabType.Searches:
+                    return tpSearches;
+                case TabType.Rewards:
+                    return tpRewards;
+                case TabType.Ambassadors:
+                    return tpAmbassadors;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(tabType), tabType, null);
+            };
+        }
 
         private void FixButtons()
         {
@@ -97,8 +137,8 @@ namespace EdgeSearch.UI
             txtPointsLimit.DataBindings.Add(nameof(txtPointsLimit.Text), search, nameof(search.PointsLimit));
 
             pbSearches.DataBindings.Clear();
-            pbSearches.DataBindings.Add(nameof(pbSearches.Maximum), search, nameof(search.SecondsToRefresh));
-            pbSearches.DataBindings.Add(nameof(pbSearches.Value), search, nameof(search.ElapsedSeconds));
+            pbSearches.DataBindings.Add(nameof(pbSearches.Maximum), search, nameof(search.SecondsToRefresh), true, DataSourceUpdateMode.OnValidation);
+            pbSearches.DataBindings.Add(nameof(pbSearches.Value), search, nameof(search.ElapsedSeconds), true, DataSourceUpdateMode.OnValidation);
 
             lblAmbassadorsPB.DataBindings.Clear();
             lblAmbassadorsPB.DataBindings.Add(nameof(lblAmbassadorsPB.Text), search, nameof(search.AmbassadorsString));
@@ -177,28 +217,28 @@ namespace EdgeSearch.UI
             await wvAmbassadors.EnsureCoreWebView2Async();
         }
 
-        public void SetSearchsURL(Uri url)
+        public async Task SetSearchsURL(Uri url)
         {
             if (wvSearches.Source != url)
                 wvSearches.Source = url;
             else
-                ReloadSearchsWeb();
+                await ReloadSearchsWeb();
         }
 
-        public void SetRewardsURL(Uri url)
+        public async Task SetRewardsURL(Uri url)
         {
             if (wvRewards.Source != url)
                 wvRewards.Source = url;
             else
-                ReloadRewardsWeb();
+                await ReloadRewardsWeb();
         }
 
-        public void SetAmbassadorsURL(Uri url)
+        public async Task SetAmbassadorsURL(Uri url)
         {
             if (wvAmbassadors.Source != url)
                 wvAmbassadors.Source = url;
             else
-                ReloadAmbassadorsWeb();
+                await ReloadAmbassadorsWeb();
         }
 
         public async void OpenRewards(Search search)
@@ -402,22 +442,37 @@ namespace EdgeSearch.UI
             pbSearches.Text = $"{strikeCount} ({strikeSeconds}) - {searchsSeconds}";
         }
 
-        public void ReloadSearchsWeb()
+        public async Task ReloadSearchsWeb()
         {
-            if (wvSearches.Source != null)
+            if ((wvSearches.Source?.ToString() ?? "about:blank") != "about:blank")
+            {
+                while ((wvSearches?.CoreWebView2?.Source ?? "about:blank") == "about:blank" || wvSearches.Source.ToString().Replace(" ", "%20") != wvSearches.CoreWebView2.Source)
+                    await Task.Delay(500);
+
                 wvSearches.Reload();
+            }
         }
 
-        public void ReloadRewardsWeb()
+        public async Task ReloadRewardsWeb()
         {
-            if (wvRewards.Source != null)
+            if ((wvRewards.Source?.ToString() ?? "about:blank") != "about:blank")
+            {
+                while ((wvRewards?.CoreWebView2?.Source ?? "about:blank") == "about:blank" || wvRewards.Source.ToString().Replace(" ", "%20") != wvRewards.CoreWebView2.Source)
+                    await Task.Delay(500);
+
                 wvRewards.Reload();
+            }
         }
 
-        public void ReloadAmbassadorsWeb()
+        public async Task ReloadAmbassadorsWeb()
         {
-            if (wvAmbassadors.Source != null)
+            if ((wvAmbassadors.Source?.ToString() ?? "about:blank") != "about:blank")
+            {
+                while ((wvAmbassadors?.CoreWebView2?.Source ?? "about:blank") != "about:blank" || wvAmbassadors.Source.ToString().Replace(" ", "%20") != wvAmbassadors.CoreWebView2.Source)
+                    await Task.Delay(500);
+
                 wvAmbassadors.Reload();
+            }
         }
 
         public async Task DeleteSessionCookies()
@@ -435,6 +490,77 @@ namespace EdgeSearch.UI
         public void SetExecutionExpectedTime(TimeSpan minTime, TimeSpan maxTime)
         {
             toolTip1.SetToolTip(pbSearches, $"Tiempo esperado: {minTime:hh\\:mm\\:ss} - {maxTime:hh\\:mm\\:ss}");
+        }
+
+        public async Task<(int currentPoints, int maxPoints)> ExtractPoints(string searchType)
+        {
+            string jsCode = $@"
+                (function() {{
+                    var result = '';
+                    // Buscar el contenedor que contiene el texto específico
+                    var pointElements = document.querySelectorAll('.pointsBreakdownCard');
+            
+                    pointElements.forEach(function(element) {{
+                        var label = element.querySelector('a').innerText;  // Obtener el texto del label (por ejemplo, 'Búsqueda en PC')
+                        if (label.includes('{searchType}')) {{
+                            // Si coincide con el tipo de búsqueda, extraer los puntos
+                            var pointsText = element.querySelector('.pointsDetail p.pointsDetail').innerText;
+                            result = pointsText.trim();  // Guardar los puntos en el resultado
+                        }}
+                    }});
+
+                    return result;  // Devolver los puntos (ejemplo: '12 / 90')
+                }})();";
+
+            string result = await wvRewards.CoreWebView2.ExecuteScriptAsync(jsCode);
+
+            // Limpiar las comillas del resultado
+            result = result.Replace("\"", "").Trim();
+
+            // Verificar si el resultado contiene valores
+            if (!string.IsNullOrEmpty(result))
+            {
+                // Separar los puntos (ejemplo: '12 / 90' -> [12, 90])
+                string[] pointsArray = result.Split('/');
+                if (pointsArray.Length == 2)
+                {
+                    // Convertir los valores a enteros
+                    int currentPoints = int.Parse(pointsArray[0].Trim());
+                    int maxPoints = int.Parse(pointsArray[1].Trim());
+
+                    // Devolver los dos valores
+                    return (currentPoints, maxPoints);
+                }
+            }
+
+            // Si no se encuentran valores o hay un error, devolver 0, 0
+            return (0, 0);
+        }
+
+        public async Task WaitForTextToBeVisible(string textToFind)
+        {
+            // Esperar hasta que la página en el WebView2 esté cargada y no sea "about:blank"
+            while ((wvRewards?.CoreWebView2?.Source ?? "about:blank") == "about:blank")
+                await Task.Delay(1000);
+
+            // Bucle para comprobar si el texto está presente
+            bool textFound = false;
+            while (!textFound)
+            {
+                // Código JavaScript que comprueba si el texto está presente
+                string jsCode = $@"
+                    (function() {{
+                        return document.body.innerText.includes('{textToFind}');
+                    }})();";
+
+                // Ejecutar el script y obtener el resultado como string ("true" o "false")
+                string result = await wvRewards.CoreWebView2.ExecuteScriptAsync(jsCode);
+
+                if (result == "true")
+                    textFound = true;
+                else
+                    await Task.Delay(1000);
+            }
         }
 
         #endregion

@@ -1,13 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
-using System.IO.Pipes;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace EdgeSearch.UI
@@ -15,7 +10,7 @@ namespace EdgeSearch.UI
     public class CustomProgressBar : ProgressBar
     {
         private Color paintedColor = Color.Green;
-        private Color paintedForeColor = Color.Black;
+        private Color paintedForeColor = Color.White;
 
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Always)]
@@ -25,8 +20,11 @@ namespace EdgeSearch.UI
             get { return base.Text; }
             set
             {
-                base.Text = value;
-                Invalidate();
+                if (base.Text != value)
+                {
+                    base.Text = value;
+                    Invalidate();
+                }
             }
         }
 
@@ -36,8 +34,11 @@ namespace EdgeSearch.UI
             get { return paintedColor; }
             set
             {
-                paintedColor = value;
-                Invalidate();
+                if (paintedColor != value)
+                {
+                    paintedColor = value;
+                    Invalidate();
+                }
             }
         }
 
@@ -47,8 +48,11 @@ namespace EdgeSearch.UI
             get { return paintedForeColor; }
             set
             {
-                paintedForeColor = value;
-                Invalidate();
+                if (paintedForeColor != value)
+                {
+                    paintedForeColor = value;
+                    Invalidate();
+                }
             }
         }
 
@@ -66,6 +70,9 @@ namespace EdgeSearch.UI
             {
                 Rectangle rect = ClientRectangle;
 
+                // Ajustar el rectángulo para que el borde quede dentro del área visible
+                rect.Inflate(-1, -1);
+
                 switch (Style)
                 {
                     case ProgressBarStyle.Blocks:
@@ -82,6 +89,12 @@ namespace EdgeSearch.UI
                             using (Brush paintedBrush = new SolidBrush(paintedColor))
                             {
                                 g.FillRectangle(paintedBrush, paintedRect);
+                            }
+
+                            // Dibujar el borde del ProgressBar
+                            using (Pen borderPen = new Pen(Color.Gray)) // Puedes cambiar el color del borde si es necesario
+                            {
+                                g.DrawRectangle(borderPen, rect);
                             }
 
                             // Dibujar el texto en dos colores
@@ -107,7 +120,6 @@ namespace EdgeSearch.UI
                         }
                     case ProgressBarStyle.Marquee:
                         {
-
                             break;
                         }
                 }
