@@ -163,10 +163,10 @@ namespace EdgeSearch.Business
                     if (args.IsSuccess)
                     {
                         await Task.Delay(15000); // Espera 15 segundos antes de cerrar la ventana
-                        
+
                         // TODO: Por algún motivo, pasa por este codigo más de una vez. Necesito mirar como hacerlo para que no reduzca el contador más veces de la cuenta.
                         //newWebView.CoreWebView2.NavigationCompleted -= handler; // Desvincular el evento
-                        
+
                         newWebView.Dispose();
                         _search.CurrentAmbassadors--;
                     }
@@ -223,8 +223,6 @@ namespace EdgeSearch.Business
             RefreshNextSearch();
             _search.URL = new Uri($"https://www.bing.com/search?q={currentSearch}&form=QBLH&sp=-1&ghc=1&lq=0&pq={currentSearch}");
 
-            await _mainForm.SetSearchsURL(_search.URL);
-
             AddHistoricSearch(currentSearch);
 
             if (_search.IsMobile)
@@ -233,6 +231,8 @@ namespace EdgeSearch.Business
                 _search.DesktopSearchesCount++;
 
             _mainForm.UpdateInterface(_search);
+
+            await _mainForm.SetSearchsURL(_search.URL);
         }
 
         private void AddHistoricSearch(string currentSearch)
@@ -356,12 +356,13 @@ namespace EdgeSearch.Business
                     }
                 }
 
-                await DoSearch();
-                await ExtractPoints();
                 RestartLimits();
-
                 if (_preferences.StrikeAmount > 0)
                     _search.StrikeCount++;
+
+                await DoSearch();
+
+                await ExtractPoints();
             }
 
             _mainForm.UpdateInterface(_search);
@@ -510,7 +511,7 @@ namespace EdgeSearch.Business
 
         private async void _mainForm_ForceClicked(object sender, EventArgs e)
         {
-            DoSearch();
+            await DoSearch();
             await ExtractPoints();
         }
 

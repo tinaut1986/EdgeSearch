@@ -221,8 +221,8 @@ namespace EdgeSearch.UI
         {
             if (wvSearches.Source != url)
                 wvSearches.Source = url;
-            else
-                await ReloadSearchsWeb();
+
+            await ReloadSearchsWeb();
         }
 
         public async Task SetRewardsURL(Uri url)
