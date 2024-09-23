@@ -55,7 +55,6 @@ namespace EdgeSearch.Business
             _mainForm.ForceClicked += _mainForm_ForceClicked;
             _mainForm.OpenClicked += _mainForm_OpenClicked;
             _mainForm.PlayRewardsClicked += _mainForm_PlayRewardsClicked;
-            _mainForm.PlayAmbassadorsClicked += _mainForm_PlayAmbassadorsClicked;
             _mainForm.PlaySearchesClicked += _mainForm_PlaySearchesClicked;
             _mainForm.NextSearchClicked += _mainForm_NextSearchClicked;
             _mainForm.MobileChanged += _mainForm_MobileChanged;
@@ -64,18 +63,12 @@ namespace EdgeSearch.Business
             _mainForm.FullPlayClicked += _mainForm_FullPlayClicked;
             _mainForm.ResetClicked += _mainForm_ResetClicked;
             _mainForm.RewardsNewWindowRequested += _mainForm_RewardsNewWindowRequested;
-            _mainForm.AmbassadorsNewWindowRequested += _mainForm_AmbassadorsNewWindowRequested;
 
             _mainForm.SearchesCoreWebView2InitializationCompleted += _mainForm_SearchesCoreWebView2InitializationCompleted;
             _mainForm.RewardsCoreWebView2InitializationCompleted += _mainForm_RewardsCoreWebView2InitializationCompleted;
-            _mainForm.AmbassadorsCoreWebView2InitializationCompleted += _mainForm_AmbassadorsCoreWebView2InitializationCompleted;
         }
 
         private async void _mainForm_SearchesCoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
-        {
-        }
-
-        private async void _mainForm_AmbassadorsCoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
         {
         }
 
@@ -134,51 +127,6 @@ namespace EdgeSearch.Business
             _mainForm.BindFields(_search);
         }
 
-        private void _mainForm_AmbassadorsNewWindowRequested(object sender, CoreWebView2NewWindowRequestedEventArgs e)
-        {
-            // Obtener el contexto de sincronización de la UI
-            var uiContext = SynchronizationContext.Current;
-
-            // Cancelar la creación de una nueva ventana
-            e.Handled = true;
-
-            // Crear una nueva instancia de WebView2 para la nueva ventana
-            WebView2 newWebView = new WebView2 { Dock = DockStyle.Fill };
-
-            uiContext.Post(async _ =>
-            {
-                await newWebView.EnsureCoreWebView2Async();
-
-                // Navegar a la URI solicitada
-                newWebView.Source = new Uri(e.Uri);
-                _search.CurrentAmbassadors++;
-                _search.TotalAmbassadors++;
-
-                // Asociar el evento de navegación completada
-                EventHandler<CoreWebView2NavigationCompletedEventArgs> handler = null;
-
-                handler = async (s, args) =>
-                {
-                    // Cerrar la nueva ventana después de que se haya cargado completamente
-                    if (args.IsSuccess)
-                    {
-                        await Task.Delay(15000); // Espera 15 segundos antes de cerrar la ventana
-
-                        // TODO: Por algún motivo, pasa por este codigo más de una vez. Necesito mirar como hacerlo para que no reduzca el contador más veces de la cuenta.
-                        //newWebView.CoreWebView2.NavigationCompleted -= handler; // Desvincular el evento
-
-                        newWebView.Dispose();
-                        _search.CurrentAmbassadors--;
-                    }
-                };
-
-                newWebView.CoreWebView2.NavigationCompleted += handler; // Vincular el evento
-
-            }, null);
-
-            _mainForm.BindFields(_search);
-        }
-
         private async void _mainForm_OpenClicked(object sender, EventArgs e)
         {
             await _mainForm.SetSearchsURL(_search.URL);
@@ -188,12 +136,6 @@ namespace EdgeSearch.Business
         {
             if (!_search.RewardsPlayed)
                 _mainForm.OpenRewards(_search);
-        }
-
-        private void _mainForm_PlayAmbassadorsClicked(object sender, EventArgs e)
-        {
-            if (!_search.AmbassadorsPlayed)
-                _mainForm.OpenAmbassadors(_search);
         }
 
         private void _mainForm_PlaySearchesClicked(object sender, EventArgs e)
@@ -325,7 +267,7 @@ namespace EdgeSearch.Business
             {
                 if (_search.ToSearch.Count == 0)
                 {
-                    PlayAndStop(false, false);
+                    PlayAndStop(false);
                     return;
                 }
 
@@ -339,7 +281,7 @@ namespace EdgeSearch.Business
                     }
                     else
                     {
-                        PlayAndStop(false, false);
+                        PlayAndStop(false);
                         return;
                     }
                 }
@@ -351,7 +293,7 @@ namespace EdgeSearch.Business
                     }
                     else
                     {
-                        PlayAndStop(false, false);
+                        PlayAndStop(false);
                         return;
                     }
                 }
@@ -392,7 +334,7 @@ namespace EdgeSearch.Business
             await RefreshMobileMode(reloadWeb);
         }
 
-        private void PlayAndStop(bool openRewards, bool openAmbassadors)
+        private void PlayAndStop(bool openRewards)
         {
             if (!_search.IsPlaying)
             {
@@ -400,9 +342,6 @@ namespace EdgeSearch.Business
 
                 if (openRewards)
                     _mainForm.OpenRewards(_search);
-
-                if (openAmbassadors)
-                    _mainForm.OpenAmbassadors(_search);
             }
             else
                 Stop();
@@ -496,9 +435,6 @@ namespace EdgeSearch.Business
             await _mainForm.SetSearchsURL(_search.URL);
             await _mainForm.SetRewardsURL(new Uri("https://rewards.bing.com/pointsbreakdown"));
             _mainForm.SelectTabAndReturn(Common.TabType.Rewards);
-            await _mainForm.SetAmbassadorsURL(new Uri("https://ambassadors.microsoft.com/xbox/quests"));
-            _mainForm.SelectTabAndReturn(Common.TabType.Ambassadors);
-
 
             await ExtractPoints();
 
@@ -573,12 +509,12 @@ namespace EdgeSearch.Business
 
         private void _mainForm_PlayClicked(object sender, EventArgs e)
         {
-            PlayAndStop(false, false);
+            PlayAndStop(false);
         }
 
         private void _mainForm_FullPlayClicked(object sender, EventArgs e)
         {
-            PlayAndStop(true, true);
+            PlayAndStop(true);
         }
 
         private async void _mainForm_ResetClicked(object sender, EventArgs e)

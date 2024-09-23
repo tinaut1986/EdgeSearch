@@ -18,14 +18,10 @@ namespace EdgeSearch.UI
         {
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            wvSearches = new Microsoft.Web.WebView2.WinForms.WebView2();
             btnPlay = new System.Windows.Forms.Button();
             lblRange = new System.Windows.Forms.Label();
-            txtURL = new System.Windows.Forms.TextBox();
-            btnOpen = new System.Windows.Forms.Button();
             lblNextSearch = new System.Windows.Forms.Label();
             btnNext = new System.Windows.Forms.Button();
-            chkMobile = new System.Windows.Forms.CheckBox();
             btnSearch = new System.Windows.Forms.Button();
             txtUpperLimit = new System.Windows.Forms.TextBox();
             txtLowerLimit = new System.Windows.Forms.TextBox();
@@ -37,12 +33,6 @@ namespace EdgeSearch.UI
             lblPointsSeparator = new System.Windows.Forms.Label();
             lblRefreshRangeSeparator = new System.Windows.Forms.Label();
             txtNextSearch = new System.Windows.Forms.TextBox();
-            tabControl1 = new System.Windows.Forms.TabControl();
-            tpSearches = new System.Windows.Forms.TabPage();
-            tpRewards = new System.Windows.Forms.TabPage();
-            wvRewards = new Microsoft.Web.WebView2.WinForms.WebView2();
-            tpAmbassadors = new System.Windows.Forms.TabPage();
-            wvAmbassadors = new Microsoft.Web.WebView2.WinForms.WebView2();
             pbSearches = new CustomProgressBar();
             menuStrip1 = new System.Windows.Forms.MenuStrip();
             fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,41 +42,32 @@ namespace EdgeSearch.UI
             tsmiPlaySearches = new System.Windows.Forms.ToolStripMenuItem();
             rewardsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             tsmiPlayRewards = new System.Windows.Forms.ToolStripMenuItem();
-            ambassadorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            tsmiPlayAmbassadors = new System.Windows.Forms.ToolStripMenuItem();
             optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             tsmISettings = new System.Windows.Forms.ToolStripMenuItem();
             tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            tabControl1 = new System.Windows.Forms.TabControl();
+            tpSearches = new System.Windows.Forms.TabPage();
+            wvSearches = new Microsoft.Web.WebView2.WinForms.WebView2();
+            txtURL = new System.Windows.Forms.TextBox();
+            chkMobile = new System.Windows.Forms.CheckBox();
+            btnOpen = new System.Windows.Forms.Button();
+            tpRewards = new System.Windows.Forms.TabPage();
+            wvRewards = new Microsoft.Web.WebView2.WinForms.WebView2();
             panel1 = new System.Windows.Forms.Panel();
             panel2 = new System.Windows.Forms.Panel();
-            lblAmbassadorsPB = new System.Windows.Forms.Label();
             lblRewardsPB = new System.Windows.Forms.Label();
             lblSearchesPB = new System.Windows.Forms.Label();
             toolTip1 = new System.Windows.Forms.ToolTip(components);
-            ((System.ComponentModel.ISupportInitialize)wvSearches).BeginInit();
-            tabControl1.SuspendLayout();
-            tpSearches.SuspendLayout();
-            tpRewards.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)wvRewards).BeginInit();
-            tpAmbassadors.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)wvAmbassadors).BeginInit();
             menuStrip1.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
+            tabControl1.SuspendLayout();
+            tpSearches.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)wvSearches).BeginInit();
+            tpRewards.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)wvRewards).BeginInit();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             SuspendLayout();
-            // 
-            // wvSearches
-            // 
-            wvSearches.AllowExternalDrop = true;
-            wvSearches.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            wvSearches.CreationProperties = null;
-            wvSearches.DefaultBackgroundColor = System.Drawing.Color.White;
-            wvSearches.Location = new System.Drawing.Point(6, 35);
-            wvSearches.Name = "wvSearches";
-            wvSearches.Size = new System.Drawing.Size(1193, 382);
-            wvSearches.TabIndex = 3;
-            wvSearches.ZoomFactor = 1D;
             // 
             // btnPlay
             // 
@@ -110,24 +91,6 @@ namespace EdgeSearch.UI
             lblRange.Text = "Refresh range (segs):";
             lblRange.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // txtURL
-            // 
-            txtURL.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            txtURL.Location = new System.Drawing.Point(6, 6);
-            txtURL.Name = "txtURL";
-            txtURL.Size = new System.Drawing.Size(1135, 23);
-            txtURL.TabIndex = 0;
-            // 
-            // btnOpen
-            // 
-            btnOpen.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            btnOpen.Image = Properties.Resources.open_url;
-            btnOpen.Location = new System.Drawing.Point(1147, 5);
-            btnOpen.Name = "btnOpen";
-            btnOpen.Size = new System.Drawing.Size(25, 25);
-            btnOpen.TabIndex = 1;
-            btnOpen.UseVisualStyleBackColor = true;
-            // 
             // lblNextSearch
             // 
             lblNextSearch.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
@@ -147,18 +110,6 @@ namespace EdgeSearch.UI
             btnNext.Size = new System.Drawing.Size(25, 25);
             btnNext.TabIndex = 7;
             btnNext.UseVisualStyleBackColor = true;
-            // 
-            // chkMobile
-            // 
-            chkMobile.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            chkMobile.Appearance = System.Windows.Forms.Appearance.Button;
-            chkMobile.Image = Properties.Resources.mobile;
-            chkMobile.Location = new System.Drawing.Point(1176, 5);
-            chkMobile.Name = "chkMobile";
-            chkMobile.Size = new System.Drawing.Size(25, 25);
-            chkMobile.TabIndex = 2;
-            chkMobile.Tag = "";
-            chkMobile.UseVisualStyleBackColor = true;
             // 
             // btnSearch
             // 
@@ -265,78 +216,6 @@ namespace EdgeSearch.UI
             txtNextSearch.Size = new System.Drawing.Size(613, 23);
             txtNextSearch.TabIndex = 9;
             // 
-            // tabControl1
-            // 
-            tabControl1.Controls.Add(tpSearches);
-            tabControl1.Controls.Add(tpRewards);
-            tabControl1.Controls.Add(tpAmbassadors);
-            tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            tabControl1.Location = new System.Drawing.Point(3, 3);
-            tabControl1.Name = "tabControl1";
-            tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new System.Drawing.Size(1213, 451);
-            tabControl1.TabIndex = 19;
-            // 
-            // tpSearches
-            // 
-            tpSearches.Controls.Add(wvSearches);
-            tpSearches.Controls.Add(txtURL);
-            tpSearches.Controls.Add(chkMobile);
-            tpSearches.Controls.Add(btnOpen);
-            tpSearches.Location = new System.Drawing.Point(4, 24);
-            tpSearches.Name = "tpSearches";
-            tpSearches.Padding = new System.Windows.Forms.Padding(3);
-            tpSearches.Size = new System.Drawing.Size(1205, 423);
-            tpSearches.TabIndex = 0;
-            tpSearches.Text = "Searches";
-            tpSearches.UseVisualStyleBackColor = true;
-            // 
-            // tpRewards
-            // 
-            tpRewards.Controls.Add(wvRewards);
-            tpRewards.Location = new System.Drawing.Point(4, 24);
-            tpRewards.Name = "tpRewards";
-            tpRewards.Padding = new System.Windows.Forms.Padding(3);
-            tpRewards.Size = new System.Drawing.Size(1205, 423);
-            tpRewards.TabIndex = 1;
-            tpRewards.Text = "Rewards";
-            tpRewards.UseVisualStyleBackColor = true;
-            // 
-            // wvRewards
-            // 
-            wvRewards.AllowExternalDrop = true;
-            wvRewards.CreationProperties = null;
-            wvRewards.DefaultBackgroundColor = System.Drawing.Color.White;
-            wvRewards.Dock = System.Windows.Forms.DockStyle.Fill;
-            wvRewards.Location = new System.Drawing.Point(3, 3);
-            wvRewards.Name = "wvRewards";
-            wvRewards.Size = new System.Drawing.Size(1199, 417);
-            wvRewards.TabIndex = 0;
-            wvRewards.ZoomFactor = 1D;
-            // 
-            // tpAmbassadors
-            // 
-            tpAmbassadors.Controls.Add(wvAmbassadors);
-            tpAmbassadors.Location = new System.Drawing.Point(4, 24);
-            tpAmbassadors.Name = "tpAmbassadors";
-            tpAmbassadors.Padding = new System.Windows.Forms.Padding(3);
-            tpAmbassadors.Size = new System.Drawing.Size(1205, 423);
-            tpAmbassadors.TabIndex = 2;
-            tpAmbassadors.Text = "Ambassadors";
-            tpAmbassadors.UseVisualStyleBackColor = true;
-            // 
-            // wvAmbassadors
-            // 
-            wvAmbassadors.AllowExternalDrop = true;
-            wvAmbassadors.CreationProperties = null;
-            wvAmbassadors.DefaultBackgroundColor = System.Drawing.Color.White;
-            wvAmbassadors.Dock = System.Windows.Forms.DockStyle.Fill;
-            wvAmbassadors.Location = new System.Drawing.Point(3, 3);
-            wvAmbassadors.Name = "wvAmbassadors";
-            wvAmbassadors.Size = new System.Drawing.Size(1199, 417);
-            wvAmbassadors.TabIndex = 1;
-            wvAmbassadors.ZoomFactor = 1D;
-            // 
             // pbSearches
             // 
             pbSearches.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
@@ -350,7 +229,7 @@ namespace EdgeSearch.UI
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, searchesToolStripMenuItem, rewardsToolStripMenuItem, ambassadorsToolStripMenuItem, optionsToolStripMenuItem });
+            menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, searchesToolStripMenuItem, rewardsToolStripMenuItem, optionsToolStripMenuItem });
             menuStrip1.Location = new System.Drawing.Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new System.Drawing.Size(1219, 24);
@@ -406,20 +285,6 @@ namespace EdgeSearch.UI
             tsmiPlayRewards.Size = new System.Drawing.Size(140, 22);
             tsmiPlayRewards.Text = "Play rewards";
             // 
-            // ambassadorsToolStripMenuItem
-            // 
-            ambassadorsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { tsmiPlayAmbassadors });
-            ambassadorsToolStripMenuItem.Name = "ambassadorsToolStripMenuItem";
-            ambassadorsToolStripMenuItem.Size = new System.Drawing.Size(90, 20);
-            ambassadorsToolStripMenuItem.Text = "Ambassadors";
-            // 
-            // tsmiPlayAmbassadors
-            // 
-            tsmiPlayAmbassadors.Image = Properties.Resources.play;
-            tsmiPlayAmbassadors.Name = "tsmiPlayAmbassadors";
-            tsmiPlayAmbassadors.Size = new System.Drawing.Size(168, 22);
-            tsmiPlayAmbassadors.Text = "Play ambassadors";
-            // 
             // optionsToolStripMenuItem
             // 
             optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { tsmISettings });
@@ -431,7 +296,7 @@ namespace EdgeSearch.UI
             // 
             tsmISettings.Image = Properties.Resources.settings;
             tsmISettings.Name = "tsmISettings";
-            tsmISettings.Size = new System.Drawing.Size(116, 22);
+            tsmISettings.Size = new System.Drawing.Size(180, 22);
             tsmISettings.Text = "Settings";
             // 
             // tableLayoutPanel1
@@ -450,6 +315,96 @@ namespace EdgeSearch.UI
             tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             tableLayoutPanel1.Size = new System.Drawing.Size(1219, 527);
             tableLayoutPanel1.TabIndex = 21;
+            // 
+            // tabControl1
+            // 
+            tabControl1.Controls.Add(tpSearches);
+            tabControl1.Controls.Add(tpRewards);
+            tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            tabControl1.Location = new System.Drawing.Point(3, 3);
+            tabControl1.Name = "tabControl1";
+            tabControl1.SelectedIndex = 0;
+            tabControl1.Size = new System.Drawing.Size(1213, 451);
+            tabControl1.TabIndex = 19;
+            // 
+            // tpSearches
+            // 
+            tpSearches.Controls.Add(wvSearches);
+            tpSearches.Controls.Add(txtURL);
+            tpSearches.Controls.Add(chkMobile);
+            tpSearches.Controls.Add(btnOpen);
+            tpSearches.Location = new System.Drawing.Point(4, 24);
+            tpSearches.Name = "tpSearches";
+            tpSearches.Padding = new System.Windows.Forms.Padding(3);
+            tpSearches.Size = new System.Drawing.Size(1205, 423);
+            tpSearches.TabIndex = 0;
+            tpSearches.Text = "Searches";
+            tpSearches.UseVisualStyleBackColor = true;
+            // 
+            // wvSearches
+            // 
+            wvSearches.AllowExternalDrop = true;
+            wvSearches.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            wvSearches.CreationProperties = null;
+            wvSearches.DefaultBackgroundColor = System.Drawing.Color.White;
+            wvSearches.Location = new System.Drawing.Point(6, 35);
+            wvSearches.Name = "wvSearches";
+            wvSearches.Size = new System.Drawing.Size(1193, 382);
+            wvSearches.TabIndex = 3;
+            wvSearches.ZoomFactor = 1D;
+            // 
+            // txtURL
+            // 
+            txtURL.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            txtURL.Location = new System.Drawing.Point(6, 6);
+            txtURL.Name = "txtURL";
+            txtURL.Size = new System.Drawing.Size(1135, 23);
+            txtURL.TabIndex = 0;
+            // 
+            // chkMobile
+            // 
+            chkMobile.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            chkMobile.Appearance = System.Windows.Forms.Appearance.Button;
+            chkMobile.Image = Properties.Resources.mobile;
+            chkMobile.Location = new System.Drawing.Point(1176, 5);
+            chkMobile.Name = "chkMobile";
+            chkMobile.Size = new System.Drawing.Size(25, 25);
+            chkMobile.TabIndex = 2;
+            chkMobile.Tag = "";
+            chkMobile.UseVisualStyleBackColor = true;
+            // 
+            // btnOpen
+            // 
+            btnOpen.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            btnOpen.Image = Properties.Resources.open_url;
+            btnOpen.Location = new System.Drawing.Point(1147, 5);
+            btnOpen.Name = "btnOpen";
+            btnOpen.Size = new System.Drawing.Size(25, 25);
+            btnOpen.TabIndex = 1;
+            btnOpen.UseVisualStyleBackColor = true;
+            // 
+            // tpRewards
+            // 
+            tpRewards.Controls.Add(wvRewards);
+            tpRewards.Location = new System.Drawing.Point(4, 24);
+            tpRewards.Name = "tpRewards";
+            tpRewards.Padding = new System.Windows.Forms.Padding(3);
+            tpRewards.Size = new System.Drawing.Size(1205, 423);
+            tpRewards.TabIndex = 1;
+            tpRewards.Text = "Rewards";
+            tpRewards.UseVisualStyleBackColor = true;
+            // 
+            // wvRewards
+            // 
+            wvRewards.AllowExternalDrop = true;
+            wvRewards.CreationProperties = null;
+            wvRewards.DefaultBackgroundColor = System.Drawing.Color.White;
+            wvRewards.Dock = System.Windows.Forms.DockStyle.Fill;
+            wvRewards.Location = new System.Drawing.Point(3, 3);
+            wvRewards.Name = "wvRewards";
+            wvRewards.Size = new System.Drawing.Size(1199, 417);
+            wvRewards.TabIndex = 0;
+            wvRewards.ZoomFactor = 1D;
             // 
             // panel1
             // 
@@ -477,7 +432,6 @@ namespace EdgeSearch.UI
             // 
             panel2.Controls.Add(pbSearches);
             panel2.Controls.Add(btnPlay);
-            panel2.Controls.Add(lblAmbassadorsPB);
             panel2.Controls.Add(lblRewardsPB);
             panel2.Controls.Add(lblSearchesPB);
             panel2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -485,17 +439,6 @@ namespace EdgeSearch.UI
             panel2.Name = "panel2";
             panel2.Size = new System.Drawing.Size(1213, 29);
             panel2.TabIndex = 20;
-            // 
-            // lblAmbassadorsPB
-            // 
-            lblAmbassadorsPB.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            lblAmbassadorsPB.AutoSize = true;
-            lblAmbassadorsPB.Location = new System.Drawing.Point(686, 7);
-            lblAmbassadorsPB.Name = "lblAmbassadorsPB";
-            lblAmbassadorsPB.Size = new System.Drawing.Size(81, 15);
-            lblAmbassadorsPB.TabIndex = 14;
-            lblAmbassadorsPB.Text = "Ambassadors:";
-            lblAmbassadorsPB.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblRewardsPB
             // 
@@ -530,17 +473,15 @@ namespace EdgeSearch.UI
             MainMenuStrip = menuStrip1;
             Name = "MainForm";
             Text = "Edge search";
-            ((System.ComponentModel.ISupportInitialize)wvSearches).EndInit();
-            tabControl1.ResumeLayout(false);
-            tpSearches.ResumeLayout(false);
-            tpSearches.PerformLayout();
-            tpRewards.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)wvRewards).EndInit();
-            tpAmbassadors.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)wvAmbassadors).EndInit();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             tableLayoutPanel1.ResumeLayout(false);
+            tabControl1.ResumeLayout(false);
+            tpSearches.ResumeLayout(false);
+            tpSearches.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)wvSearches).EndInit();
+            tpRewards.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)wvRewards).EndInit();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             panel2.ResumeLayout(false);
@@ -550,15 +491,10 @@ namespace EdgeSearch.UI
         }
 
         #endregion
-
-        private Microsoft.Web.WebView2.WinForms.WebView2 wvSearches;
         private System.Windows.Forms.Button btnPlay;
         private System.Windows.Forms.Label lblRange;
-        private System.Windows.Forms.TextBox txtURL;
-        private System.Windows.Forms.Button btnOpen;
         private System.Windows.Forms.Label lblNextSearch;
         private System.Windows.Forms.Button btnNext;
-        private System.Windows.Forms.CheckBox chkMobile;
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.TextBox txtUpperLimit;
         private System.Windows.Forms.TextBox txtLowerLimit;
@@ -570,10 +506,6 @@ namespace EdgeSearch.UI
         private System.Windows.Forms.Label lblPointsSeparator;
         private System.Windows.Forms.Label lblRefreshRangeSeparator;
         private System.Windows.Forms.TextBox txtNextSearch;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tpSearches;
-        private System.Windows.Forms.TabPage tpRewards;
-        private Microsoft.Web.WebView2.WinForms.WebView2 wvRewards;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tsmiReset;
@@ -581,21 +513,24 @@ namespace EdgeSearch.UI
         private System.Windows.Forms.ToolStripMenuItem searchesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rewardsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tsmiPlayRewards;
-        private System.Windows.Forms.TabPage tpAmbassadors;
-        private Microsoft.Web.WebView2.WinForms.WebView2 wvAmbassadors;
-        private System.Windows.Forms.ToolStripMenuItem ambassadorsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem tsmiPlayAmbassadors;
         private CustomProgressBar pbSearches;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label lblSearchesPB;
         private System.Windows.Forms.Label lblRewardsPB;
-        private System.Windows.Forms.Label lblAmbassadorsPB;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tsmISettings;
         private System.Windows.Forms.ToolStripMenuItem tsmiPlaySearches;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tpSearches;
+        private Microsoft.Web.WebView2.WinForms.WebView2 wvSearches;
+        private System.Windows.Forms.TextBox txtURL;
+        private System.Windows.Forms.CheckBox chkMobile;
+        private System.Windows.Forms.Button btnOpen;
+        private System.Windows.Forms.TabPage tpRewards;
+        private Microsoft.Web.WebView2.WinForms.WebView2 wvRewards;
     }
 }
 

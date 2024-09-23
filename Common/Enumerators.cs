@@ -10,6 +10,5 @@ namespace EdgeSearch.Common
     {
         Searches = 0,
         Rewards = 1,
-        Ambassadors = 2,
     }
 }

@@ -21,15 +21,12 @@ namespace EdgeSearch.UI
         public event EventHandler ResetClicked;
         public event EventHandler PlaySearchesClicked;
         public event EventHandler PlayRewardsClicked;
-        public event EventHandler PlayAmbassadorsClicked;
         public event EventHandler NextSearchClicked;
         public event EventHandler MobileChanged;
         public event EventHandler PbSearchesMouseMove;
         public event EventHandler<CoreWebView2InitializationCompletedEventArgs> SearchesCoreWebView2InitializationCompleted;
         public event EventHandler<CoreWebView2InitializationCompletedEventArgs> RewardsCoreWebView2InitializationCompleted;
-        public event EventHandler<CoreWebView2InitializationCompletedEventArgs> AmbassadorsCoreWebView2InitializationCompleted;
         public event EventHandler<CoreWebView2NewWindowRequestedEventArgs> RewardsNewWindowRequested;
-        public event EventHandler<CoreWebView2NewWindowRequestedEventArgs> AmbassadorsNewWindowRequested;
         #endregion
 
         #region Constructors & destructor
@@ -94,8 +91,6 @@ namespace EdgeSearch.UI
                     return tpSearches;
                 case TabType.Rewards:
                     return tpRewards;
-                case TabType.Ambassadors:
-                    return tpAmbassadors;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(tabType), tabType, null);
             };
@@ -140,9 +135,6 @@ namespace EdgeSearch.UI
             pbSearches.DataBindings.Add(nameof(pbSearches.Maximum), search, nameof(search.SecondsToRefresh), true, DataSourceUpdateMode.OnValidation);
             pbSearches.DataBindings.Add(nameof(pbSearches.Value), search, nameof(search.ElapsedSeconds), true, DataSourceUpdateMode.OnValidation);
 
-            lblAmbassadorsPB.DataBindings.Clear();
-            lblAmbassadorsPB.DataBindings.Add(nameof(lblAmbassadorsPB.Text), search, nameof(search.AmbassadorsString));
-
             lblRewardsPB.DataBindings.Clear();
             lblRewardsPB.DataBindings.Add(nameof(lblRewardsPB.Text), search, nameof(search.RewardsString));
         }
@@ -151,10 +143,8 @@ namespace EdgeSearch.UI
         {
             wvSearches.CoreWebView2InitializationCompleted += WvSearches_CoreWebView2InitializationCompleted;
             wvRewards.CoreWebView2InitializationCompleted += WvRewards_CoreWebView2InitializationCompleted;
-            wvAmbassadors.CoreWebView2InitializationCompleted += WvAmbassadors_CoreWebView2InitializationCompleted;
 
             tsmiPlayRewards.Click += TsmiPlayRewards_Click;
-            tsmiPlayAmbassadors.Click += TsmiPlayAmbassadors_Click;
             tsmiPlaySearches.Click += TsmiPlaySearches_Click;
 
             tsmiPlay.Click += TsmiPlay_Click;
@@ -174,9 +164,7 @@ namespace EdgeSearch.UI
         {
             wvSearches.CoreWebView2InitializationCompleted -= WvSearches_CoreWebView2InitializationCompleted;
             wvRewards.CoreWebView2InitializationCompleted -= WvRewards_CoreWebView2InitializationCompleted;
-            wvAmbassadors.CoreWebView2InitializationCompleted -= WvAmbassadors_CoreWebView2InitializationCompleted;
             tsmiPlayRewards.Click -= TsmiPlayRewards_Click;
-            tsmiPlayAmbassadors.Click -= TsmiPlayAmbassadors_Click;
             tsmiPlaySearches.Click -= TsmiPlaySearches_Click;
 
             tsmiPlay.Click -= TsmiPlay_Click;
@@ -202,10 +190,8 @@ namespace EdgeSearch.UI
         {
             await wvSearches.EnsureCoreWebView2Async(null);
             await wvRewards.EnsureCoreWebView2Async(null);
-            await wvAmbassadors.EnsureCoreWebView2Async(null);
 
             wvRewards.CoreWebView2.NewWindowRequested += Rewards_CoreWebView2_NewWindowRequested;
-            wvAmbassadors.CoreWebView2.NewWindowRequested += Ambassadors_CoreWebView2_NewWindowRequested;
         }
 
         private async void InitializeWebView()
@@ -214,7 +200,6 @@ namespace EdgeSearch.UI
 
             await wvSearches.EnsureCoreWebView2Async();
             await wvRewards.EnsureCoreWebView2Async();
-            await wvAmbassadors.EnsureCoreWebView2Async();
         }
 
         public async Task SetSearchsURL(Uri url)
@@ -231,14 +216,6 @@ namespace EdgeSearch.UI
                 wvRewards.Source = url;
             else
                 await ReloadRewardsWeb();
-        }
-
-        public async Task SetAmbassadorsURL(Uri url)
-        {
-            if (wvAmbassadors.Source != url)
-                wvAmbassadors.Source = url;
-            else
-                await ReloadAmbassadorsWeb();
         }
 
         public async void OpenRewards(Search search)
@@ -305,104 +282,6 @@ namespace EdgeSearch.UI
             search.RewardsPlayed = false;
         }
 
-        public async void OpenAmbassadors(Search search)
-        {
-            if (search.AmbassadorsPlayed)
-                return;
-
-            search.AmbassadorsPlayed = true;
-
-            while (true)
-            {
-                // Definir el script de JavaScript para ejecutar en la página usando string.Format
-                string script = @"
-                    // Selecciona todos los elementos con la clase ""mission-category""
-                    var categories = document.querySelectorAll('.mission-category');
-
-                    // Bandera para indicar si se encontró al menos un elemento válido
-                    window.scriptResult = false;
-
-                    // Función para crear una pausa
-                    function delay(ms) {{
-                        console.log('pausa ' + ms + 'ms');
-                        return new Promise(resolve => setTimeout(resolve, ms));
-                    }}
-
-                    // Función asíncrona para procesar cada categoría
-                    async function processCategory(category) {{
-	                    // Selecciona el elemento con la clase ""category-title"" dentro del elemento actual
-	                    var title = category.querySelector('.category-title');
-
-	                    if (!title) {{
-		                    return;
-	                    }}
-
-	                    // Verifica si el texto del elemento ""category-title"" es ""Xbox Community Quests""
-	                    if (title.textContent !== 'Xbox Community Quests') {{
-		                    // Selecciona todos los elementos con la clase ""card-cta"" dentro del elemento actual
-		                    var cards = Array.from(category.querySelectorAll('a.c-button.f-primary'))
-                                             .filter(card => !card.textContent.includes('knowledge check'));
-
-		                    // Recorre cada elemento de la clase ""card-cta""
-		                    for (var i = 0; i < cards.length; i++) {{
-			                    // Establece la bandera en true si se encontró al menos un elemento válido
-			                    window.scriptResult = true;
-
-			                    // Haz lo que necesites con cada elemento ""card-cta""
-			                    console.log(cards[i].textContent);
-
-			                    // Simular el clic en el primer botón encontrado
-			                    cards[i].click();
-                                console.log('click en ' + cards[i].textContent);
-			
-			                    // Pausa de un número aleatorio de segundos entre 15 y 20 antes de procesar el siguiente elemento
-			                    var randomDelay = Math.floor(Math.random() * 16) + 5; // Número aleatorio entre 15 y 20
-
-			                    await delay(randomDelay * 1000);
-
-			                    // Mostrar en la consola el número de elementos encontrados
-			                    console.log('Elemento encontrado en la categoria ' + title.textContent);
-		                    }}
-	                    }}
-                    }}
-
-                    // Procesar cada categoría de forma asíncrona
-                    (async function() {{
-                        for (var i = 0; i < categories.length; i++) {{
-                            await processCategory(categories[i]);
-                        }}
-                        
-                        if (window.scriptResult) {{
-                            var randomDelay = Math.floor(Math.random() * 6) + 5; // Número aleatorio entre 5 y 10
-                            console.log('Refrescando la pagina en ' + randomDelay + 'segs');
-                            await delay(randomDelay  * 1000);
-                            location.reload();
-                        }}
-                    }})();
-                ";
-
-                // Ejecutar el script
-                await wvAmbassadors.ExecuteScriptAsync(script);
-
-                // Esperar un breve momento para asegurarse de que el script se ejecuta
-                await Task.Delay(100);
-
-                // Recuperar el resultado almacenado en window.scriptResult
-                var result = await wvAmbassadors.ExecuteScriptAsync("window.scriptResult");
-
-                // Verificar el resultado y salir si ya no quedan mas elementos
-                if (result == null || result.ToString().ToLower() != "true")
-                {
-                    Console.WriteLine("No quedan más botones para pulsar.");
-                    break;
-
-                }
-                await Task.Delay(600000); // Espera 10 minutos antes de volver a ejecutar la función
-            }
-
-            search.AmbassadorsPlayed = false;
-        }
-
         public void UpdateInterface(Search search)
         {
             if (!search.IsPlaying)
@@ -461,17 +340,6 @@ namespace EdgeSearch.UI
                     await Task.Delay(500);
 
                 wvRewards.Reload();
-            }
-        }
-
-        public async Task ReloadAmbassadorsWeb()
-        {
-            if ((wvAmbassadors.Source?.ToString() ?? "about:blank") != "about:blank")
-            {
-                while ((wvAmbassadors?.CoreWebView2?.Source ?? "about:blank") != "about:blank" || wvAmbassadors.Source.ToString().Replace(" ", "%20") != wvAmbassadors.CoreWebView2.Source)
-                    await Task.Delay(500);
-
-                wvAmbassadors.Reload();
             }
         }
 
@@ -576,29 +444,14 @@ namespace EdgeSearch.UI
             RewardsCoreWebView2InitializationCompleted?.Invoke(sender, e);
         }
 
-        private void WvAmbassadors_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
-        {
-            AmbassadorsCoreWebView2InitializationCompleted?.Invoke(sender, e);
-        }
-
         private void Rewards_CoreWebView2_NewWindowRequested(object sender, CoreWebView2NewWindowRequestedEventArgs e)
         {
             RewardsNewWindowRequested?.Invoke(sender, e);
         }
 
-        private void Ambassadors_CoreWebView2_NewWindowRequested(object sender, CoreWebView2NewWindowRequestedEventArgs e)
-        {
-            AmbassadorsNewWindowRequested?.Invoke(sender, e);
-        }
-
         private void TsmiPlayRewards_Click(object sender, EventArgs e)
         {
             PlayRewardsClicked?.Invoke(sender, e);
-        }
-
-        private void TsmiPlayAmbassadors_Click(object sender, EventArgs e)
-        {
-            PlayAmbassadorsClicked?.Invoke(sender, e);
         }
 
         private void TsmiPlaySearches_Click(object sender, EventArgs e)
