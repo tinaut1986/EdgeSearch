@@ -328,7 +328,7 @@ namespace EdgeSearch.UI
         {
             if ((wvSearches.Source?.ToString() ?? "about:blank") != "about:blank")
             {
-                while ((wvSearches?.CoreWebView2?.Source ?? "about:blank") == "about:blank" || wvSearches.Source.ToString().Replace(" ", "%20") != wvSearches.CoreWebView2.Source)
+                while ((wvSearches?.CoreWebView2?.Source ?? "about:blank") == "about:blank" || wvSearches.Source.ToString() != Uri.UnescapeDataString(wvSearches.CoreWebView2.Source))
                     await Task.Delay(500);
 
                 wvSearches.Reload();
@@ -339,7 +339,7 @@ namespace EdgeSearch.UI
         {
             if ((wvRewards.Source?.ToString() ?? "about:blank") != "about:blank")
             {
-                while ((wvRewards?.CoreWebView2?.Source ?? "about:blank") == "about:blank" || wvRewards.Source.ToString().Replace(" ", "%20") != wvRewards.CoreWebView2.Source)
+                while ((wvRewards?.CoreWebView2?.Source ?? "about:blank") == "about:blank" || wvRewards.Source.ToString() != Uri.UnescapeDataString(wvRewards.CoreWebView2.Source))
                     await Task.Delay(500);
 
                 wvRewards.Reload();
