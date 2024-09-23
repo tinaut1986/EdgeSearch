@@ -7,7 +7,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace EdgeSearch.UI
 {
@@ -117,10 +116,10 @@ namespace EdgeSearch.UI
             chkMobile.DataBindings.Add(nameof(chkMobile.Checked), search, nameof(search.IsMobile));
 
             txtLowerLimit.DataBindings.Clear();
-            txtLowerLimit.DataBindings.Add(nameof(txtLowerLimit.Text), search, nameof(search.LowerLimit));
+            txtLowerLimit.DataBindings.Add(nameof(txtLowerLimit.Text), search.Preferences, nameof(search.Preferences.LowerLimit));
 
             txtUpperLimit.DataBindings.Clear();
-            txtUpperLimit.DataBindings.Add(nameof(txtUpperLimit.Text), search, nameof(search.UpperLimit));
+            txtUpperLimit.DataBindings.Add(nameof(txtUpperLimit.Text), search.Preferences, nameof(search.Preferences.UpperLimit));
 
             txtSearches.DataBindings.Clear();
             txtSearches.DataBindings.Add(nameof(txtSearches.Text), search, nameof(search.SearchesCount));
@@ -131,9 +130,9 @@ namespace EdgeSearch.UI
             txtPointsLimit.DataBindings.Clear();
             txtPointsLimit.DataBindings.Add(nameof(txtPointsLimit.Text), search, nameof(search.PointsLimit));
 
-            pbSearches.DataBindings.Clear();
-            pbSearches.DataBindings.Add(nameof(pbSearches.Maximum), search, nameof(search.SecondsToRefresh), true, DataSourceUpdateMode.OnValidation);
-            pbSearches.DataBindings.Add(nameof(pbSearches.Value), search, nameof(search.ElapsedSeconds), true, DataSourceUpdateMode.OnValidation);
+            //pbSearches.DataBindings.Clear();
+            //pbSearches.DataBindings.Add(nameof(pbSearches.Maximum), search, nameof(search.SearchesProgressBarMax), true);
+            //pbSearches.DataBindings.Add(nameof(pbSearches.Value), search, nameof(search.SearchesProgressBarValue), true);
 
             lblRewardsPB.DataBindings.Clear();
             lblRewardsPB.DataBindings.Add(nameof(lblRewardsPB.Text), search, nameof(search.RewardsString));
@@ -314,11 +313,15 @@ namespace EdgeSearch.UI
             DateTime now = DateTime.Now;
             DateTime strikeTime = (search.StrikeTime ?? now);
 
-            string strikeCount = $"{search.StrikeCount}/{search.TotalStrikeCount}";
-            string strikeSeconds = $"{Convert.ToInt32((now - strikeTime).TotalSeconds)}/{search.StrikeDelay} secs";
-            string searchsSeconds = $"{search.ElapsedSeconds}/{search.SecondsToRefresh} segs";
+            string strikeCount = $"{search.StrikeCount}/{search.Preferences.StrikeAmount}";
+            string strikeSeconds = $"{Convert.ToInt32((now - strikeTime).TotalSeconds)}/{search.Preferences.StrikeDelay} sec";
+            string searchsSeconds = $"{search.ElapsedSeconds}/{search.SecondsToRefresh} sec";
 
             pbSearches.Text = $"{strikeCount} ({strikeSeconds}) - {searchsSeconds}";
+
+            pbSearches.Maximum = search.SearchesProgressBarMax;
+            pbSearches.Value = search.SearchesProgressBarValue;
+            pbSearches.PaintedColor = search.SearchesProgressBarColor;
         }
 
         public async Task ReloadSearchsWeb()
@@ -357,7 +360,7 @@ namespace EdgeSearch.UI
 
         public void SetExecutionExpectedTime(TimeSpan minTime, TimeSpan maxTime)
         {
-            toolTip1.SetToolTip(pbSearches, $"Tiempo esperado: {minTime:hh\\:mm\\:ss} - {maxTime:hh\\:mm\\:ss}");
+            toolTip1.SetToolTip(pbSearches, $"Expected time: {minTime:hh\\:mm\\:ss} - {maxTime:hh\\:mm\\:ss}");
         }
 
         public async Task<(int currentPoints, int maxPoints)> ExtractPoints(string searchType)

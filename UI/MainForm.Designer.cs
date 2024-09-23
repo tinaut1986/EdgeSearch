@@ -86,9 +86,9 @@ namespace EdgeSearch.UI
             lblRange.AutoSize = true;
             lblRange.Location = new System.Drawing.Point(240, 7);
             lblRange.Name = "lblRange";
-            lblRange.Size = new System.Drawing.Size(116, 15);
+            lblRange.Size = new System.Drawing.Size(110, 15);
             lblRange.TabIndex = 8;
-            lblRange.Text = "Refresh range (segs):";
+            lblRange.Text = "Refresh range (sec):";
             lblRange.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblNextSearch
@@ -296,7 +296,7 @@ namespace EdgeSearch.UI
             // 
             tsmISettings.Image = Properties.Resources.settings;
             tsmISettings.Name = "tsmISettings";
-            tsmISettings.Size = new System.Drawing.Size(180, 22);
+            tsmISettings.Size = new System.Drawing.Size(116, 22);
             tsmISettings.Text = "Settings";
             // 
             // tableLayoutPanel1
