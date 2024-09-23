@@ -10,18 +10,31 @@ namespace EdgeSearch.Models
     public class Search : INotifyPropertyChanged
     {
         private const int _pointsPerSearch = 3;
-        private int mobileTotalPoints;
-        private int desktopTotalPoints;
-        private int desktopSearchesCount;
-        private int mobileSearchesCount;
-        private Mode currentMode;
-        private int elapsedSeconds;
-        private int secondsToRefresh;
-        private bool isPlaying;
-        private string nextSearch;
-        private Uri uRL;
-        private int upperLimit;
-        private int lowerLimit;
+        private int _mobileTotalPoints;
+        private int _desktopTotalPoints;
+        private int _desktopSearchesCount;
+        private int _mobileSearchesCount;
+        private Mode _currentMode;
+        private int _elapsedSeconds;
+        private int _secondsToRefresh;
+        private bool _isPlaying;
+        private string _nextSearch;
+        private Uri _url;
+        private int _upperLimit;
+        private int _lowerLimit;
+        private bool _ambassadorsPlayed;
+        private bool _rewardsPlayed;
+        private int _strikeCount;
+        private int _totalStrikeCount;
+        private DateTime? _strikeTime;
+        private int _strikeDelay;
+        private int _pointsPersearch;
+
+        private int _currentRewards;
+        private int _totalRewards;
+
+        private int _currentAmbassadors;
+        private int _totalAmbassadors;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -40,7 +53,7 @@ namespace EdgeSearch.Models
             UpperLimit = 90;
             CurrentMode = Mode.Desktop;
             MobileUserAgent = "Mozilla/5.0 (Linux; Android 9; ASUS_X00TD; Flow) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/359.0.0.288 Mobile Safari/537.36"; ;
-            DesktopUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36";
+            DesktopUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 Edg/128.0.0.0";
         }
 
         public Search(Preferences preferences)
@@ -51,24 +64,27 @@ namespace EdgeSearch.Models
             DesktopUserAgent = preferences.DesktopUserAgent;
             MobileTotalPoints = preferences.MobileTotalPoints;
             MobileUserAgent = preferences.MobileUserAgent;
+            StrikeDelay = preferences.StrikeDelay;
+            TotalStrikeCount = preferences.StrikeAmount;
+            PointsPersearch = preferences.PointsPersearch;
         }
         #endregion
 
         public int LowerLimit
         {
-            get => lowerLimit;
+            get => _lowerLimit;
             set
             {
-                lowerLimit = value;
+                _lowerLimit = value;
                 NotifyPropertyChanged();
             }
         }
         public int UpperLimit
         {
-            get => upperLimit;
+            get => _upperLimit;
             set
             {
-                upperLimit = value;
+                _upperLimit = value;
                 NotifyPropertyChanged();
             }
         }
@@ -77,92 +93,160 @@ namespace EdgeSearch.Models
 
         public int MobileTotalPoints
         {
-            get => mobileTotalPoints;
+            get => _mobileTotalPoints;
             set
             {
-                mobileTotalPoints = value;
+                _mobileTotalPoints = value;
                 NotifyPropertyChanged();
             }
         }
 
         public int DesktopTotalPoints
         {
-            get => desktopTotalPoints;
+            get => _desktopTotalPoints;
             set
             {
-                desktopTotalPoints = value;
+                _desktopTotalPoints = value;
                 NotifyPropertyChanged();
             }
         }
         public int DesktopSearchesCount
         {
-            get => desktopSearchesCount;
+            get => _desktopSearchesCount;
             set
             {
-                desktopSearchesCount = value;
+                _desktopSearchesCount = value;
                 NotifyPropertyChanged();
             }
         }
         public int MobileSearchesCount
         {
-            get => mobileSearchesCount;
+            get => _mobileSearchesCount;
             set
             {
-                mobileSearchesCount = value;
+                _mobileSearchesCount = value;
                 NotifyPropertyChanged();
             }
         }
         public Mode CurrentMode
         {
-            get => currentMode;
+            get => _currentMode;
             set
             {
-                currentMode = value;
+                _currentMode = value;
                 NotifyPropertyChanged();
             }
         }
+
         public int ElapsedSeconds
         {
-            get => elapsedSeconds;
+            get => _elapsedSeconds;
             set
             {
-                elapsedSeconds = value;
+                _elapsedSeconds = value;
                 NotifyPropertyChanged();
             }
         }
         public int SecondsToRefresh
         {
-            get => secondsToRefresh;
+            get => _secondsToRefresh;
             set
             {
-                secondsToRefresh = value;
+                _secondsToRefresh = value;
                 NotifyPropertyChanged();
+            }
+        }
+        public DateTime? StrikeTime
+        {
+            get => _strikeTime;
+            set
+            {
+                _strikeTime = value;
+                NotifyPropertyChanged();
+            }
+        }
+        public int StrikeDelay
+        {
+            get => _strikeDelay;
+            set
+            {
+                _strikeDelay = value;
+                NotifyPropertyChanged();
+            }
+        }
+        public int StrikeCount
+        {
+            get => _strikeCount;
+            set
+            {
+                _strikeCount = value;
+                NotifyPropertyChanged();
+            }
+        }
+        public int TotalStrikeCount
+        {
+            get => _totalStrikeCount;
+            set
+            {
+                _totalStrikeCount = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public int PointsPersearch
+        {
+            get => _pointsPersearch;
+            set
+            {
+                _pointsPersearch = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public int TotalProgressBar
+        {
+            get
+            {
+                if (StrikeCount < TotalStrikeCount)
+                    return SecondsToRefresh;
+                else
+                    return StrikeDelay;
+            }
+        }
+        public int CurrentProgressBar
+        {
+            get
+            {
+                if (StrikeCount < TotalStrikeCount)
+                    return SecondsToRefresh;
+                else
+                    return StrikeDelay;
             }
         }
         public bool IsPlaying
         {
-            get => isPlaying;
+            get => _isPlaying;
             set
             {
-                isPlaying = value;
+                _isPlaying = value;
                 NotifyPropertyChanged();
             }
         }
         public string NextSearch
         {
-            get => nextSearch;
+            get => _nextSearch;
             set
             {
-                nextSearch = value;
+                _nextSearch = value;
                 NotifyPropertyChanged();
             }
         }
         public Uri URL
         {
-            get => uRL;
+            get => _url;
             set
             {
-                uRL = value;
+                _url = value;
                 NotifyPropertyChanged();
             }
         }
@@ -173,7 +257,7 @@ namespace EdgeSearch.Models
         public List<string> Retro { get; set; } = new List<string>();
         public List<string> Games { get; set; } = new List<string>();
         public List<string> Companies { get; set; } = new List<string>();
-        public List<string> UsedSearchs { get; set; } = new List<string>();
+        public List<Tuple<DateTime, Mode, string>> UsedSearchs { get; set; } = new List<Tuple<DateTime, Mode, string>>();
         public bool IsMobile
         {
             get => CurrentMode == Mode.Mobile;
@@ -229,5 +313,45 @@ namespace EdgeSearch.Models
                 NotifyPropertyChanged();
             }
         }
+
+        public bool AmbassadorsPlayed
+        {
+            get => _ambassadorsPlayed;
+            set => _ambassadorsPlayed = value;
+        }
+
+        public bool RewardsPlayed
+        {
+            get => _rewardsPlayed;
+            set => _rewardsPlayed = value;
+        }
+
+        public int CurrentAmbassadors
+        {
+            get => _currentAmbassadors;
+            set => _currentAmbassadors = value;
+        }
+
+        public int TotalAmbassadors
+        {
+            get => _totalAmbassadors;
+            set => _totalAmbassadors = value;
+        }
+
+        public string AmbassadorsString => $"Ambassadors: {CurrentAmbassadors}/{TotalAmbassadors}";
+
+        public int CurrentRewards
+        {
+            get => _currentRewards;
+            set => _currentRewards = value;
+        }
+
+        public int TotalRewards
+        {
+            get => _totalRewards;
+            set => _totalRewards = value;
+        }
+
+        public string RewardsString => $"Rewards: {CurrentRewards}/{TotalRewards}";
     }
 }

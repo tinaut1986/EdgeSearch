@@ -23,7 +23,7 @@ namespace EdgeSearch
 
         private static MainForm NewMethod()
         {
-            Preferences preferences = new Preferences("config.json");
+            Preferences preferences = new Preferences("Config\\config.json");
             Search search = new Search(preferences);
             MainForm mainForm = new MainForm();
             // Carga las preferencias

@@ -1,10 +1,15 @@
 ﻿using EdgeSearch.models;
 using EdgeSearch.Models;
 using EdgeSearch.UI;
+using EdgeSearch.Utils;
+using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.WinForms;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 
@@ -17,7 +22,8 @@ namespace EdgeSearch.Business
         private Search _search;
         private Random _random;
         private Preferences _preferences;
-        private Timer _refreshTimer;
+        private System.Windows.Forms.Timer _refreshTimer;
+        private Awaker _awaker;
         #endregion
 
         #region Properties
@@ -30,9 +36,10 @@ namespace EdgeSearch.Business
             _mainForm = mainForm;
             _search = search;
             _preferences = preferences;
+            _awaker = new Awaker();
             _random = new Random();
 
-            LoadSearchesFromFile("searches.xml"); // Carga las búsquedas desde el archivo
+            LoadSearchesFromFile("Config\\searches.xml"); // Carga las búsquedas desde el archivo
 
             SetupRefreshTimer();
             InitializeEvents();
@@ -47,19 +54,98 @@ namespace EdgeSearch.Business
             _mainForm.Load += _mainForm_Load;
             _mainForm.ForceClicked += _mainForm_ForceClicked;
             _mainForm.OpenClicked += _mainForm_OpenClicked;
+            _mainForm.PlayRewardsClicked += _mainForm_PlayRewardsClicked;
+            _mainForm.PlaySearchesClicked += _mainForm_PlaySearchesClicked;
             _mainForm.NextSearchClicked += _mainForm_NextSearchClicked;
             _mainForm.MobileChanged += _mainForm_MobileChanged;
+            _mainForm.PbSearchesMouseMove += _mainForm_PbSearchesMouseMove;
             _mainForm.PlayClicked += _mainForm_PlayClicked;
+            _mainForm.FullPlayClicked += _mainForm_FullPlayClicked;
+            _mainForm.ResetClicked += _mainForm_ResetClicked;
+            _mainForm.RewardsNewWindowRequested += _mainForm_RewardsNewWindowRequested;
+
+            _mainForm.SearchesCoreWebView2InitializationCompleted += _mainForm_SearchesCoreWebView2InitializationCompleted;
+            _mainForm.RewardsCoreWebView2InitializationCompleted += _mainForm_RewardsCoreWebView2InitializationCompleted;
         }
 
-        private void _mainForm_OpenClicked(object sender, EventArgs e)
+        private async void _mainForm_SearchesCoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
         {
-            _mainForm.SetURL(_search.URL);
+        }
+
+        private async void _mainForm_RewardsCoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
+        {
+            await ExtractPoints();
+        }
+
+        /// <summary>
+        /// This function handle new windows manually, but without opening the web in a new window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void _mainForm_RewardsNewWindowRequested(object sender, CoreWebView2NewWindowRequestedEventArgs e)
+        {
+            // Obtener el contexto de sincronización de la UI
+            var uiContext = SynchronizationContext.Current;
+
+            // Cancelar la creación de una nueva ventana
+            e.Handled = true;
+
+            // Crear una nueva instancia de WebView2 para la nueva ventana
+            var newWebView = new WebView2 { Dock = DockStyle.Fill };
+
+            uiContext.Post(async _ =>
+            {
+                await newWebView.EnsureCoreWebView2Async();
+
+                // Navegar a la URI solicitada
+                newWebView.Source = new Uri(e.Uri);
+                _search.CurrentRewards++;
+                _search.TotalRewards++;
+
+                // Asociar el evento de navegación completada
+                EventHandler<CoreWebView2NavigationCompletedEventArgs> handler = null;
+
+                handler = async (s, args) =>
+                {
+                    // Cerrar la nueva ventana después de que se haya cargado completamente
+                    if (args.IsSuccess)
+                    {
+                        await Task.Delay(15000); // Espera 15 segundos antes de cerrar la ventana
+
+                        // TODO: Por algún motivo, pasa por este codigo más de una vez. Necesito mirar como hacerlo para que no reduzca el contador más veces de la cuenta.
+                        //newWebView.CoreWebView2.NavigationCompleted -= handler; // Desvincular el evento
+
+                        newWebView.Dispose();
+                        _search.CurrentRewards--;
+                    }
+                };
+
+                newWebView.CoreWebView2.NavigationCompleted += handler; // Vincular el evento
+
+            }, null);
+
+            _mainForm.BindFields(_search);
+        }
+
+        private async void _mainForm_OpenClicked(object sender, EventArgs e)
+        {
+            await _mainForm.SetSearchsURL(_search.URL);
+        }
+
+        private void _mainForm_PlayRewardsClicked(object sender, EventArgs e)
+        {
+            if (!_search.RewardsPlayed)
+                _mainForm.OpenRewards(_search);
+        }
+
+        private void _mainForm_PlaySearchesClicked(object sender, EventArgs e)
+        {
+            _mainForm_PlayClicked(sender, e);
         }
 
         private void SetupRefreshTimer()
         {
-            _refreshTimer = new Timer();
+            _refreshTimer = new System.Windows.Forms.Timer();
             _refreshTimer.Interval = 1000; // Intervalo de actualización cada segundo
             _refreshTimer.Tick += RefreshTimer_Tick;
         }
@@ -70,15 +156,16 @@ namespace EdgeSearch.Business
             _mainForm.UpdateInterface(_search);
         }
 
-        private void DoSearch()
+        private async Task DoSearch()
         {
-            string currentSearch = Search.NextSearch;
+            if (!CanDoSearch())
+                Stop();
+
+            string currentSearch = _search.NextSearch;
             RefreshNextSearch();
-            Search.URL = new Uri($"https://www.bing.com/search?q={currentSearch}&form=QBLH&sp=-1&ghc=1&lq=0&pq={currentSearch}");
+            _search.URL = new Uri($"https://www.bing.com/search?q={currentSearch}&form=QBLH&sp=-1&ghc=1&lq=0&pq={currentSearch}");
 
-            _mainForm.SetURL(_search.URL);
-
-            _search.UsedSearchs.Add(currentSearch);
+            AddHistoricSearch(currentSearch);
 
             if (_search.IsMobile)
                 _search.MobileSearchesCount++;
@@ -86,6 +173,18 @@ namespace EdgeSearch.Business
                 _search.DesktopSearchesCount++;
 
             _mainForm.UpdateInterface(_search);
+
+            await _mainForm.SetSearchsURL(_search.URL);
+        }
+
+        private void AddHistoricSearch(string currentSearch)
+        {
+            _search.UsedSearchs.Add(new Tuple<DateTime, Preferences.Mode, string>(DateTime.Now, _search.CurrentMode, currentSearch));
+        }
+
+        private bool CanDoSearch()
+        {
+            return _search.UsedSearchs.Count(x => Math.Abs((x.Item1 - DateTime.Now).TotalSeconds) < 10) < 3;
         }
 
         private void LoadSearchesFromFile(string filePath)
@@ -133,38 +232,60 @@ namespace EdgeSearch.Business
                 if (search.Contains("%company%"))
                     search = search.Replace("%company%", GetCompany());
             }
-            while (_search.UsedSearchs.Contains(search));
+            while (_search.UsedSearchs.Any(x => x.Item3 == search));
 
             return search;
         }
 
         private async void RefreshTimer_Tick(object sender, EventArgs e)
         {
+            if (_preferences.StrikeAmount > 0)
+            {
+                if (_search.StrikeCount >= _preferences.StrikeAmount)
+                {
+                    DateTime now = DateTime.Now;
+
+                    if (_search.StrikeTime == null)
+                        _search.StrikeTime = now;
+
+                    if (Convert.ToInt32((now - _search.StrikeTime.Value).TotalSeconds) > _preferences.StrikeDelay)
+                    {
+                        _search.StrikeCount = 0;
+                        _search.StrikeTime = null;
+                    }
+                    else
+                    {
+                        _mainForm.UpdateInterface(_search);
+                        return;
+                    }
+                }
+            }
+
             _search.ElapsedSeconds++;
 
             if (_search.ElapsedSeconds >= _search.SecondsToRefresh)
             {
                 if (_search.ToSearch.Count == 0)
                 {
-                    PlayAndStop();
+                    PlayAndStop(false);
                     return;
                 }
 
-                bool desktopPointsReached = (_search.DesktopSearchesCount * 3) >= _search.DesktopTotalPoints;
-                bool MobilePointsReached = (_search.MobileSearchesCount * 3) >= _search.MobileTotalPoints;
+                bool desktopPointsReached = (_search.DesktopSearchesCount * _search.PointsPersearch) >= _search.DesktopTotalPoints;
+                bool mobilePointsReached = (_search.MobileSearchesCount * _search.PointsPersearch) >= _search.MobileTotalPoints;
                 if (!Search.IsMobile && desktopPointsReached)
                 {
-                    if (!MobilePointsReached)
+                    if (!mobilePointsReached)
                     {
                         await ChangeMobileMode(Preferences.Mode.Mobile, false);
                     }
                     else
                     {
-                        PlayAndStop();
+                        PlayAndStop(false);
                         return;
                     }
                 }
-                else if (Search.IsMobile && MobilePointsReached)
+                else if (Search.IsMobile && mobilePointsReached)
                 {
                     if (!desktopPointsReached)
                     {
@@ -172,39 +293,80 @@ namespace EdgeSearch.Business
                     }
                     else
                     {
-                        PlayAndStop();
+                        PlayAndStop(false);
                         return;
                     }
                 }
 
-                DoSearch();
                 RestartLimits();
+                if (_preferences.StrikeAmount > 0)
+                    _search.StrikeCount++;
+
+                await DoSearch();
+
+                await ExtractPoints();
             }
 
             _mainForm.UpdateInterface(_search);
         }
 
-        private async System.Threading.Tasks.Task ChangeMobileMode(Preferences.Mode mode, bool reloadWeb)
+        private async Task ExtractPoints()
+        {
+            await _mainForm.ReloadRewardsWeb();
+            await Task.Delay(2000);
+
+            await _mainForm.WaitForTextToBeVisible("Búsqueda en PC");
+            (int currentPoints, int maxPoints) desktop = await _mainForm.ExtractPoints("Búsqueda en PC");
+            _search.DesktopSearchesCount = desktop.currentPoints / _search.PointsPersearch;
+            _search.DesktopTotalPoints = desktop.maxPoints;
+
+            await _mainForm.WaitForTextToBeVisible("Búsqueda en móviles");
+            (int currentPoints, int maxPoints) mobile = await _mainForm.ExtractPoints("Búsqueda en móviles");
+            _search.MobileSearchesCount = mobile.currentPoints / _search.PointsPersearch;
+            _search.MobileTotalPoints = mobile.maxPoints;
+
+            _mainForm.BindFields(_search);
+        }
+
+        private async Task ChangeMobileMode(Preferences.Mode mode, bool reloadWeb)
         {
             _search.CurrentMode = mode;
             await RefreshMobileMode(reloadWeb);
         }
 
-        private void PlayAndStop()
+        private void PlayAndStop(bool openRewards)
         {
             if (!_search.IsPlaying)
             {
-                RestartLimits();
-                _refreshTimer.Start(); // Inicia el temporizador cuando se presiona el botón
-                _search.IsPlaying = true;
+                Play();
+
+                if (openRewards)
+                    _mainForm.OpenRewards(_search);
             }
             else
-            {
-                _refreshTimer.Stop(); // Detiene el temporizador si ya está activo
-                _search.IsPlaying = false;
-            }
+                Stop();
 
             _mainForm.UpdateInterface(_search);
+        }
+
+        private void Stop()
+        {
+            _refreshTimer.Stop(); // Detiene el temporizador si ya está activo
+            _search.IsPlaying = false;
+            _search.StrikeCount = 0;
+            _search.StrikeTime = null;
+            _search.ElapsedSeconds = 0;
+
+            _awaker.Stop();
+        }
+
+        private void Play()
+        {
+            RestartLimits();
+
+            _refreshTimer.Start(); // Inicia el temporizador cuando se presiona el botón
+            _search.IsPlaying = true;
+            _awaker.Start();
         }
 
         public void RestartLimits()
@@ -215,9 +377,8 @@ namespace EdgeSearch.Business
             _mainForm.UpdateInterface(_search);
         }
 
-        private async System.Threading.Tasks.Task RefreshMobileMode(bool reloadWeb)
+        private async Task RefreshMobileMode(bool reloadWeb)
         {
-            _preferences.LastMode = _search.CurrentMode;
             _preferences.Save();
 
             if (_search.IsMobile)
@@ -227,8 +388,17 @@ namespace EdgeSearch.Business
 
             await _mainForm.DeleteSessionCookies();
 
+            if (!CanDoSearch())
+            {
+                Stop();
+                return;
+            }
+
             if (reloadWeb)
-                _mainForm.ReloadWeb();
+            {
+                AddHistoricSearch(_search.URL.ToString());
+                await _mainForm.ReloadSearchsWeb();
+            }
 
             _mainForm.UpdateInterface(_search);
         }
@@ -262,7 +432,12 @@ namespace EdgeSearch.Business
         {
             await _mainForm.EnsureCoreWebView2Async();
             _search.URL = new Uri("https://www.bing.es/");
-            _mainForm.SetURL(_search.URL);
+            await _mainForm.SetSearchsURL(_search.URL);
+            await _mainForm.SetRewardsURL(new Uri("https://rewards.bing.com/pointsbreakdown"));
+            _mainForm.SelectTabAndReturn(Common.TabType.Rewards);
+
+            await ExtractPoints();
+
             _mainForm.UpdateInterface(_search);
 
             _mainForm.BindFields(_search);
@@ -270,9 +445,10 @@ namespace EdgeSearch.Business
             RefreshNextSearch();
         }
 
-        private void _mainForm_ForceClicked(object sender, EventArgs e)
+        private async void _mainForm_ForceClicked(object sender, EventArgs e)
         {
-            DoSearch();
+            await DoSearch();
+            await ExtractPoints();
         }
 
         private void _mainForm_NextSearchClicked(object sender, EventArgs e)
@@ -286,9 +462,67 @@ namespace EdgeSearch.Business
             await RefreshMobileMode(true);
         }
 
+        private void _mainForm_PbSearchesMouseMove(object sender, EventArgs e)
+        {
+            TimeSpan desktopMin = ExecutionTimeCalculator.CalculateTotalTime(totalExecutions: (_search.DesktopTotalPoints / _search.PointsPersearch) - (_search.DesktopSearchesCount),
+                                                                             executionsOffset: _search.TotalStrikeCount - _search.StrikeCount,
+                                                                             executionsPerStrike: _search.TotalStrikeCount,
+                                                                             pauseBetweenExecutions: _search.LowerLimit,
+                                                                             pauseBetweenStrikes: _search.StrikeDelay,
+                                                                             elapsedSeconds: _search.IsDesktop ? _search.ElapsedSeconds : 0,
+                                                                             currentPause: _search.IsDesktop ? _search.SecondsToRefresh : 0,
+                                                                             strikeTime: _search.StrikeTime,
+                                                                             playing: _search.IsPlaying && _search.IsDesktop);
+
+            TimeSpan desktopMax = ExecutionTimeCalculator.CalculateTotalTime(totalExecutions: (_search.DesktopTotalPoints / _search.PointsPersearch) - (_search.DesktopSearchesCount),
+                                                                             executionsOffset: _search.TotalStrikeCount - _search.StrikeCount,
+                                                                             executionsPerStrike: _search.TotalStrikeCount,
+                                                                             pauseBetweenExecutions: _search.UpperLimit,
+                                                                             pauseBetweenStrikes: _search.StrikeDelay,
+                                                                             elapsedSeconds: _search.IsDesktop ? _search.ElapsedSeconds : 0,
+                                                                             currentPause: _search.IsDesktop ? _search.SecondsToRefresh : 0,
+                                                                             strikeTime: _search.StrikeTime,
+                                                                             playing: _search.IsPlaying && _search.IsDesktop);
+
+            TimeSpan mobileMin = ExecutionTimeCalculator.CalculateTotalTime(totalExecutions: (_search.MobileTotalPoints / _search.PointsPersearch) - (_search.MobileSearchesCount),
+                                                                            executionsOffset: _search.TotalStrikeCount - _search.StrikeCount,
+                                                                            executionsPerStrike: _search.TotalStrikeCount,
+                                                                            pauseBetweenExecutions: _search.LowerLimit,
+                                                                            pauseBetweenStrikes: _search.StrikeDelay,
+                                                                            elapsedSeconds: _search.IsMobile ? _search.ElapsedSeconds : 0,
+                                                                            currentPause: _search.IsMobile ? _search.SecondsToRefresh : 0,
+                                                                            strikeTime: _search.StrikeTime,
+                                                                            playing: _search.IsPlaying && _search.IsMobile);
+
+            TimeSpan mobileMax = ExecutionTimeCalculator.CalculateTotalTime(totalExecutions: (_search.MobileTotalPoints / _search.PointsPersearch) - (_search.MobileSearchesCount),
+                                                                            executionsOffset: _search.TotalStrikeCount - _search.StrikeCount,
+                                                                            executionsPerStrike: _search.TotalStrikeCount,
+                                                                            pauseBetweenExecutions: _search.UpperLimit,
+                                                                            pauseBetweenStrikes: _search.StrikeDelay,
+                                                                            elapsedSeconds: _search.IsMobile ? _search.ElapsedSeconds : 0,
+                                                                            currentPause: _search.IsMobile ? _search.SecondsToRefresh : 0,
+                                                                            strikeTime: _search.StrikeTime,
+                                                                            playing: _search.IsPlaying && _search.IsMobile);
+
+            _mainForm.SetExecutionExpectedTime(desktopMin + mobileMin, desktopMax + mobileMax);
+        }
+
         private void _mainForm_PlayClicked(object sender, EventArgs e)
         {
-            PlayAndStop();
+            PlayAndStop(false);
+        }
+
+        private void _mainForm_FullPlayClicked(object sender, EventArgs e)
+        {
+            PlayAndStop(true);
+        }
+
+        private async void _mainForm_ResetClicked(object sender, EventArgs e)
+        {
+            _search.MobileSearchesCount = 0;
+            _search.DesktopSearchesCount = 0;
+            await ChangeMobileMode(Preferences.Mode.Desktop, true);
+            _mainForm.UpdateInterface(_search);
         }
 
         #endregion

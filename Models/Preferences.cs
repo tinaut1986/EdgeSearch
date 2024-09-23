@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json; // Asegúrate de tener la librería Newtonsoft.Json instalada
 using System;
 using System.IO;
+using System.Security.Cryptography.Xml;
 
 namespace EdgeSearch.models
 {
@@ -12,23 +13,35 @@ namespace EdgeSearch.models
             Mobile = 1,
         }
 
+        public int PointsPersearch { get; set; }
         public int LowerLimit { get; set; }
         public int UpperLimit { get; set; }
         public int MobileTotalPoints { get; set; }
         public int DesktopTotalPoints { get; set; }
         public string MobileUserAgent { get; set; }
         public string DesktopUserAgent { get; set; }
-        public Mode LastMode { get; set; }
+        /// <summary>
+        /// After "StrikeAmount" searches, a pause of "StrikeDelay" seconds is done.
+        /// </summary>
+        public int StrikeAmount { get; set; }
+        /// <summary>
+        /// After "StrikeAmount" searches, a pause of "StrikeDelay" seconds is done.
+        /// </summary>
+        public int StrikeDelay { get; set; }
+        public Mode InitialMode { get; set; }
 
         private readonly string _configFilePath;
 
         public Preferences()
         {
-            LowerLimit = 15;
-            UpperLimit = 90;
-            LastMode = Mode.Desktop;
+            PointsPersearch = 3;
+            LowerLimit = 20;
+            UpperLimit = 40;
+            InitialMode = Mode.Desktop;
             MobileTotalPoints = 60;
             DesktopTotalPoints = 90;
+            StrikeAmount = 0;
+            StrikeDelay = 15;
             MobileUserAgent = "Mozilla/5.0 (Linux; Android 9; ASUS_X00TD; Flow) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/359.0.0.288 Mobile Safari/537.36"; ;
             DesktopUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36";
         }
@@ -71,11 +84,14 @@ namespace EdgeSearch.models
 
         private void Map(Preferences preferences)
         {
+            PointsPersearch = preferences.PointsPersearch;
             LowerLimit = preferences.LowerLimit;
             UpperLimit = preferences.UpperLimit;
-            LastMode = preferences.LastMode;
+            InitialMode = preferences.InitialMode;
             MobileTotalPoints = preferences.MobileTotalPoints;
             DesktopTotalPoints = preferences.DesktopTotalPoints;
+            StrikeAmount = preferences.StrikeAmount;
+            StrikeDelay = preferences.StrikeDelay;
             DesktopUserAgent = preferences.DesktopUserAgent;
             MobileUserAgent = preferences.MobileUserAgent;
         }
