@@ -24,7 +24,7 @@ namespace EdgeSearch.Utils
                 remainingExecutions = executionsPerStrike;
 
             // Calculate the total time for all chains except the last pause
-            int totalTimeInSeconds = (remainingExecutions * pauseBetweenExecutions) + (totalStrikes * pauseBetweenStrikes) + strikeSeconds;
+            int totalTimeInSeconds = (remainingExecutions * pauseBetweenExecutions) + (totalStrikes * pauseBetweenStrikes) + (totalStrikes * executionsPerStrike * pauseBetweenExecutions) + strikeSeconds;
 
             // Return the total time as a TimeSpan object
             int total = totalTimeInSeconds - elapsedSeconds;

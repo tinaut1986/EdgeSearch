@@ -105,7 +105,7 @@ namespace EdgeSearch.Models
             get
             {
                 if (StrikeTime != null)
-                    return _preferences.StrikeDelay - Convert.ToInt32((DateTime.Now - StrikeTime.Value).TotalSeconds);
+                    return Math.Max(0, _preferences.StrikeDelay - Convert.ToInt32((DateTime.Now - StrikeTime.Value).TotalSeconds));
                 else
                     return ElapsedSeconds;
             }
