@@ -43,7 +43,7 @@ namespace EdgeSearch.UI
             rewardsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             tsmiPlayRewards = new System.Windows.Forms.ToolStripMenuItem();
             optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            tsmISettings = new System.Windows.Forms.ToolStripMenuItem();
+            tsmiPreferences = new System.Windows.Forms.ToolStripMenuItem();
             tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             tabControl1 = new System.Windows.Forms.TabControl();
             tpSearches = new System.Windows.Forms.TabPage();
@@ -126,6 +126,7 @@ namespace EdgeSearch.UI
             txtUpperLimit.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             txtUpperLimit.Location = new System.Drawing.Point(414, 3);
             txtUpperLimit.Name = "txtUpperLimit";
+            txtUpperLimit.ReadOnly = true;
             txtUpperLimit.Size = new System.Drawing.Size(28, 23);
             txtUpperLimit.TabIndex = 10;
             // 
@@ -134,6 +135,7 @@ namespace EdgeSearch.UI
             txtLowerLimit.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             txtLowerLimit.Location = new System.Drawing.Point(362, 3);
             txtLowerLimit.Name = "txtLowerLimit";
+            txtLowerLimit.ReadOnly = true;
             txtLowerLimit.Size = new System.Drawing.Size(28, 23);
             txtLowerLimit.TabIndex = 9;
             // 
@@ -287,17 +289,17 @@ namespace EdgeSearch.UI
             // 
             // optionsToolStripMenuItem
             // 
-            optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { tsmISettings });
+            optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { tsmiPreferences });
             optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             optionsToolStripMenuItem.Text = "Options";
             // 
-            // tsmISettings
+            // tsmiPreferences
             // 
-            tsmISettings.Image = Properties.Resources.settings;
-            tsmISettings.Name = "tsmISettings";
-            tsmISettings.Size = new System.Drawing.Size(116, 22);
-            tsmISettings.Text = "Settings";
+            tsmiPreferences.Image = Properties.Resources.settings;
+            tsmiPreferences.Name = "tsmiPreferences";
+            tsmiPreferences.Size = new System.Drawing.Size(180, 22);
+            tsmiPreferences.Text = "Preferences";
             // 
             // tableLayoutPanel1
             // 
@@ -520,7 +522,7 @@ namespace EdgeSearch.UI
         private System.Windows.Forms.Label lblSearchesPB;
         private System.Windows.Forms.Label lblRewardsPB;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem tsmISettings;
+        private System.Windows.Forms.ToolStripMenuItem tsmiPreferences;
         private System.Windows.Forms.ToolStripMenuItem tsmiPlaySearches;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.TabControl tabControl1;

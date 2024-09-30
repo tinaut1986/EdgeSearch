@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json; // Asegúrate de tener la librería Newtonsoft.Json instalada
 using System;
 using System.IO;
-using System.Security.Cryptography.Xml;
 
 namespace EdgeSearch.models
 {
@@ -13,9 +12,10 @@ namespace EdgeSearch.models
             Mobile = 1,
         }
 
-        public int PointsPersearch { get; set; }
-        public int LowerLimit { get; set; }
-        public int UpperLimit { get; set; }
+        public int MobilePointsPersearch { get; set; }
+        public int DesktopPointsPersearch { get; set; }
+        public int MinWait { get; set; }
+        public int MaxWait { get; set; }
         public int MobileTotalPoints { get; set; }
         public int DesktopTotalPoints { get; set; }
         public string MobileUserAgent { get; set; }
@@ -34,9 +34,10 @@ namespace EdgeSearch.models
 
         public Preferences()
         {
-            PointsPersearch = 3;
-            LowerLimit = 20;
-            UpperLimit = 40;
+            MobilePointsPersearch = 3;
+            DesktopPointsPersearch = 3;
+            MinWait = 20;
+            MaxWait = 40;
             InitialMode = Mode.Desktop;
             MobileTotalPoints = 60;
             DesktopTotalPoints = 90;
@@ -84,9 +85,10 @@ namespace EdgeSearch.models
 
         private void Map(Preferences preferences)
         {
-            PointsPersearch = preferences.PointsPersearch;
-            LowerLimit = preferences.LowerLimit;
-            UpperLimit = preferences.UpperLimit;
+            MobilePointsPersearch = preferences.MobilePointsPersearch;
+            DesktopPointsPersearch = preferences.DesktopPointsPersearch;
+            MinWait = preferences.MinWait;
+            MaxWait = preferences.MaxWait;
             InitialMode = preferences.InitialMode;
             MobileTotalPoints = preferences.MobileTotalPoints;
             DesktopTotalPoints = preferences.DesktopTotalPoints;

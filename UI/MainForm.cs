@@ -21,6 +21,7 @@ namespace EdgeSearch.UI
         public event EventHandler PlaySearchesClicked;
         public event EventHandler PlayRewardsClicked;
         public event EventHandler NextSearchClicked;
+        public event EventHandler PreferencesClciked;
         public event EventHandler MobileChanged;
         public event EventHandler PbSearchesMouseMove;
         public event EventHandler<CoreWebView2InitializationCompletedEventArgs> SearchesCoreWebView2InitializationCompleted;
@@ -116,10 +117,10 @@ namespace EdgeSearch.UI
             chkMobile.DataBindings.Add(nameof(chkMobile.Checked), search, nameof(search.IsMobile));
 
             txtLowerLimit.DataBindings.Clear();
-            txtLowerLimit.DataBindings.Add(nameof(txtLowerLimit.Text), search.Preferences, nameof(search.Preferences.LowerLimit));
+            txtLowerLimit.DataBindings.Add(nameof(txtLowerLimit.Text), search.Preferences, nameof(search.Preferences.MinWait));
 
             txtUpperLimit.DataBindings.Clear();
-            txtUpperLimit.DataBindings.Add(nameof(txtUpperLimit.Text), search.Preferences, nameof(search.Preferences.UpperLimit));
+            txtUpperLimit.DataBindings.Add(nameof(txtUpperLimit.Text), search.Preferences, nameof(search.Preferences.MaxWait));
 
             txtSearches.DataBindings.Clear();
             txtSearches.DataBindings.Add(nameof(txtSearches.Text), search, nameof(search.SearchesCount));
@@ -145,6 +146,7 @@ namespace EdgeSearch.UI
 
             tsmiPlayRewards.Click += TsmiPlayRewards_Click;
             tsmiPlaySearches.Click += TsmiPlaySearches_Click;
+            tsmiPreferences.Click += TsmiPreferences_Click;
 
             tsmiPlay.Click += TsmiPlay_Click;
             tsmiReset.Click += TsmiReset_Click;
@@ -165,6 +167,7 @@ namespace EdgeSearch.UI
             wvRewards.CoreWebView2InitializationCompleted -= WvRewards_CoreWebView2InitializationCompleted;
             tsmiPlayRewards.Click -= TsmiPlayRewards_Click;
             tsmiPlaySearches.Click -= TsmiPlaySearches_Click;
+            tsmiPreferences.Click -= TsmiPreferences_Click;
 
             tsmiPlay.Click -= TsmiPlay_Click;
             tsmiReset.Click -= TsmiReset_Click;
@@ -460,6 +463,11 @@ namespace EdgeSearch.UI
         private void TsmiPlaySearches_Click(object sender, EventArgs e)
         {
             PlaySearchesClicked?.Invoke(sender, e);
+        }
+
+        private void TsmiPreferences_Click(object sender, EventArgs e)
+        {
+            PreferencesClciked?.Invoke(sender, e);
         }
 
         private void TsmiPlay_Click(object sender, EventArgs e)

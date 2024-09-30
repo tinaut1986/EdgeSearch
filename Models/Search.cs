@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography.Xml;
 using static EdgeSearch.models.Preferences;
 
 namespace EdgeSearch.Models
@@ -46,8 +45,8 @@ namespace EdgeSearch.Models
         {
             _preferences = new Preferences();
 
-            _preferences.LowerLimit = 15;
-            _preferences.UpperLimit = 90;
+            _preferences.MinWait = 15;
+            _preferences.MaxWait = 90;
             CurrentMode = Mode.Desktop;
             _preferences.MobileUserAgent = "Mozilla/5.0 (Linux; Android 9; ASUS_X00TD; Flow) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/359.0.0.288 Mobile Safari/537.36"; ;
             _preferences.DesktopUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 Edg/128.0.0.0";
@@ -251,12 +250,25 @@ namespace EdgeSearch.Models
             }
         }
 
-        public int CurrentPoints
+        public int PointsPersearch
         {
-            get => SearchesCount * _preferences.PointsPersearch;
+            get => CurrentMode == Mode.Mobile ? _preferences.MobilePointsPersearch : _preferences.DesktopPointsPersearch;
             set
             {
-                SearchesCount = value / _preferences.PointsPersearch;
+                if (IsMobile)
+                    MobileSearchesCount = value;
+                else if (IsDesktop)
+                    DesktopSearchesCount = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public int CurrentPoints
+        {
+            get => SearchesCount * PointsPersearch;
+            set
+            {
+                SearchesCount = value / PointsPersearch;
                 NotifyPropertyChanged();
             }
         }
