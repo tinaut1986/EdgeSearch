@@ -316,14 +316,16 @@ namespace EdgeSearch.Business
             await Task.Delay(2000);
 
             await _mainForm.WaitForTextToBeVisible("Búsqueda en PC");
-            (int currentPoints, int maxPoints) desktop = await _mainForm.ExtractPoints("Búsqueda en PC");
+            (int currentPoints, int maxPoints, int pointsPerSearch) desktop = await _mainForm.ExtractPoints("Búsqueda en PC");
             _search.DesktopSearchesCount = desktop.currentPoints / _search.Preferences.DesktopPointsPersearch;
             _search.Preferences.DesktopTotalPoints = desktop.maxPoints;
+            _search.Preferences.DesktopPointsPersearch = desktop.pointsPerSearch;
 
             await _mainForm.WaitForTextToBeVisible("Búsqueda en móviles");
-            (int currentPoints, int maxPoints) mobile = await _mainForm.ExtractPoints("Búsqueda en móviles");
+            (int currentPoints, int maxPoints, int pointsPerSearch) mobile = await _mainForm.ExtractPoints("Búsqueda en móviles");
             _search.MobileSearchesCount = mobile.currentPoints / _search.Preferences.MobilePointsPersearch;
             _search.Preferences.MobileTotalPoints = mobile.maxPoints;
+            _search.Preferences.MobilePointsPersearch = mobile.pointsPerSearch;
 
             _mainForm.BindFields(_search);
         }

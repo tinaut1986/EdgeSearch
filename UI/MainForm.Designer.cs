@@ -19,19 +19,10 @@ namespace EdgeSearch.UI
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             btnPlay = new System.Windows.Forms.Button();
-            lblRange = new System.Windows.Forms.Label();
             lblNextSearch = new System.Windows.Forms.Label();
             btnNext = new System.Windows.Forms.Button();
             btnSearch = new System.Windows.Forms.Button();
-            txtUpperLimit = new System.Windows.Forms.TextBox();
-            txtLowerLimit = new System.Windows.Forms.TextBox();
             lblSearches = new System.Windows.Forms.Label();
-            txtSearches = new System.Windows.Forms.TextBox();
-            lblPoints = new System.Windows.Forms.Label();
-            txtCurrentPoints = new System.Windows.Forms.TextBox();
-            txtPointsLimit = new System.Windows.Forms.TextBox();
-            lblPointsSeparator = new System.Windows.Forms.Label();
-            lblRefreshRangeSeparator = new System.Windows.Forms.Label();
             txtNextSearch = new System.Windows.Forms.TextBox();
             pbSearches = new CustomProgressBar();
             menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -80,17 +71,6 @@ namespace EdgeSearch.UI
             btnPlay.TabIndex = 13;
             btnPlay.UseVisualStyleBackColor = true;
             // 
-            // lblRange
-            // 
-            lblRange.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            lblRange.AutoSize = true;
-            lblRange.Location = new System.Drawing.Point(240, 7);
-            lblRange.Name = "lblRange";
-            lblRange.Size = new System.Drawing.Size(110, 15);
-            lblRange.TabIndex = 8;
-            lblRange.Text = "Refresh range (sec):";
-            lblRange.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
             // lblNextSearch
             // 
             lblNextSearch.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
@@ -121,94 +101,15 @@ namespace EdgeSearch.UI
             btnSearch.TabIndex = 6;
             btnSearch.UseVisualStyleBackColor = true;
             // 
-            // txtUpperLimit
-            // 
-            txtUpperLimit.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            txtUpperLimit.Location = new System.Drawing.Point(414, 3);
-            txtUpperLimit.Name = "txtUpperLimit";
-            txtUpperLimit.ReadOnly = true;
-            txtUpperLimit.Size = new System.Drawing.Size(28, 23);
-            txtUpperLimit.TabIndex = 10;
-            // 
-            // txtLowerLimit
-            // 
-            txtLowerLimit.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            txtLowerLimit.Location = new System.Drawing.Point(362, 3);
-            txtLowerLimit.Name = "txtLowerLimit";
-            txtLowerLimit.ReadOnly = true;
-            txtLowerLimit.Size = new System.Drawing.Size(28, 23);
-            txtLowerLimit.TabIndex = 9;
-            // 
             // lblSearches
             // 
             lblSearches.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            lblSearches.AutoSize = true;
             lblSearches.Location = new System.Drawing.Point(9, 7);
             lblSearches.Name = "lblSearches";
-            lblSearches.Size = new System.Drawing.Size(56, 15);
+            lblSearches.Size = new System.Drawing.Size(433, 17);
             lblSearches.TabIndex = 14;
             lblSearches.Text = "Searches:";
             lblSearches.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // txtSearches
-            // 
-            txtSearches.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            txtSearches.Location = new System.Drawing.Point(71, 3);
-            txtSearches.Name = "txtSearches";
-            txtSearches.ReadOnly = true;
-            txtSearches.Size = new System.Drawing.Size(28, 23);
-            txtSearches.TabIndex = 15;
-            // 
-            // lblPoints
-            // 
-            lblPoints.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            lblPoints.AutoSize = true;
-            lblPoints.Location = new System.Drawing.Point(105, 7);
-            lblPoints.Name = "lblPoints";
-            lblPoints.Size = new System.Drawing.Size(43, 15);
-            lblPoints.TabIndex = 16;
-            lblPoints.Text = "Points:";
-            lblPoints.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // txtCurrentPoints
-            // 
-            txtCurrentPoints.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            txtCurrentPoints.Location = new System.Drawing.Point(154, 3);
-            txtCurrentPoints.Name = "txtCurrentPoints";
-            txtCurrentPoints.ReadOnly = true;
-            txtCurrentPoints.Size = new System.Drawing.Size(28, 23);
-            txtCurrentPoints.TabIndex = 17;
-            // 
-            // txtPointsLimit
-            // 
-            txtPointsLimit.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            txtPointsLimit.Location = new System.Drawing.Point(206, 3);
-            txtPointsLimit.Name = "txtPointsLimit";
-            txtPointsLimit.ReadOnly = true;
-            txtPointsLimit.Size = new System.Drawing.Size(28, 23);
-            txtPointsLimit.TabIndex = 18;
-            // 
-            // lblPointsSeparator
-            // 
-            lblPointsSeparator.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            lblPointsSeparator.AutoSize = true;
-            lblPointsSeparator.Location = new System.Drawing.Point(188, 7);
-            lblPointsSeparator.Name = "lblPointsSeparator";
-            lblPointsSeparator.Size = new System.Drawing.Size(12, 15);
-            lblPointsSeparator.TabIndex = 14;
-            lblPointsSeparator.Text = "/";
-            lblPointsSeparator.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // lblRefreshRangeSeparator
-            // 
-            lblRefreshRangeSeparator.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            lblRefreshRangeSeparator.AutoSize = true;
-            lblRefreshRangeSeparator.Location = new System.Drawing.Point(396, 7);
-            lblRefreshRangeSeparator.Name = "lblRefreshRangeSeparator";
-            lblRefreshRangeSeparator.Size = new System.Drawing.Size(12, 15);
-            lblRefreshRangeSeparator.TabIndex = 14;
-            lblRefreshRangeSeparator.Text = "-";
-            lblRefreshRangeSeparator.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtNextSearch
             // 
@@ -298,7 +199,7 @@ namespace EdgeSearch.UI
             // 
             tsmiPreferences.Image = Properties.Resources.settings;
             tsmiPreferences.Name = "tsmiPreferences";
-            tsmiPreferences.Size = new System.Drawing.Size(180, 22);
+            tsmiPreferences.Size = new System.Drawing.Size(135, 22);
             tsmiPreferences.Text = "Preferences";
             // 
             // tableLayoutPanel1
@@ -412,18 +313,9 @@ namespace EdgeSearch.UI
             // 
             panel1.Controls.Add(txtNextSearch);
             panel1.Controls.Add(btnSearch);
-            panel1.Controls.Add(txtSearches);
             panel1.Controls.Add(btnNext);
             panel1.Controls.Add(lblNextSearch);
-            panel1.Controls.Add(txtCurrentPoints);
-            panel1.Controls.Add(txtUpperLimit);
-            panel1.Controls.Add(lblPointsSeparator);
             panel1.Controls.Add(lblSearches);
-            panel1.Controls.Add(txtLowerLimit);
-            panel1.Controls.Add(lblRefreshRangeSeparator);
-            panel1.Controls.Add(txtPointsLimit);
-            panel1.Controls.Add(lblRange);
-            panel1.Controls.Add(lblPoints);
             panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             panel1.Location = new System.Drawing.Point(3, 460);
             panel1.Name = "panel1";
@@ -494,19 +386,10 @@ namespace EdgeSearch.UI
 
         #endregion
         private System.Windows.Forms.Button btnPlay;
-        private System.Windows.Forms.Label lblRange;
         private System.Windows.Forms.Label lblNextSearch;
         private System.Windows.Forms.Button btnNext;
         private System.Windows.Forms.Button btnSearch;
-        private System.Windows.Forms.TextBox txtUpperLimit;
-        private System.Windows.Forms.TextBox txtLowerLimit;
         private System.Windows.Forms.Label lblSearches;
-        private System.Windows.Forms.TextBox txtSearches;
-        private System.Windows.Forms.Label lblPoints;
-        private System.Windows.Forms.TextBox txtCurrentPoints;
-        private System.Windows.Forms.TextBox txtPointsLimit;
-        private System.Windows.Forms.Label lblPointsSeparator;
-        private System.Windows.Forms.Label lblRefreshRangeSeparator;
         private System.Windows.Forms.TextBox txtNextSearch;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;

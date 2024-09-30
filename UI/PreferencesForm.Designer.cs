@@ -105,6 +105,7 @@ namespace EdgeSearch.UI
             txtMobilePointsPerSearch.Location = new System.Drawing.Point(112, 51);
             txtMobilePointsPerSearch.Margin = new Padding(4, 3, 4, 3);
             txtMobilePointsPerSearch.Name = "txtMobilePointsPerSearch";
+            txtMobilePointsPerSearch.ReadOnly = true;
             txtMobilePointsPerSearch.Size = new System.Drawing.Size(66, 23);
             txtMobilePointsPerSearch.TabIndex = 2;
             // 
@@ -246,6 +247,7 @@ namespace EdgeSearch.UI
             txtDesktopPointsPerSearch.Location = new System.Drawing.Point(112, 51);
             txtDesktopPointsPerSearch.Margin = new Padding(4, 3, 4, 3);
             txtDesktopPointsPerSearch.Name = "txtDesktopPointsPerSearch";
+            txtDesktopPointsPerSearch.ReadOnly = true;
             txtDesktopPointsPerSearch.Size = new System.Drawing.Size(66, 23);
             txtDesktopPointsPerSearch.TabIndex = 2;
             // 

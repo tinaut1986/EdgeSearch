@@ -4,6 +4,7 @@ using EdgeSearch.Properties;
 using EdgeSearch.Utils;
 using Microsoft.Web.WebView2.Core;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -115,25 +116,6 @@ namespace EdgeSearch.UI
 
             chkMobile.DataBindings.Clear();
             chkMobile.DataBindings.Add(nameof(chkMobile.Checked), search, nameof(search.IsMobile));
-
-            txtLowerLimit.DataBindings.Clear();
-            txtLowerLimit.DataBindings.Add(nameof(txtLowerLimit.Text), search.Preferences, nameof(search.Preferences.MinWait));
-
-            txtUpperLimit.DataBindings.Clear();
-            txtUpperLimit.DataBindings.Add(nameof(txtUpperLimit.Text), search.Preferences, nameof(search.Preferences.MaxWait));
-
-            txtSearches.DataBindings.Clear();
-            txtSearches.DataBindings.Add(nameof(txtSearches.Text), search, nameof(search.SearchesCount));
-
-            txtCurrentPoints.DataBindings.Clear();
-            txtCurrentPoints.DataBindings.Add(nameof(txtCurrentPoints.Text), search, nameof(search.CurrentPoints));
-
-            txtPointsLimit.DataBindings.Clear();
-            txtPointsLimit.DataBindings.Add(nameof(txtPointsLimit.Text), search, nameof(search.PointsLimit));
-
-            //pbSearches.DataBindings.Clear();
-            //pbSearches.DataBindings.Add(nameof(pbSearches.Maximum), search, nameof(search.SearchesProgressBarMax), true);
-            //pbSearches.DataBindings.Add(nameof(pbSearches.Value), search, nameof(search.SearchesProgressBarValue), true);
 
             lblRewardsPB.DataBindings.Clear();
             lblRewardsPB.DataBindings.Add(nameof(lblRewardsPB.Text), search, nameof(search.RewardsString));
@@ -325,6 +307,8 @@ namespace EdgeSearch.UI
             pbSearches.Maximum = search.SearchesProgressBarMax;
             pbSearches.Value = search.SearchesProgressBarValue;
             pbSearches.PaintedColor = search.SearchesProgressBarColor;
+
+            lblSearches.Text = $"Searches: {search.SearchesCount} (x{search.PointsPersearch}) | Points: {search.CurrentPoints} / {search.PointsLimit} | Refresh range (s): {search.Preferences.MinWait} / {search.Preferences.MaxWait}";
         }
 
         public async Task ReloadSearchsWeb()
@@ -366,49 +350,55 @@ namespace EdgeSearch.UI
             toolTip1.SetToolTip(pbSearches, $"Expected time: {minTime:hh\\:mm\\:ss} - {maxTime:hh\\:mm\\:ss}");
         }
 
-        public async Task<(int currentPoints, int maxPoints)> ExtractPoints(string searchType)
+        public async Task<(int currentPoints, int maxPoints, int pointsPerSearch)> ExtractPoints(string searchType)
         {
             string jsCode = $@"
-                (function() {{
-                    var result = '';
-                    // Buscar el contenedor que contiene el texto específico
-                    var pointElements = document.querySelectorAll('.pointsBreakdownCard');
-            
-                    pointElements.forEach(function(element) {{
-                        var label = element.querySelector('a').innerText;  // Obtener el texto del label (por ejemplo, 'Búsqueda en PC')
-                        if (label.includes('{searchType}')) {{
-                            // Si coincide con el tipo de búsqueda, extraer los puntos
-                            var pointsText = element.querySelector('.pointsDetail p.pointsDetail').innerText;
-                            result = pointsText.trim();  // Guardar los puntos en el resultado
-                        }}
-                    }});
+        (function() {{
+            var result = {{}};
+            // Buscar el contenedor que contiene el texto específico
+            var pointElements = document.querySelectorAll('.pointsBreakdownCard');
+    
+            pointElements.forEach(function(element) {{
+                var label = element.querySelector('a').innerText;
+                if (label.includes('{searchType}')) {{
+                    // Extraer los puntos
+                    var pointsText = element.querySelector('.pointsDetail p.pointsDetail').innerText;
+                    result.points = pointsText.trim();
 
-                    return result;  // Devolver los puntos (ejemplo: '12 / 90')
-                }})();";
+                    // Extraer los puntos por búsqueda
+                    var descriptionText = element.querySelector('.description').innerText;
+                    var match = descriptionText.match(/(\d+)\s+puntos?\s+por\s+búsqueda/);
+                    if (match) {{
+                        result.pointsPerSearch = match[1];
+                    }}
+                }}
+            }});
 
-            string result = await wvRewards.CoreWebView2.ExecuteScriptAsync(jsCode);
+            return JSON.stringify(result);
+        }})();";
 
-            // Limpiar las comillas del resultado
-            result = result.Replace("\"", "").Trim();
+            string resultJson = await wvRewards.CoreWebView2.ExecuteScriptAsync(jsCode);
 
-            // Verificar si el resultado contiene valores
-            if (!string.IsNullOrEmpty(result))
+            resultJson = resultJson.Trim('"').Replace("\\\"", "\"");
+
+            // Deserializar el resultado JSON
+            var resultObj = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(resultJson);
+
+            if (resultObj != null && resultObj.ContainsKey("points") && resultObj.ContainsKey("pointsPerSearch"))
             {
-                // Separar los puntos (ejemplo: '12 / 90' -> [12, 90])
-                string[] pointsArray = result.Split('/');
+                string[] pointsArray = resultObj["points"].Split('/');
                 if (pointsArray.Length == 2)
                 {
-                    // Convertir los valores a enteros
                     int currentPoints = int.Parse(pointsArray[0].Trim());
                     int maxPoints = int.Parse(pointsArray[1].Trim());
+                    int pointsPerSearch = int.Parse(resultObj["pointsPerSearch"]);
 
-                    // Devolver los dos valores
-                    return (currentPoints, maxPoints);
+                    return (currentPoints, maxPoints, pointsPerSearch);
                 }
             }
 
-            // Si no se encuentran valores o hay un error, devolver 0, 0
-            return (0, 0);
+            // Si no se encuentran valores o hay un error, devolver 0, 0, 0
+            return (0, 0, 0);
         }
 
         public async Task WaitForTextToBeVisible(string textToFind)
