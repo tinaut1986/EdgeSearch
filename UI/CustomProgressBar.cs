@@ -20,7 +20,7 @@ namespace EdgeSearch.UI
                 if (base.Text != value)
                 {
                     base.Text = value;
-                    Invalidate();
+                    Invalidate();  // Redraw only when text changes
                 }
             }
         }
@@ -34,7 +34,7 @@ namespace EdgeSearch.UI
                 if (paintedColor != value)
                 {
                     paintedColor = value;
-                    Invalidate();
+                    Invalidate();  // Redraw only when the color changes
                 }
             }
         }
@@ -48,7 +48,7 @@ namespace EdgeSearch.UI
                 if (paintedForeColor != value)
                 {
                     paintedForeColor = value;
-                    Invalidate();
+                    Invalidate();  // Redraw only when the color changes
                 }
             }
         }
@@ -59,68 +59,64 @@ namespace EdgeSearch.UI
             PaintedColor = Color.Green;
             ForeColor = Color.Black;
             PaintedForeColor = Color.White;
+            DoubleBuffered = true;  // Enable double buffering to prevent flickering
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            using (Graphics g = e.Graphics)
+            // Use the graphics object from PaintEventArgs
+            Graphics g = e.Graphics;
+
+            Rectangle rect = ClientRectangle;
+            rect.Inflate(-1, -1);  // Shrink the rect slightly to avoid clipping issues
+
+            // Fill the unpainted portion
+            using (Brush unpaintedBrush = new SolidBrush(BackColor))
             {
-                Rectangle rect = ClientRectangle;
+                g.FillRectangle(unpaintedBrush, rect);
+            }
 
-                // Ajustar el rectángulo para que el borde quede dentro del área visible
-                rect.Inflate(-1, -1);
+            // Calculate the painted area based on the current value
+            Rectangle paintedRect = new Rectangle(rect.X, rect.Y, (int)(rect.Width * ((double)Value / Maximum)), rect.Height);
+            using (Brush paintedBrush = new SolidBrush(paintedColor))
+            {
+                g.FillRectangle(paintedBrush, paintedRect);
+            }
 
-                switch (Style)
+            // Draw the border of the ProgressBar
+            using (Pen borderPen = new Pen(Color.Gray))
+            {
+                g.DrawRectangle(borderPen, rect);
+            }
+
+            // Draw the text in the middle
+            SizeF textSize = g.MeasureString(Text, Font);
+            PointF textLocation = new PointF((Width - textSize.Width) / 2, (Height - textSize.Height) / 2);
+
+            // Text in the painted portion
+            if (paintedRect.Width > 0)
+            {
+                Rectangle clipRect = new Rectangle(rect.X, rect.Y, paintedRect.Width, rect.Height);
+                g.SetClip(clipRect);  // Clip the drawing region to the painted area
+                using (Brush paintedTextBrush = new SolidBrush(PaintedForeColor))
                 {
-                    case ProgressBarStyle.Blocks:
-                    case ProgressBarStyle.Continuous:
-                        {
-                            // Dibujar la parte no pintada
-                            using (Brush unpaintedBrush = new SolidBrush(BackColor))
-                            {
-                                g.FillRectangle(unpaintedBrush, rect);
-                            }
-
-                            // Dibujar la parte pintada
-                            Rectangle paintedRect = new Rectangle(rect.X, rect.Y, (int)(rect.Width * ((double)Value / Maximum)), rect.Height);
-                            using (Brush paintedBrush = new SolidBrush(paintedColor))
-                            {
-                                g.FillRectangle(paintedBrush, paintedRect);
-                            }
-
-                            // Dibujar el borde del ProgressBar
-                            using (Pen borderPen = new Pen(Color.Gray)) // Puedes cambiar el color del borde si es necesario
-                            {
-                                g.DrawRectangle(borderPen, rect);
-                            }
-
-                            // Dibujar el texto en dos colores
-                            SizeF textSize = g.MeasureString(Text, Font);
-                            PointF location = new PointF((Width - textSize.Width) / 2, (Height - textSize.Height) / 2);
-
-                            // Dibujar la parte del texto en la parte pintada
-                            g.SetClip(paintedRect);
-                            using (Brush paintedTextBrush = new SolidBrush(PaintedForeColor))
-                            {
-                                g.DrawString(Text, Font, paintedTextBrush, location);
-                            }
-
-                            // Dibujar la parte del texto en la parte no pintada
-                            g.SetClip(rect);
-                            g.SetClip(paintedRect, System.Drawing.Drawing2D.CombineMode.Exclude);
-                            using (Brush unpaintedTextBrush = new SolidBrush(ForeColor))
-                            {
-                                g.DrawString(Text, Font, unpaintedTextBrush, location);
-                            }
-
-                            break;
-                        }
-                    case ProgressBarStyle.Marquee:
-                        {
-                            break;
-                        }
+                    g.DrawString(Text, Font, paintedTextBrush, textLocation);
                 }
             }
+
+            // Text in the unpainted portion
+            if (paintedRect.Width < rect.Width)
+            {
+                Rectangle clipRect = new Rectangle(paintedRect.Right, rect.Y, rect.Width - paintedRect.Width, rect.Height);
+                g.SetClip(clipRect);  // Clip the drawing region to the unpainted area
+                using (Brush unpaintedTextBrush = new SolidBrush(ForeColor))
+                {
+                    g.DrawString(Text, Font, unpaintedTextBrush, textLocation);
+                }
+            }
+
+            // Reset clipping
+            g.ResetClip();
         }
     }
 }
