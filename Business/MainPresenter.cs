@@ -30,11 +30,10 @@ namespace EdgeSearch.Business
         #endregion
 
         #region Constructors and destructor
-        public MainPresenter(MainForm mainForm, Search search, Preferences preferences)
+        public MainPresenter(MainForm mainForm, Search search)
         {
             _mainForm = mainForm;
             _search = search;
-            _search.Preferences = preferences;
             _awaker = new Awaker();
             _random = new Random();
 
@@ -126,19 +125,19 @@ namespace EdgeSearch.Business
 
             }, null);
 
-            _mainForm.BindFields(_search);
+            _mainForm.BindFields();
         }
 
 
         private void _mainForm_SearchesNavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
         {
-            _mainForm.RefreshSearchesURL(_search);
+            _mainForm.RefreshSearchesURL();
         }
 
         private void _mainForm_PlayRewardsClicked(object sender, EventArgs e)
         {
             if (!_search.RewardsPlayed)
-                _mainForm.OpenRewards(_search);
+                _mainForm.OpenRewards();
         }
 
         private void _mainForm_PlaySearchesClicked(object sender, EventArgs e)
@@ -156,7 +155,7 @@ namespace EdgeSearch.Business
         private void RefreshNextSearch()
         {
             _search.NextSearch = CreateSearch();
-            _mainForm.UpdateInterface(_search);
+            _mainForm.UpdateInterface();
         }
 
         private async Task DoSearch()
@@ -175,7 +174,7 @@ namespace EdgeSearch.Business
             else
                 _search.DesktopSearchesCount++;
 
-            _mainForm.UpdateInterface(_search);
+            _mainForm.UpdateInterface();
 
             await _mainForm.OpenSearchesURL(_search.URL);
         }
@@ -310,7 +309,7 @@ namespace EdgeSearch.Business
                 await ExtractPoints();
             }
 
-            _mainForm.UpdateInterface(_search);
+            _mainForm.UpdateInterface();
         }
 
         private async Task ExtractPoints()
@@ -343,7 +342,7 @@ namespace EdgeSearch.Business
                 _search.Preferences.MobilePointsPersearch = 0;
             }
 
-            _mainForm.BindFields(_search);
+            _mainForm.BindFields();
         }
 
 
@@ -360,12 +359,12 @@ namespace EdgeSearch.Business
                 Play();
 
                 if (openRewards)
-                    _mainForm.OpenRewards(_search);
+                    _mainForm.OpenRewards();
             }
             else
                 Stop();
 
-            _mainForm.UpdateInterface(_search);
+            _mainForm.UpdateInterface();
         }
 
         private void Stop()
@@ -393,7 +392,7 @@ namespace EdgeSearch.Business
             _search.ElapsedSeconds = 0;
             _search.SecondsToRefresh = _random.Next(_search.Preferences.MinWait, _search.Preferences.MaxWait + 1);
 
-            _mainForm.UpdateInterface(_search);
+            _mainForm.UpdateInterface();
         }
 
         private async Task RefreshMobileMode(bool reloadWeb)
@@ -419,7 +418,7 @@ namespace EdgeSearch.Business
                 await _mainForm.ReloadSearchsWeb();
             }
 
-            _mainForm.UpdateInterface(_search);
+            _mainForm.UpdateInterface();
         }
 
         private string GetSaga() => _search.Sagas[_random.Next(0, _search.Sagas.Count)];
@@ -457,9 +456,9 @@ namespace EdgeSearch.Business
 
             await ExtractPoints();
 
-            _mainForm.UpdateInterface(_search);
+            _mainForm.UpdateInterface();
 
-            _mainForm.BindFields(_search);
+            _mainForm.BindFields();
 
             RefreshNextSearch();
         }
@@ -496,7 +495,7 @@ namespace EdgeSearch.Business
             _search.MobileSearchesCount = 0;
             _search.DesktopSearchesCount = 0;
             await ChangeMobileMode(Preferences.Mode.Desktop, true);
-            _mainForm.UpdateInterface(_search);
+            _mainForm.UpdateInterface();
         }
 
         private void _mainForm_PreferencesClciked(object sender, EventArgs e)
@@ -506,8 +505,8 @@ namespace EdgeSearch.Business
             {
                 form.ShowDialog();
                 _search.Preferences = new Preferences("Config\\config.json");
-                _mainForm.BindFields(_search);
-                _mainForm.UpdateInterface(_search);
+                _mainForm.BindFields();
+                _mainForm.UpdateInterface();
             }
         }
 

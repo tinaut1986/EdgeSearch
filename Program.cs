@@ -25,9 +25,9 @@ namespace EdgeSearch
         {
             Preferences preferences = new Preferences("Config\\config.json");
             Search search = new Search(preferences);
-            MainForm mainForm = new MainForm();
+            MainForm mainForm = new MainForm(search);
             // Carga las preferencias
-            MainPresenter presenter = new MainPresenter(mainForm, search, preferences);
+            MainPresenter presenter = new MainPresenter(mainForm, search);
             return mainForm;
         }
     }

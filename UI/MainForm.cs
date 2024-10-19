@@ -15,6 +15,8 @@ namespace EdgeSearch.UI
     public partial class MainForm : Form
     {
         #region Members
+        private Search _search;
+
         public event EventHandler PlayClicked;
         public event EventHandler FullPlayClicked;
         public event EventHandler ForceClicked;
@@ -32,9 +34,11 @@ namespace EdgeSearch.UI
         #endregion
 
         #region Constructors & destructor
-        public MainForm()
+        public MainForm(Search search)
         {
             InitializeComponent();
+
+            _search = search;
 
             FixButtons();
 
@@ -105,16 +109,16 @@ namespace EdgeSearch.UI
             btnNext.FitImage();
         }
 
-        public void BindFields(Search search)
+        public void BindFields()
         {
             txtURL.DataBindings.Clear();
-            txtURL.DataBindings.Add(nameof(txtURL.Text), search, nameof(search.URL));
+            txtURL.DataBindings.Add(nameof(txtURL.Text), _search, nameof(_search.URL));
 
             txtNextSearch.DataBindings.Clear();
-            txtNextSearch.DataBindings.Add(nameof(txtNextSearch.Text), search, nameof(search.NextSearch));
+            txtNextSearch.DataBindings.Add(nameof(txtNextSearch.Text), _search, nameof(_search.NextSearch));
 
             chkMobile.DataBindings.Clear();
-            chkMobile.DataBindings.Add(nameof(chkMobile.Checked), search, nameof(search.IsMobile));
+            chkMobile.DataBindings.Add(nameof(chkMobile.Checked), _search, nameof(_search.IsMobile));
         }
 
         private void InitializeEvents()
@@ -185,9 +189,9 @@ namespace EdgeSearch.UI
             await ReloadSearchsWeb();
         }
 
-        public void RefreshSearchesURL(Search search)
+        public void RefreshSearchesURL()
         {
-            search.URL = wvSearches.Source;
+            _search.URL = wvSearches.Source;
         }
 
         public async Task SetRewardsURL(Uri url)
@@ -198,12 +202,12 @@ namespace EdgeSearch.UI
                 await ReloadRewardsWeb();
         }
 
-        public async void OpenRewards(Search search)
+        public async void OpenRewards()
         {
-            if (search.RewardsPlayed)
+            if (_search.RewardsPlayed)
                 return;
 
-            search.RewardsPlayed = true;
+            _search.RewardsPlayed = true;
 
             SetRewardsProgressBarState(true);
 
@@ -268,13 +272,13 @@ namespace EdgeSearch.UI
                 await Task.Delay(6000); // Espera 6 segundos antes de volver a ejecutar la función
             }
 
-            search.RewardsPlayed = false;
+            _search.RewardsPlayed = false;
             SetRewardsProgressBarState(false);
         }
 
-        public void UpdateInterface(Search search)
+        public void UpdateInterface()
         {
-            if (!search.IsPlaying)
+            if (!_search.IsPlaying)
             {
                 btnPlay.Image = Resources.play;
 
@@ -299,11 +303,11 @@ namespace EdgeSearch.UI
 
             txtURL.Text = wvSearches.Source.AbsoluteUri;
 
-            UpdateProgressBarSearches(search);
+            UpdateProgressBarSearches(_search);
 
-            UpdateProgressBarRewards(search);
+            UpdateProgressBarRewards(_search);
 
-            lblSearches.Text = $"Searches: {search.SearchesCount} (x{search.PointsPersearch}) | Points: {search.CurrentPoints} / {search.PointsLimit} | Refresh range (s): {search.Preferences.MinWait} / {search.Preferences.MaxWait}";
+            lblSearches.Text = $"Searches: {_search.SearchesCount} (x{_search.PointsPersearch}) | Points: {_search.CurrentPoints} / {_search.PointsLimit} | Refresh range (s): {_search.Preferences.MinWait} / {_search.Preferences.MaxWait}";
         }
 
         public void UpdateProgressBarRewards(Search search)
