@@ -16,7 +16,6 @@ namespace EdgeSearch.UI
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             btnPlay = new System.Windows.Forms.Button();
             lblNextSearch = new System.Windows.Forms.Label();
@@ -46,9 +45,8 @@ namespace EdgeSearch.UI
             wvRewards = new Microsoft.Web.WebView2.WinForms.WebView2();
             panel1 = new System.Windows.Forms.Panel();
             panel2 = new System.Windows.Forms.Panel();
-            lblRewardsPB = new System.Windows.Forms.Label();
-            lblSearchesPB = new System.Windows.Forms.Label();
-            toolTip1 = new System.Windows.Forms.ToolTip(components);
+            flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            pbRewards = new CustomProgressBar();
             menuStrip1.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             tabControl1.SuspendLayout();
@@ -58,6 +56,7 @@ namespace EdgeSearch.UI
             ((System.ComponentModel.ISupportInitialize)wvRewards).BeginInit();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
+            flowLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
             // btnPlay
@@ -65,7 +64,7 @@ namespace EdgeSearch.UI
             btnPlay.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             btnPlay.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             btnPlay.Image = Properties.Resources.play;
-            btnPlay.Location = new System.Drawing.Point(1180, 2);
+            btnPlay.Location = new System.Drawing.Point(1185, 1);
             btnPlay.Name = "btnPlay";
             btnPlay.Size = new System.Drawing.Size(25, 25);
             btnPlay.TabIndex = 13;
@@ -123,11 +122,11 @@ namespace EdgeSearch.UI
             // 
             pbSearches.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             pbSearches.ForeColor = System.Drawing.Color.Black;
-            pbSearches.Location = new System.Drawing.Point(66, 3);
+            pbSearches.Location = new System.Drawing.Point(3, 3);
             pbSearches.Name = "pbSearches";
             pbSearches.PaintedColor = System.Drawing.Color.Green;
             pbSearches.PaintedForeColor = System.Drawing.Color.White;
-            pbSearches.Size = new System.Drawing.Size(324, 23);
+            pbSearches.Size = new System.Drawing.Size(523, 23);
             pbSearches.TabIndex = 19;
             // 
             // menuStrip1
@@ -324,37 +323,34 @@ namespace EdgeSearch.UI
             // 
             // panel2
             // 
-            panel2.Controls.Add(pbSearches);
+            panel2.Controls.Add(flowLayoutPanel1);
             panel2.Controls.Add(btnPlay);
-            panel2.Controls.Add(lblRewardsPB);
-            panel2.Controls.Add(lblSearchesPB);
             panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             panel2.Location = new System.Drawing.Point(3, 495);
             panel2.Name = "panel2";
             panel2.Size = new System.Drawing.Size(1213, 29);
             panel2.TabIndex = 20;
             // 
-            // lblRewardsPB
+            // flowLayoutPanel1
             // 
-            lblRewardsPB.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            lblRewardsPB.AutoSize = true;
-            lblRewardsPB.Location = new System.Drawing.Point(396, 7);
-            lblRewardsPB.Name = "lblRewardsPB";
-            lblRewardsPB.Size = new System.Drawing.Size(54, 15);
-            lblRewardsPB.TabIndex = 14;
-            lblRewardsPB.Text = "Rewards:";
-            lblRewardsPB.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            flowLayoutPanel1.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            flowLayoutPanel1.Controls.Add(pbSearches);
+            flowLayoutPanel1.Controls.Add(pbRewards);
+            flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            flowLayoutPanel1.Name = "flowLayoutPanel1";
+            flowLayoutPanel1.Size = new System.Drawing.Size(1179, 29);
+            flowLayoutPanel1.TabIndex = 20;
             // 
-            // lblSearchesPB
+            // pbRewards
             // 
-            lblSearchesPB.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            lblSearchesPB.AutoSize = true;
-            lblSearchesPB.Location = new System.Drawing.Point(4, 7);
-            lblSearchesPB.Name = "lblSearchesPB";
-            lblSearchesPB.Size = new System.Drawing.Size(56, 15);
-            lblSearchesPB.TabIndex = 14;
-            lblSearchesPB.Text = "Searches:";
-            lblSearchesPB.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            pbRewards.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            pbRewards.ForeColor = System.Drawing.Color.Black;
+            pbRewards.Location = new System.Drawing.Point(532, 3);
+            pbRewards.Name = "pbRewards";
+            pbRewards.PaintedColor = System.Drawing.Color.Green;
+            pbRewards.PaintedForeColor = System.Drawing.Color.White;
+            pbRewards.Size = new System.Drawing.Size(324, 23);
+            pbRewards.TabIndex = 19;
             // 
             // MainForm
             // 
@@ -379,7 +375,7 @@ namespace EdgeSearch.UI
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             panel2.ResumeLayout(false);
-            panel2.PerformLayout();
+            flowLayoutPanel1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -402,12 +398,9 @@ namespace EdgeSearch.UI
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Label lblSearchesPB;
-        private System.Windows.Forms.Label lblRewardsPB;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tsmiPreferences;
         private System.Windows.Forms.ToolStripMenuItem tsmiPlaySearches;
-        private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tpSearches;
         private Microsoft.Web.WebView2.WinForms.WebView2 wvSearches;
@@ -416,6 +409,8 @@ namespace EdgeSearch.UI
         private System.Windows.Forms.Button btnOpen;
         private System.Windows.Forms.TabPage tpRewards;
         private Microsoft.Web.WebView2.WinForms.WebView2 wvRewards;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private CustomProgressBar pbRewards;
     }
 }
 

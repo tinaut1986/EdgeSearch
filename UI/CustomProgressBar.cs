@@ -112,7 +112,7 @@ namespace EdgeSearch.UI
             }
         }
 
-        private void DrawStandardProgressBar(Graphics g, Rectangle rect)
+        private void DrawProgressBar(Graphics g, Rectangle rect, Rectangle? paintedRect = null)
         {
             // Draw the unpainted portion
             using (Brush unpaintedBrush = new SolidBrush(BackColor))
@@ -120,11 +120,13 @@ namespace EdgeSearch.UI
                 g.FillRectangle(unpaintedBrush, rect);
             }
 
-            // Draw the painted portion
-            Rectangle paintedRect = new Rectangle(rect.X, rect.Y, (int)(rect.Width * ((double)Value / Maximum)), rect.Height);
-            using (Brush paintedBrush = new SolidBrush(paintedColor))
+            // Draw the painted portion if provided
+            if (paintedRect.HasValue)
             {
-                g.FillRectangle(paintedBrush, paintedRect);
+                using (Brush paintedBrush = new SolidBrush(paintedColor))
+                {
+                    g.FillRectangle(paintedBrush, paintedRect.Value);
+                }
             }
 
             // Draw the border of the ProgressBar
@@ -132,38 +134,39 @@ namespace EdgeSearch.UI
             {
                 g.DrawRectangle(borderPen, rect);
             }
+        }
 
-            // Draw the text in the center
-            DrawCenteredText(g, rect, paintedRect);
+        private void DrawStandardProgressBar(Graphics g, Rectangle rect)
+        {
+            Rectangle? paintedRect = null;
+
+            // Ensure that Maximum is greater than 0 to avoid division by zero
+            if (Maximum > 0)
+            {
+                // Calculate the painted portion
+                paintedRect = new Rectangle(rect.X, rect.Y, (int)(rect.Width * ((double)Value / Maximum)), rect.Height);
+            }
+
+            // Draw the base ProgressBar (background, border, and optional paintedRect)
+            DrawProgressBar(g, rect, paintedRect);
+
+            // Draw the text in the center considering the painted area
+            DrawCenteredText(g, rect, paintedRect ?? Rectangle.Empty);
         }
 
         private void DrawMarqueeProgressBar(Graphics g, Rectangle rect)
         {
-            // Draw the unpainted portion
-            using (Brush unpaintedBrush = new SolidBrush(BackColor))
-            {
-                g.FillRectangle(unpaintedBrush, rect);
-            }
-
-            // Draw the moving portion of the Marquee
             int marqueeWidth = rect.Width / 4; // Width of the moving block (adjustable)
             Rectangle marqueeRect = new Rectangle(marqueeOffset, rect.Y, marqueeWidth, rect.Height);
-            using (Brush marqueeBrush = new SolidBrush(paintedColor))
-            {
-                g.FillRectangle(marqueeBrush, marqueeRect);
-            }
+
+            // Draw the base ProgressBar (background and border)
+            DrawProgressBar(g, rect, marqueeRect);
 
             // Move the Marquee block
             marqueeOffset += 5; // Marquee speed
             if (marqueeOffset > rect.Width)
             {
                 marqueeOffset = -marqueeWidth; // Reset the cycle when the block goes out of view
-            }
-
-            // Draw the border of the ProgressBar
-            using (Pen borderPen = new Pen(Color.Gray))
-            {
-                g.DrawRectangle(borderPen, rect);
             }
 
             // Draw the text in the center

@@ -6,6 +6,7 @@ using Microsoft.Web.WebView2.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -24,7 +25,6 @@ namespace EdgeSearch.UI
         public event EventHandler NextSearchClicked;
         public event EventHandler PreferencesClciked;
         public event EventHandler MobileChanged;
-        public event EventHandler PbSearchesMouseMove;
         public event EventHandler<CoreWebView2InitializationCompletedEventArgs> SearchesCoreWebView2InitializationCompleted;
         public event EventHandler<CoreWebView2InitializationCompletedEventArgs> RewardsCoreWebView2InitializationCompleted;
         public event EventHandler<CoreWebView2NewWindowRequestedEventArgs> RewardsNewWindowRequested;
@@ -65,7 +65,6 @@ namespace EdgeSearch.UI
         #endregion
 
         #region Methods
-
 
         public void SelectTab(TabType tabType)
         {
@@ -116,9 +115,6 @@ namespace EdgeSearch.UI
 
             chkMobile.DataBindings.Clear();
             chkMobile.DataBindings.Add(nameof(chkMobile.Checked), search, nameof(search.IsMobile));
-
-            lblRewardsPB.DataBindings.Clear();
-            lblRewardsPB.DataBindings.Add(nameof(lblRewardsPB.Text), search, nameof(search.RewardsString));
         }
 
         private void InitializeEvents()
@@ -139,14 +135,13 @@ namespace EdgeSearch.UI
             chkMobile.Click += ChkMobile_Click;
             btnOpen.Click += btnOpen_Click;
             txtURL.KeyPress += txtURL_KeyPress;
-
-            pbSearches.MouseMove += PbSearches_MouseMove;
         }
 
         private void FinalizeEvents()
         {
             wvSearches.CoreWebView2InitializationCompleted -= WvSearches_CoreWebView2InitializationCompleted;
             wvRewards.CoreWebView2InitializationCompleted -= WvRewards_CoreWebView2InitializationCompleted;
+
             tsmiPlayRewards.Click -= TsmiPlayRewards_Click;
             tsmiPlaySearches.Click -= TsmiPlaySearches_Click;
             tsmiPreferences.Click -= TsmiPreferences_Click;
@@ -160,8 +155,6 @@ namespace EdgeSearch.UI
             chkMobile.Click -= ChkMobile_Click;
             btnOpen.Click -= btnOpen_Click;
             txtURL.KeyPress -= txtURL_KeyPress;
-
-            pbSearches.MouseMove -= PbSearches_MouseMove;
         }
 
         public void SetUserAgent(string userAgent)
@@ -302,11 +295,14 @@ namespace EdgeSearch.UI
             string strikeSeconds = $"{Convert.ToInt32((now - strikeTime).TotalSeconds)}/{search.Preferences.StrikeDelay} sec";
             string searchsSeconds = $"{search.ElapsedSeconds}/{search.SecondsToRefresh} sec";
 
-            pbSearches.Text = $"{strikeCount} ({strikeSeconds}) - {searchsSeconds}";
+            pbSearches.Text = $"Searches: {strikeCount} ({strikeSeconds}) - {searchsSeconds} | Expected time: {ExecutionTimeCalculator.GetTotalExpectedTime(search)}";
 
             pbSearches.Maximum = search.SearchesProgressBarMax;
             pbSearches.Value = search.SearchesProgressBarValue;
             pbSearches.PaintedColor = search.SearchesProgressBarColor;
+            pbSearches.ForeColor = System.Drawing.Color.Black;
+
+            pbRewards.Text = search.RewardsString;
 
             lblSearches.Text = $"Searches: {search.SearchesCount} (x{search.PointsPersearch}) | Points: {search.CurrentPoints} / {search.PointsLimit} | Refresh range (s): {search.Preferences.MinWait} / {search.Preferences.MaxWait}";
         }
@@ -345,9 +341,12 @@ namespace EdgeSearch.UI
             }
         }
 
-        public void SetExecutionExpectedTime(TimeSpan minTime, TimeSpan maxTime)
+        public void SetRewardsProgressBarState(bool play)
         {
-            toolTip1.SetToolTip(pbSearches, $"Expected time: {minTime:hh\\:mm\\:ss} - {maxTime:hh\\:mm\\:ss}");
+            if (play)
+                pbRewards.Style = ProgressBarStyle.Marquee;
+            else
+                pbRewards.Style = ProgressBarStyle.Continuous;
         }
 
         public async Task<(int currentPoints, int maxPoints, int pointsPerSearch)> ExtractPoints(string searchType)
@@ -401,15 +400,18 @@ namespace EdgeSearch.UI
             return (0, 0, 0);
         }
 
-        public async Task WaitForTextToBeVisible(string textToFind)
+        public async Task<bool> WaitForTextToBeVisible(string textToFind, int timeoutMilliseconds = 10000)
         {
             // Esperar hasta que la página en el WebView2 esté cargada y no sea "about:blank"
             while ((wvRewards?.CoreWebView2?.Source ?? "about:blank") == "about:blank")
                 await Task.Delay(1000);
 
+            // Tiempo máximo de espera
+            var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.CancelAfter(timeoutMilliseconds);
+
             // Bucle para comprobar si el texto está presente
-            bool textFound = false;
-            while (!textFound)
+            while (!cancellationTokenSource.IsCancellationRequested)
             {
                 // Código JavaScript que comprueba si el texto está presente
                 string jsCode = $@"
@@ -421,10 +423,13 @@ namespace EdgeSearch.UI
                 string result = await wvRewards.CoreWebView2.ExecuteScriptAsync(jsCode);
 
                 if (result == "true")
-                    textFound = true;
+                    return true;
                 else
                     await Task.Delay(1000);
             }
+
+            // Si no se encontró el texto dentro del tiempo límite
+            return false;
         }
 
         #endregion
@@ -484,11 +489,6 @@ namespace EdgeSearch.UI
         {
             if (e.KeyChar == (char)ConsoleKey.Enter)
                 btnOpen_Click(null, null);
-        }
-
-        private void PbSearches_MouseMove(object sender, MouseEventArgs e)
-        {
-            PbSearchesMouseMove?.Invoke(sender, e);
         }
 
         private void btnNext_Click(object sender, EventArgs e)

@@ -1,8 +1,9 @@
-﻿using System;
+﻿using EdgeSearch.Models;
+using System;
 
 namespace EdgeSearch.Utils
 {
-    public class ExecutionTimeCalculator
+    public static class ExecutionTimeCalculator
     {
         public static TimeSpan CalculateTotalTime(int totalExecutions, int executionsOffset, int executionsPerStrike,
             int pauseBetweenExecutions, int pauseBetweenStrikes, int elapsedSeconds, int currentPause, DateTime? strikeTime, bool playing)
@@ -35,6 +36,73 @@ namespace EdgeSearch.Utils
                 total += -pauseBetweenExecutions + currentPause;
 
             return TimeSpan.FromSeconds(total);
+        }
+
+        public static TimeSpan GetDesktopExpectedTimeMin(Search search)
+        {
+            return CalculateTotalTime(totalExecutions: (search.Preferences.DesktopPointsPersearch == 0 ? 0 : (search.Preferences.DesktopTotalPoints / search.Preferences.DesktopPointsPersearch)) - (search.DesktopSearchesCount),
+                                      executionsOffset: search.Preferences.StrikeAmount - search.StrikeCount,
+                                      executionsPerStrike: search.Preferences.StrikeAmount,
+                                      pauseBetweenExecutions: search.Preferences.MinWait,
+                                      pauseBetweenStrikes: search.Preferences.StrikeDelay,
+                                      elapsedSeconds: search.IsDesktop ? search.ElapsedSeconds : 0,
+                                      currentPause: search.IsDesktop ? search.SecondsToRefresh : 0,
+                                      strikeTime: search.StrikeTime,
+                                      playing: search.IsPlaying && search.IsDesktop);
+        }
+
+        public static TimeSpan GetDesktopExpectedTimeMax(Search search)
+        {
+            return CalculateTotalTime(totalExecutions: (search.Preferences.DesktopPointsPersearch == 0 ? 0 : (search.Preferences.DesktopTotalPoints / search.Preferences.DesktopPointsPersearch)) - (search.DesktopSearchesCount),
+                                      executionsOffset: search.Preferences.StrikeAmount - search.StrikeCount,
+                                      executionsPerStrike: search.Preferences.StrikeAmount,
+                                      pauseBetweenExecutions: search.Preferences.MaxWait,
+                                      pauseBetweenStrikes: search.Preferences.StrikeDelay,
+                                      elapsedSeconds: search.IsDesktop ? search.ElapsedSeconds : 0,
+                                      currentPause: search.IsDesktop ? search.SecondsToRefresh : 0,
+                                      strikeTime: search.StrikeTime,
+                                      playing: search.IsPlaying && search.IsDesktop);
+        }
+
+        public static TimeSpan GetMobileExpectedTimeMin(Search search)
+        {
+            return CalculateTotalTime(totalExecutions: (search.Preferences.MobilePointsPersearch == 0 ? 0 : (search.Preferences.MobileTotalPoints / search.Preferences.MobilePointsPersearch)) - (search.MobileSearchesCount),
+                                      executionsOffset: search.Preferences.StrikeAmount - search.StrikeCount,
+                                      executionsPerStrike: search.Preferences.StrikeAmount,
+                                      pauseBetweenExecutions: search.Preferences.MinWait,
+                                      pauseBetweenStrikes: search.Preferences.StrikeDelay,
+                                      elapsedSeconds: search.IsMobile ? search.ElapsedSeconds : 0,
+                                      currentPause: search.IsMobile ? search.SecondsToRefresh : 0,
+                                      strikeTime: search.StrikeTime,
+                                      playing: search.IsPlaying && search.IsMobile);
+        }
+
+        public static TimeSpan GetMobileExpectedTimeMax(Search search)
+        {
+            return CalculateTotalTime(totalExecutions: (search.Preferences.MobilePointsPersearch == 0 ? 0 : (search.Preferences.MobileTotalPoints / search.Preferences.MobilePointsPersearch)) - (search.MobileSearchesCount),
+                                      executionsOffset: search.Preferences.StrikeAmount - search.StrikeCount,
+                                      executionsPerStrike: search.Preferences.StrikeAmount,
+                                      pauseBetweenExecutions: search.Preferences.MaxWait,
+                                      pauseBetweenStrikes: search.Preferences.StrikeDelay,
+                                      elapsedSeconds: search.IsMobile ? search.ElapsedSeconds : 0,
+                                      currentPause: search.IsMobile ? search.SecondsToRefresh : 0,
+                                      strikeTime: search.StrikeTime,
+                                      playing: search.IsPlaying && search.IsMobile);
+        }
+
+        public static TimeSpan GetTotalExpectedTimeMin(Search search)
+        {
+            return GetMobileExpectedTimeMin(search) + GetDesktopExpectedTimeMin(search);
+        }
+
+        public static TimeSpan GetTotalExpectedTimeMax(Search search)
+        {
+            return GetMobileExpectedTimeMax(search) + GetDesktopExpectedTimeMax(search);
+        }
+
+        public static String GetTotalExpectedTime(Search search)
+        {
+            return $"Expected time: {GetTotalExpectedTimeMin(search):hh\\:mm\\:ss} - {GetTotalExpectedTimeMax(search):hh\\:mm\\:ss}";
         }
     }
 }

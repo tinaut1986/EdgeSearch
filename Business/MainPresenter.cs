@@ -57,7 +57,6 @@ namespace EdgeSearch.Business
             _mainForm.PlaySearchesClicked += _mainForm_PlaySearchesClicked;
             _mainForm.NextSearchClicked += _mainForm_NextSearchClicked;
             _mainForm.MobileChanged += _mainForm_MobileChanged;
-            _mainForm.PbSearchesMouseMove += _mainForm_PbSearchesMouseMove;
             _mainForm.PlayClicked += _mainForm_PlayClicked;
             _mainForm.FullPlayClicked += _mainForm_FullPlayClicked;
             _mainForm.ResetClicked += _mainForm_ResetClicked;
@@ -101,6 +100,7 @@ namespace EdgeSearch.Business
                 newWebView.Source = new Uri(e.Uri);
                 _search.CurrentRewards++;
                 _search.TotalRewards++;
+                _mainForm.SetRewardsProgressBarState(true);
 
                 // Asociar el evento de navegación completada
                 EventHandler<CoreWebView2NavigationCompletedEventArgs> handler = null;
@@ -117,6 +117,8 @@ namespace EdgeSearch.Business
 
                         newWebView.Dispose();
                         _search.CurrentRewards--;
+                        if (Search.CurrentRewards == 0)
+                            _mainForm.SetRewardsProgressBarState(false);
                     }
                 };
 
@@ -315,20 +317,34 @@ namespace EdgeSearch.Business
             await _mainForm.ReloadRewardsWeb();
             await Task.Delay(2000);
 
+            // Buscar primero "Búsqueda en PC"
             await _mainForm.WaitForTextToBeVisible("Búsqueda en PC");
             (int currentPoints, int maxPoints, int pointsPerSearch) desktop = await _mainForm.ExtractPoints("Búsqueda en PC");
-            _search.DesktopSearchesCount = desktop.currentPoints / _search.Preferences.DesktopPointsPersearch;
-            _search.Preferences.DesktopTotalPoints = desktop.maxPoints;
             _search.Preferences.DesktopPointsPersearch = desktop.pointsPerSearch;
+            _search.Preferences.DesktopTotalPoints = desktop.maxPoints;
+            _search.DesktopSearchesCount = desktop.currentPoints / _search.Preferences.DesktopPointsPersearch;
 
-            await _mainForm.WaitForTextToBeVisible("Búsqueda en móviles");
-            (int currentPoints, int maxPoints, int pointsPerSearch) mobile = await _mainForm.ExtractPoints("Búsqueda en móviles");
-            _search.MobileSearchesCount = mobile.currentPoints / _search.Preferences.MobilePointsPersearch;
-            _search.Preferences.MobileTotalPoints = mobile.maxPoints;
-            _search.Preferences.MobilePointsPersearch = mobile.pointsPerSearch;
+            // Intentar encontrar "Búsqueda en móviles" con un tiempo límite de 10 segundos
+            bool mobileSearchVisible = await _mainForm.WaitForTextToBeVisible("Búsqueda en móviles", 1000);
+
+            if (mobileSearchVisible)
+            {
+                (int currentPoints, int maxPoints, int pointsPerSearch) mobile = await _mainForm.ExtractPoints("Búsqueda en móviles");
+                _search.Preferences.MobilePointsPersearch = mobile.pointsPerSearch;
+                _search.Preferences.MobileTotalPoints = mobile.maxPoints;
+                _search.MobileSearchesCount = mobile.currentPoints / _search.Preferences.MobilePointsPersearch;
+            }
+            else
+            {
+                // Manejar el caso cuando "Búsqueda en móviles" no está disponible
+                _search.MobileSearchesCount = 0;
+                _search.Preferences.MobileTotalPoints = 0;
+                _search.Preferences.MobilePointsPersearch = 0;
+            }
 
             _mainForm.BindFields(_search);
         }
+
 
         private async Task ChangeMobileMode(Preferences.Mode mode, bool reloadWeb)
         {
@@ -462,51 +478,6 @@ namespace EdgeSearch.Business
         {
             _search.IsMobile = !_search.IsMobile;
             await RefreshMobileMode(true);
-        }
-
-        private void _mainForm_PbSearchesMouseMove(object sender, EventArgs e)
-        {
-            TimeSpan desktopMin = ExecutionTimeCalculator.CalculateTotalTime(totalExecutions: (_search.Preferences.DesktopTotalPoints / _search.Preferences.DesktopPointsPersearch) - (_search.DesktopSearchesCount),
-                                                                             executionsOffset: _search.Preferences.StrikeAmount - _search.StrikeCount,
-                                                                             executionsPerStrike: _search.Preferences.StrikeAmount,
-                                                                             pauseBetweenExecutions: _search.Preferences.MinWait,
-                                                                             pauseBetweenStrikes: _search.Preferences.StrikeDelay,
-                                                                             elapsedSeconds: _search.IsDesktop ? _search.ElapsedSeconds : 0,
-                                                                             currentPause: _search.IsDesktop ? _search.SecondsToRefresh : 0,
-                                                                             strikeTime: _search.StrikeTime,
-                                                                             playing: _search.IsPlaying && _search.IsDesktop);
-
-            TimeSpan desktopMax = ExecutionTimeCalculator.CalculateTotalTime(totalExecutions: (_search.Preferences.DesktopTotalPoints / _search.Preferences.DesktopPointsPersearch) - (_search.DesktopSearchesCount),
-                                                                             executionsOffset: _search.Preferences.StrikeAmount - _search.StrikeCount,
-                                                                             executionsPerStrike: _search.Preferences.StrikeAmount,
-                                                                             pauseBetweenExecutions: _search.Preferences.MaxWait,
-                                                                             pauseBetweenStrikes: _search.Preferences.StrikeDelay,
-                                                                             elapsedSeconds: _search.IsDesktop ? _search.ElapsedSeconds : 0,
-                                                                             currentPause: _search.IsDesktop ? _search.SecondsToRefresh : 0,
-                                                                             strikeTime: _search.StrikeTime,
-                                                                             playing: _search.IsPlaying && _search.IsDesktop);
-
-            TimeSpan mobileMin = ExecutionTimeCalculator.CalculateTotalTime(totalExecutions: (_search.Preferences.MobileTotalPoints / _search.Preferences.MobilePointsPersearch) - (_search.MobileSearchesCount),
-                                                                            executionsOffset: _search.Preferences.StrikeAmount - _search.StrikeCount,
-                                                                            executionsPerStrike: _search.Preferences.StrikeAmount,
-                                                                            pauseBetweenExecutions: _search.Preferences.MinWait,
-                                                                            pauseBetweenStrikes: _search.Preferences.StrikeDelay,
-                                                                            elapsedSeconds: _search.IsMobile ? _search.ElapsedSeconds : 0,
-                                                                            currentPause: _search.IsMobile ? _search.SecondsToRefresh : 0,
-                                                                            strikeTime: _search.StrikeTime,
-                                                                            playing: _search.IsPlaying && _search.IsMobile);
-
-            TimeSpan mobileMax = ExecutionTimeCalculator.CalculateTotalTime(totalExecutions: (_search.Preferences.MobileTotalPoints / _search.Preferences.MobilePointsPersearch) - (_search.MobileSearchesCount),
-                                                                            executionsOffset: _search.Preferences.StrikeAmount - _search.StrikeCount,
-                                                                            executionsPerStrike: _search.Preferences.StrikeAmount,
-                                                                            pauseBetweenExecutions: _search.Preferences.MaxWait,
-                                                                            pauseBetweenStrikes: _search.Preferences.StrikeDelay,
-                                                                            elapsedSeconds: _search.IsMobile ? _search.ElapsedSeconds : 0,
-                                                                            currentPause: _search.IsMobile ? _search.SecondsToRefresh : 0,
-                                                                            strikeTime: _search.StrikeTime,
-                                                                            playing: _search.IsPlaying && _search.IsMobile);
-
-            _mainForm.SetExecutionExpectedTime(desktopMin + mobileMin, desktopMax + mobileMax);
         }
 
         private void _mainForm_PlayClicked(object sender, EventArgs e)
