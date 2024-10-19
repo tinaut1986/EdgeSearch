@@ -18,7 +18,6 @@ namespace EdgeSearch.UI
         public event EventHandler PlayClicked;
         public event EventHandler FullPlayClicked;
         public event EventHandler ForceClicked;
-        public event EventHandler OpenClicked;
         public event EventHandler ResetClicked;
         public event EventHandler PlaySearchesClicked;
         public event EventHandler PlayRewardsClicked;
@@ -28,6 +27,8 @@ namespace EdgeSearch.UI
         public event EventHandler<CoreWebView2InitializationCompletedEventArgs> SearchesCoreWebView2InitializationCompleted;
         public event EventHandler<CoreWebView2InitializationCompletedEventArgs> RewardsCoreWebView2InitializationCompleted;
         public event EventHandler<CoreWebView2NewWindowRequestedEventArgs> RewardsNewWindowRequested;
+        public event EventHandler<CoreWebView2NavigationCompletedEventArgs> SearchesNavigationCompleted;
+
         #endregion
 
         #region Constructors & destructor
@@ -100,7 +101,6 @@ namespace EdgeSearch.UI
         {
             btnPlay.FitImage();
             chkMobile.FitImage();
-            btnOpen.FitImage();
             btnSearch.FitImage();
             btnNext.FitImage();
         }
@@ -133,8 +133,6 @@ namespace EdgeSearch.UI
             btnSearch.Click += btnForce_Click;
             btnNext.Click += btnNext_Click;
             chkMobile.Click += ChkMobile_Click;
-            btnOpen.Click += btnOpen_Click;
-            txtURL.KeyPress += txtURL_KeyPress;
         }
 
         private void FinalizeEvents()
@@ -153,8 +151,6 @@ namespace EdgeSearch.UI
             btnSearch.Click -= btnForce_Click;
             btnNext.Click -= btnNext_Click;
             chkMobile.Click -= ChkMobile_Click;
-            btnOpen.Click -= btnOpen_Click;
-            txtURL.KeyPress -= txtURL_KeyPress;
         }
 
         public void SetUserAgent(string userAgent)
@@ -177,14 +173,21 @@ namespace EdgeSearch.UI
 
             await wvSearches.EnsureCoreWebView2Async();
             await wvRewards.EnsureCoreWebView2Async();
+
+            wvSearches.NavigationCompleted += wvSearches_NavigationCompleted;
         }
 
-        public async Task SetSearchsURL(Uri url)
+        public async Task OpenSearchesURL(Uri url)
         {
             if (wvSearches.Source != url)
                 wvSearches.Source = url;
 
             await ReloadSearchsWeb();
+        }
+
+        public void RefreshSearchesURL(Search search)
+        {
+            search.URL = wvSearches.Source;
         }
 
         public async Task SetRewardsURL(Uri url)
@@ -202,8 +205,12 @@ namespace EdgeSearch.UI
 
             search.RewardsPlayed = true;
 
+            SetRewardsProgressBarState(true);
+
             // Definir la clase CSS que se va a usar
             string className = "mee-icon-AddMedium";
+            string excludeClassName = "exclusiveLockedPts";
+
 
             while (true)
             {
@@ -213,13 +220,18 @@ namespace EdgeSearch.UI
                         // Obtener una referencia a los botones por su clase CSS
                         var buttons = document.getElementsByClassName('{0}');
 
-                        // Verificar si hay elementos con esa clase
-                        if (buttons.length > 0) {{
-                            // Mostrar en la consola el número de elementos encontrados
-                            console.log('Elementos encontrados con la clase {0}: ' + buttons.length);
+                        // Filtrar los botones que no tengan la clase 'exclusiveLockedPts'
+                        var validButtons = Array.prototype.filter.call(buttons, function(button) {{
+                            return !button.classList.contains('{1}');
+                        }});
 
-                            // Simular el clic en el primer botón encontrado
-                            buttons[0].click();
+                        // Verificar si hay elementos con esa clase filtrados
+                        if (validButtons.length > 0) {{
+                            // Mostrar en la consola el número de elementos válidos encontrados
+                            console.log('Elementos válidos encontrados con la clase {0}: ' + validButtons.length);
+
+                            // Simular el clic en el primer botón válido encontrado
+                            validButtons[0].click();
 
                             // Esperar 5 segundos antes de recargar
                             setTimeout(function() {{
@@ -230,12 +242,12 @@ namespace EdgeSearch.UI
                             // Guardar el resultado en window para accederlo más tarde
                             window.scriptResult = true;
                         }} else {{
-                            console.log('No se encontraron elementos con la clase {0}');
+                            console.log('No se encontraron elementos válidos con la clase {0}');
                             // Guardar el resultado en window para accederlo más tarde
                             window.scriptResult = false;
                         }}
                     }})();
-                ", className);
+                ", className, excludeClassName);
 
                 // Ejecutar el script
                 await wvRewards.ExecuteScriptAsync(script);
@@ -246,17 +258,18 @@ namespace EdgeSearch.UI
                 // Recuperar el resultado almacenado en window.scriptResult
                 var result = await wvRewards.ExecuteScriptAsync("window.scriptResult");
 
-                // Verificar el resultado y salir si ya no quedan mas elementos
+                // Verificar el resultado y salir si ya no quedan más elementos
                 if (result == null || result.ToString().ToLower() != "true")
                 {
                     Console.WriteLine("No quedan más botones para pulsar.");
                     break;
-
                 }
+
                 await Task.Delay(6000); // Espera 6 segundos antes de volver a ejecutar la función
             }
 
             search.RewardsPlayed = false;
+            SetRewardsProgressBarState(false);
         }
 
         public void UpdateInterface(Search search)
@@ -284,10 +297,22 @@ namespace EdgeSearch.UI
 
             btnPlay.FitImage();
 
-            btnOpen.Enabled = !search.IsPlaying;
-            txtURL.ReadOnly = search.IsPlaying;
             txtURL.Text = wvSearches.Source.AbsoluteUri;
 
+            UpdateProgressBarSearches(search);
+
+            UpdateProgressBarRewards(search);
+
+            lblSearches.Text = $"Searches: {search.SearchesCount} (x{search.PointsPersearch}) | Points: {search.CurrentPoints} / {search.PointsLimit} | Refresh range (s): {search.Preferences.MinWait} / {search.Preferences.MaxWait}";
+        }
+
+        public void UpdateProgressBarRewards(Search search)
+        {
+            pbRewards.Text = search.RewardsString;
+        }
+
+        public void UpdateProgressBarSearches(Search search)
+        {
             DateTime now = DateTime.Now;
             DateTime strikeTime = (search.StrikeTime ?? now);
 
@@ -301,10 +326,6 @@ namespace EdgeSearch.UI
             pbSearches.Value = search.SearchesProgressBarValue;
             pbSearches.PaintedColor = search.SearchesProgressBarColor;
             pbSearches.ForeColor = System.Drawing.Color.Black;
-
-            pbRewards.Text = search.RewardsString;
-
-            lblSearches.Text = $"Searches: {search.SearchesCount} (x{search.PointsPersearch}) | Points: {search.CurrentPoints} / {search.PointsLimit} | Refresh range (s): {search.Preferences.MinWait} / {search.Preferences.MaxWait}";
         }
 
         public async Task ReloadSearchsWeb()
@@ -450,6 +471,11 @@ namespace EdgeSearch.UI
             RewardsNewWindowRequested?.Invoke(sender, e);
         }
 
+        private void wvSearches_NavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
+        {
+            SearchesNavigationCompleted?.Invoke(sender, e);
+        }
+
         private void TsmiPlayRewards_Click(object sender, EventArgs e)
         {
             PlayRewardsClicked?.Invoke(sender, e);
@@ -478,17 +504,6 @@ namespace EdgeSearch.UI
         private void btnPlay_Click(object sender, EventArgs e)
         {
             FullPlayClicked?.Invoke(sender, e);
-        }
-
-        private void btnOpen_Click(object sender, EventArgs e)
-        {
-            OpenClicked?.Invoke(sender, e);
-        }
-
-        private void txtURL_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar == (char)ConsoleKey.Enter)
-                btnOpen_Click(null, null);
         }
 
         private void btnNext_Click(object sender, EventArgs e)

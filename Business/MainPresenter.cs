@@ -52,7 +52,6 @@ namespace EdgeSearch.Business
         {
             _mainForm.Load += _mainForm_Load;
             _mainForm.ForceClicked += _mainForm_ForceClicked;
-            _mainForm.OpenClicked += _mainForm_OpenClicked;
             _mainForm.PlayRewardsClicked += _mainForm_PlayRewardsClicked;
             _mainForm.PlaySearchesClicked += _mainForm_PlaySearchesClicked;
             _mainForm.NextSearchClicked += _mainForm_NextSearchClicked;
@@ -61,14 +60,16 @@ namespace EdgeSearch.Business
             _mainForm.FullPlayClicked += _mainForm_FullPlayClicked;
             _mainForm.ResetClicked += _mainForm_ResetClicked;
             _mainForm.RewardsNewWindowRequested += _mainForm_RewardsNewWindowRequested;
+            _mainForm.SearchesNavigationCompleted += _mainForm_SearchesNavigationCompleted;
             _mainForm.PreferencesClciked += _mainForm_PreferencesClciked;
 
             _mainForm.SearchesCoreWebView2InitializationCompleted += _mainForm_SearchesCoreWebView2InitializationCompleted;
             _mainForm.RewardsCoreWebView2InitializationCompleted += _mainForm_RewardsCoreWebView2InitializationCompleted;
         }
 
-        private async void _mainForm_SearchesCoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
+        private void _mainForm_SearchesCoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
         {
+
         }
 
         private async void _mainForm_RewardsCoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
@@ -100,7 +101,7 @@ namespace EdgeSearch.Business
                 newWebView.Source = new Uri(e.Uri);
                 _search.CurrentRewards++;
                 _search.TotalRewards++;
-                _mainForm.SetRewardsProgressBarState(true);
+                _mainForm.UpdateProgressBarRewards(_search);
 
                 // Asociar el evento de navegación completada
                 EventHandler<CoreWebView2NavigationCompletedEventArgs> handler = null;
@@ -117,8 +118,7 @@ namespace EdgeSearch.Business
 
                         newWebView.Dispose();
                         _search.CurrentRewards--;
-                        if (Search.CurrentRewards == 0)
-                            _mainForm.SetRewardsProgressBarState(false);
+                        _mainForm.UpdateProgressBarRewards(_search);
                     }
                 };
 
@@ -129,9 +129,10 @@ namespace EdgeSearch.Business
             _mainForm.BindFields(_search);
         }
 
-        private async void _mainForm_OpenClicked(object sender, EventArgs e)
+
+        private void _mainForm_SearchesNavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
         {
-            await _mainForm.SetSearchsURL(_search.URL);
+            _mainForm.RefreshSearchesURL(_search);
         }
 
         private void _mainForm_PlayRewardsClicked(object sender, EventArgs e)
@@ -176,7 +177,7 @@ namespace EdgeSearch.Business
 
             _mainForm.UpdateInterface(_search);
 
-            await _mainForm.SetSearchsURL(_search.URL);
+            await _mainForm.OpenSearchesURL(_search.URL);
         }
 
         private void AddHistoricSearch(string currentSearch)
@@ -257,7 +258,7 @@ namespace EdgeSearch.Business
                     }
                     else
                     {
-                        _mainForm.UpdateInterface(_search);
+                        _mainForm.UpdateProgressBarSearches(_search);
                         return;
                     }
                 }
@@ -450,7 +451,7 @@ namespace EdgeSearch.Business
         {
             await _mainForm.EnsureCoreWebView2Async();
             _search.URL = new Uri("https://www.bing.es/");
-            await _mainForm.SetSearchsURL(_search.URL);
+            await _mainForm.OpenSearchesURL(_search.URL);
             await _mainForm.SetRewardsURL(new Uri("https://rewards.bing.com/pointsbreakdown"));
             _mainForm.SelectTabAndReturn(Common.TabType.Rewards);
 

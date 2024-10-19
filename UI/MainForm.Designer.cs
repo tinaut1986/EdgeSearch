@@ -40,7 +40,6 @@ namespace EdgeSearch.UI
             wvSearches = new Microsoft.Web.WebView2.WinForms.WebView2();
             txtURL = new System.Windows.Forms.TextBox();
             chkMobile = new System.Windows.Forms.CheckBox();
-            btnOpen = new System.Windows.Forms.Button();
             tpRewards = new System.Windows.Forms.TabPage();
             wvRewards = new Microsoft.Web.WebView2.WinForms.WebView2();
             panel1 = new System.Windows.Forms.Panel();
@@ -234,7 +233,6 @@ namespace EdgeSearch.UI
             tpSearches.Controls.Add(wvSearches);
             tpSearches.Controls.Add(txtURL);
             tpSearches.Controls.Add(chkMobile);
-            tpSearches.Controls.Add(btnOpen);
             tpSearches.Location = new System.Drawing.Point(4, 24);
             tpSearches.Name = "tpSearches";
             tpSearches.Padding = new System.Windows.Forms.Padding(3);
@@ -260,7 +258,8 @@ namespace EdgeSearch.UI
             txtURL.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             txtURL.Location = new System.Drawing.Point(6, 6);
             txtURL.Name = "txtURL";
-            txtURL.Size = new System.Drawing.Size(1135, 23);
+            txtURL.ReadOnly = true;
+            txtURL.Size = new System.Drawing.Size(1164, 23);
             txtURL.TabIndex = 0;
             // 
             // chkMobile
@@ -274,16 +273,6 @@ namespace EdgeSearch.UI
             chkMobile.TabIndex = 2;
             chkMobile.Tag = "";
             chkMobile.UseVisualStyleBackColor = true;
-            // 
-            // btnOpen
-            // 
-            btnOpen.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            btnOpen.Image = Properties.Resources.open_url;
-            btnOpen.Location = new System.Drawing.Point(1147, 5);
-            btnOpen.Name = "btnOpen";
-            btnOpen.Size = new System.Drawing.Size(25, 25);
-            btnOpen.TabIndex = 1;
-            btnOpen.UseVisualStyleBackColor = true;
             // 
             // tpRewards
             // 
@@ -406,7 +395,6 @@ namespace EdgeSearch.UI
         private Microsoft.Web.WebView2.WinForms.WebView2 wvSearches;
         private System.Windows.Forms.TextBox txtURL;
         private System.Windows.Forms.CheckBox chkMobile;
-        private System.Windows.Forms.Button btnOpen;
         private System.Windows.Forms.TabPage tpRewards;
         private Microsoft.Web.WebView2.WinForms.WebView2 wvRewards;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
