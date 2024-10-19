@@ -421,15 +421,20 @@ namespace EdgeSearch.UI
             return (0, 0, 0);
         }
 
-        public async Task<bool> WaitForTextToBeVisible(string textToFind, int timeoutMilliseconds = 10000)
+        public async Task<bool> WaitForTextToBeVisible(string textToFind, int? timeoutMilliseconds = null)
         {
             // Esperar hasta que la página en el WebView2 esté cargada y no sea "about:blank"
             while ((wvRewards?.CoreWebView2?.Source ?? "about:blank") == "about:blank")
                 await Task.Delay(1000);
 
             // Tiempo máximo de espera
-            var cancellationTokenSource = new CancellationTokenSource();
-            cancellationTokenSource.CancelAfter(timeoutMilliseconds);
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+            // Si el tiempo de espera es especificado, configurar el CancellationToken
+            if (timeoutMilliseconds.HasValue)
+            {
+                cancellationTokenSource.CancelAfter(timeoutMilliseconds.Value);
+            }
 
             // Bucle para comprobar si el texto está presente
             while (!cancellationTokenSource.IsCancellationRequested)
@@ -445,11 +450,12 @@ namespace EdgeSearch.UI
 
                 if (result == "true")
                     return true;
-                else
-                    await Task.Delay(1000);
+
+                // Espera antes de volver a comprobar
+                await Task.Delay(1000);
             }
 
-            // Si no se encontró el texto dentro del tiempo límite
+            // Si no se encontró el texto dentro del tiempo límite (si se especificó)
             return false;
         }
 
