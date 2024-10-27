@@ -28,8 +28,6 @@ namespace EdgeSearch.Models
         private int _currentAmbassadors;
         private int _totalAmbassadors;
 
-        private Preferences _preferences;
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         // This method is called by the Set accessor of each property.  
@@ -43,19 +41,7 @@ namespace EdgeSearch.Models
         #region Constructors
         public Search()
         {
-            _preferences = new Preferences();
-
-            _preferences.MinWait = 15;
-            _preferences.MaxWait = 90;
             CurrentMode = Mode.Desktop;
-            _preferences.MobileUserAgent = "Mozilla/5.0 (Linux; Android 9; ASUS_X00TD; Flow) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/359.0.0.288 Mobile Safari/537.36"; ;
-            _preferences.DesktopUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 Edg/128.0.0.0";
-        }
-
-        public Search(Preferences preferences)
-            : base()
-        {
-            _preferences = preferences;
         }
         #endregion
 
@@ -96,28 +82,6 @@ namespace EdgeSearch.Models
             {
                 _elapsedSeconds = value;
                 NotifyPropertyChanged();
-            }
-        }
-
-        public int SearchesProgressBarValue
-        {
-            get
-            {
-                if (StrikeTime != null)
-                    return Math.Max(0, _preferences.StrikeDelay - Convert.ToInt32((DateTime.Now - StrikeTime.Value).TotalSeconds));
-                else
-                    return ElapsedSeconds;
-            }
-        }
-
-        public int SearchesProgressBarMax
-        {
-            get
-            {
-                if (StrikeTime != null)
-                    return _preferences.StrikeDelay;
-                else
-                    return _secondsToRefresh;
             }
         }
 
@@ -162,26 +126,6 @@ namespace EdgeSearch.Models
             }
         }
 
-        public int TotalProgressBar
-        {
-            get
-            {
-                if (StrikeCount < _preferences.StrikeAmount)
-                    return SecondsToRefresh;
-                else
-                    return _preferences.StrikeDelay;
-            }
-        }
-        public int CurrentProgressBar
-        {
-            get
-            {
-                if (StrikeCount < _preferences.StrikeAmount)
-                    return SecondsToRefresh;
-                else
-                    return _preferences.StrikeDelay;
-            }
-        }
         public bool IsPlaying
         {
             get => _isPlaying;
@@ -250,43 +194,6 @@ namespace EdgeSearch.Models
             }
         }
 
-        public int PointsPersearch
-        {
-            get => CurrentMode == Mode.Mobile ? _preferences.MobilePointsPersearch : _preferences.DesktopPointsPersearch;
-            set
-            {
-                if (IsMobile)
-                    MobileSearchesCount = value;
-                else if (IsDesktop)
-                    DesktopSearchesCount = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        public int CurrentPoints
-        {
-            get => SearchesCount * PointsPersearch;
-            set
-            {
-                SearchesCount = value / PointsPersearch;
-                NotifyPropertyChanged();
-            }
-        }
-
-        public int PointsLimit
-        {
-            get => CurrentMode == Mode.Mobile ? _preferences.MobileTotalPoints : _preferences.DesktopTotalPoints;
-            set
-            {
-                if (IsMobile)
-                    _preferences.MobileTotalPoints = value;
-                else if (IsDesktop)
-                    _preferences.DesktopTotalPoints = value;
-
-                NotifyPropertyChanged();
-            }
-        }
-
 
         public bool RewardsPlayed
         {
@@ -298,12 +205,6 @@ namespace EdgeSearch.Models
         {
             get => _currentAmbassadors;
             set => _currentAmbassadors = value;
-        }
-
-        public Preferences Preferences
-        {
-            get => _preferences;
-            set => _preferences = value;
         }
 
         public int TotalAmbassadors

@@ -13,5 +13,8 @@
     <Compile Update="UI\PreferencesForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="UI\ProfilesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
 </Project>

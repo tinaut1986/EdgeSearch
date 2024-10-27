@@ -70,7 +70,7 @@ namespace EdgeSearch.models
 
                 preferences = new Preferences();
                 Map(preferences);
-                this.Save();
+                Save();
             }
             else
             {

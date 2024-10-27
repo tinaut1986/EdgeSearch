@@ -15,7 +15,7 @@ namespace EdgeSearch.UI
     public partial class MainForm : Form
     {
         #region Members
-        private Search _search;
+        private Profile _profile;
 
         public event EventHandler PlayClicked;
         public event EventHandler FullPlayClicked;
@@ -34,11 +34,11 @@ namespace EdgeSearch.UI
         #endregion
 
         #region Constructors & destructor
-        public MainForm(Search search)
+        public MainForm(Profile profile)
         {
             InitializeComponent();
 
-            _search = search;
+            _profile = profile;
 
             FixButtons();
 
@@ -112,48 +112,81 @@ namespace EdgeSearch.UI
         public void BindFields()
         {
             txtURL.DataBindings.Clear();
-            txtURL.DataBindings.Add(nameof(txtURL.Text), _search, nameof(_search.URL));
+            txtURL.DataBindings.Add(nameof(txtURL.Text), _profile.Search, nameof(_profile.Search.URL));
 
             txtNextSearch.DataBindings.Clear();
-            txtNextSearch.DataBindings.Add(nameof(txtNextSearch.Text), _search, nameof(_search.NextSearch));
+            txtNextSearch.DataBindings.Add(nameof(txtNextSearch.Text), _profile.Search, nameof(_profile.Search.NextSearch));
 
             chkMobile.DataBindings.Clear();
-            chkMobile.DataBindings.Add(nameof(chkMobile.Checked), _search, nameof(_search.IsMobile));
+            chkMobile.DataBindings.Add(nameof(chkMobile.Checked), _profile.Search, nameof(_profile.Search.IsMobile));
         }
 
         private void InitializeEvents()
         {
+            // Evento de inicialización del WebView2
             wvSearches.CoreWebView2InitializationCompleted += WvSearches_CoreWebView2InitializationCompleted;
             wvRewards.CoreWebView2InitializationCompleted += WvRewards_CoreWebView2InitializationCompleted;
 
-            tsmiPlayRewards.Click += TsmiPlayRewards_Click;
-            tsmiPlaySearches.Click += TsmiPlaySearches_Click;
-            tsmiPreferences.Click += TsmiPreferences_Click;
+            // Eventos de menú
+            var menuItems = new (ToolStripMenuItem item, EventHandler handler)[]
+            {
+                (tsmiPlayRewards, TsmiPlayRewards_Click),
+                (tsmiPlaySearches, TsmiPlaySearches_Click),
+                (tsmiPreferences, TsmiPreferences_Click),
+                (tsmiPlay, TsmiPlay_Click),
+                (tsmiReset, TsmiReset_Click)
+            };
 
-            tsmiPlay.Click += TsmiPlay_Click;
-            tsmiReset.Click += TsmiReset_Click;
+            foreach (var (item, handler) in menuItems)
+                item.Click += handler;
 
-            btnPlay.Click += btnPlay_Click;
-            btnSearch.Click += btnForce_Click;
-            btnNext.Click += btnNext_Click;
+            // Eventos de botones
+            var buttons = new (Button button, EventHandler handler)[]
+            {
+                (btnPlay, btnPlay_Click),
+                (btnSearch, btnForce_Click),
+                (btnNext, btnNext_Click)
+            };
+
+            foreach (var (button, handler) in buttons)
+                button.Click += handler;
+
+            // Evento para el checkbox
             chkMobile.Click += ChkMobile_Click;
         }
 
+
         private void FinalizeEvents()
         {
+            // Evento de inicialización del WebView2
             wvSearches.CoreWebView2InitializationCompleted -= WvSearches_CoreWebView2InitializationCompleted;
             wvRewards.CoreWebView2InitializationCompleted -= WvRewards_CoreWebView2InitializationCompleted;
 
-            tsmiPlayRewards.Click -= TsmiPlayRewards_Click;
-            tsmiPlaySearches.Click -= TsmiPlaySearches_Click;
-            tsmiPreferences.Click -= TsmiPreferences_Click;
+            // Eventos de menú
+            var menuItems = new (ToolStripMenuItem item, EventHandler handler)[]
+            {
+                (tsmiPlayRewards, TsmiPlayRewards_Click),
+                (tsmiPlaySearches, TsmiPlaySearches_Click),
+                (tsmiPreferences, TsmiPreferences_Click),
+                (tsmiPlay, TsmiPlay_Click),
+                (tsmiReset, TsmiReset_Click)
+            };
 
-            tsmiPlay.Click -= TsmiPlay_Click;
-            tsmiReset.Click -= TsmiReset_Click;
+            foreach (var (item, handler) in menuItems)
+                item.Click -= handler;
 
-            btnPlay.Click -= btnPlay_Click;
-            btnSearch.Click -= btnForce_Click;
-            btnNext.Click -= btnNext_Click;
+            // Eventos de botones
+            var buttons = new (Button button, EventHandler handler)[]
+            {
+                (btnPlay, btnPlay_Click),
+                (btnSearch, btnForce_Click),
+                (btnNext, btnNext_Click)
+            };
+
+            foreach (var (button, handler) in buttons)
+                button.Click -= handler;
+
+            // Evento para el checkbox
             chkMobile.Click -= ChkMobile_Click;
         }
 
@@ -191,7 +224,7 @@ namespace EdgeSearch.UI
 
         public void RefreshSearchesURL()
         {
-            _search.URL = wvSearches.Source;
+            _profile.Search.URL = wvSearches.Source;
         }
 
         public async Task SetRewardsURL(Uri url)
@@ -204,10 +237,10 @@ namespace EdgeSearch.UI
 
         public async void OpenRewards()
         {
-            if (_search.RewardsPlayed)
+            if (_profile.Search.RewardsPlayed)
                 return;
 
-            _search.RewardsPlayed = true;
+            _profile.Search.RewardsPlayed = true;
 
             SetRewardsProgressBarState(true);
 
@@ -272,13 +305,13 @@ namespace EdgeSearch.UI
                 await Task.Delay(6000); // Espera 6 segundos antes de volver a ejecutar la función
             }
 
-            _search.RewardsPlayed = false;
+            _profile.Search.RewardsPlayed = false;
             SetRewardsProgressBarState(false);
         }
 
         public void UpdateInterface()
         {
-            if (!_search.IsPlaying)
+            if (!_profile.Search.IsPlaying)
             {
                 btnPlay.Image = Resources.play;
 
@@ -303,11 +336,11 @@ namespace EdgeSearch.UI
 
             txtURL.Text = wvSearches.Source.AbsoluteUri;
 
-            UpdateProgressBarSearches(_search);
+            UpdateProgressBarSearches(_profile);
 
-            UpdateProgressBarRewards(_search);
+            UpdateProgressBarRewards(_profile.Search);
 
-            lblSearches.Text = $"Searches: {_search.SearchesCount} (x{_search.PointsPersearch}) | Points: {_search.CurrentPoints} / {_search.PointsLimit} | Refresh range (s): {_search.Preferences.MinWait} / {_search.Preferences.MaxWait}";
+            lblSearches.Text = $"Searches: {_profile.Search.SearchesCount} (x{_profile.PointsPersearch}) | Points: {_profile.CurrentPoints} / {_profile.PointsLimit} | Refresh range (s): {_profile.Preferences.MinWait} / {_profile.Preferences.MaxWait}";
         }
 
         public void UpdateProgressBarRewards(Search search)
@@ -315,20 +348,20 @@ namespace EdgeSearch.UI
             pbRewards.Text = search.RewardsString;
         }
 
-        public void UpdateProgressBarSearches(Search search)
+        public void UpdateProgressBarSearches(Profile profile)
         {
             DateTime now = DateTime.Now;
-            DateTime strikeTime = (search.StrikeTime ?? now);
+            DateTime strikeTime = (profile.Search.StrikeTime ?? now);
 
-            string strikeCount = $"{search.StrikeCount}/{search.Preferences.StrikeAmount}";
-            string strikeSeconds = $"{Convert.ToInt32((now - strikeTime).TotalSeconds)}/{search.Preferences.StrikeDelay} sec";
-            string searchsSeconds = $"{search.ElapsedSeconds}/{search.SecondsToRefresh} sec";
+            string strikeCount = $"{profile.Search.StrikeCount}/{profile.Preferences.StrikeAmount}";
+            string strikeSeconds = $"{Convert.ToInt32((now - strikeTime).TotalSeconds)}/{profile.Preferences.StrikeDelay} sec";
+            string searchsSeconds = $"{profile.Search.ElapsedSeconds}/{profile.Search.SecondsToRefresh} sec";
 
-            pbSearches.Text = $"Searches: {strikeCount} ({strikeSeconds}) - {searchsSeconds} | Expected time: {ExecutionTimeCalculator.GetTotalExpectedTime(search)}";
+            pbSearches.Text = $"Searches: {strikeCount} ({strikeSeconds}) - {searchsSeconds} | Expected time: {ExecutionTimeCalculator.GetTotalExpectedTime(profile)}";
 
-            pbSearches.Maximum = search.SearchesProgressBarMax;
-            pbSearches.Value = search.SearchesProgressBarValue;
-            pbSearches.PaintedColor = search.SearchesProgressBarColor;
+            pbSearches.Maximum = profile.SearchesProgressBarMax;
+            pbSearches.Value = profile.SearchesProgressBarValue;
+            pbSearches.PaintedColor = profile.Search.SearchesProgressBarColor;
             pbSearches.ForeColor = System.Drawing.Color.Black;
         }
 
@@ -377,29 +410,29 @@ namespace EdgeSearch.UI
         public async Task<(int currentPoints, int maxPoints, int pointsPerSearch)> ExtractPoints(string searchType)
         {
             string jsCode = $@"
-        (function() {{
-            var result = {{}};
-            // Buscar el contenedor que contiene el texto específico
-            var pointElements = document.querySelectorAll('.pointsBreakdownCard');
+                (function() {{
+                    var result = {{}};
+                    // Buscar el contenedor que contiene el texto específico
+                    var pointElements = document.querySelectorAll('.pointsBreakdownCard');
     
-            pointElements.forEach(function(element) {{
-                var label = element.querySelector('a').innerText;
-                if (label.includes('{searchType}')) {{
-                    // Extraer los puntos
-                    var pointsText = element.querySelector('.pointsDetail p.pointsDetail').innerText;
-                    result.points = pointsText.trim();
+                    pointElements.forEach(function(element) {{
+                        var label = element.querySelector('a').innerText;
+                        if (label.includes('{searchType}')) {{
+                            // Extraer los puntos
+                            var pointsText = element.querySelector('.pointsDetail p.pointsDetail').innerText;
+                            result.points = pointsText.trim();
 
-                    // Extraer los puntos por búsqueda
-                    var descriptionText = element.querySelector('.description').innerText;
-                    var match = descriptionText.match(/(\d+)\s+puntos?\s+por\s+búsqueda/);
-                    if (match) {{
-                        result.pointsPerSearch = match[1];
-                    }}
-                }}
-            }});
+                            // Extraer los puntos por búsqueda
+                            var descriptionText = element.querySelector('.description').innerText;
+                            var match = descriptionText.match(/(\d+)\s+puntos?\s+por\s+búsqueda/);
+                            if (match) {{
+                                result.pointsPerSearch = match[1];
+                            }}
+                        }}
+                    }});
 
-            return JSON.stringify(result);
-        }})();";
+                    return JSON.stringify(result);
+                }})();";
 
             string resultJson = await wvRewards.CoreWebView2.ExecuteScriptAsync(jsCode);
 

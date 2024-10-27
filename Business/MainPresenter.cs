@@ -1,7 +1,6 @@
 ﻿using EdgeSearch.models;
 using EdgeSearch.Models;
 using EdgeSearch.UI;
-using EdgeSearch.Utils;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 using System;
@@ -19,21 +18,21 @@ namespace EdgeSearch.Business
     {
         #region Members
         private MainForm _mainForm;
-        private Search _search;
+        private Profile _profile;
         private Random _random;
         private System.Windows.Forms.Timer _refreshTimer;
         private Awaker _awaker;
         #endregion
 
         #region Properties
-        Search Search => _search;
+        Profile Profile => _profile;
         #endregion
 
         #region Constructors and destructor
-        public MainPresenter(MainForm mainForm, Search search)
+        public MainPresenter(MainForm mainForm, Profile profile)
         {
             _mainForm = mainForm;
-            _search = search;
+            _profile = profile;
             _awaker = new Awaker();
             _random = new Random();
 
@@ -98,9 +97,9 @@ namespace EdgeSearch.Business
 
                 // Navegar a la URI solicitada
                 newWebView.Source = new Uri(e.Uri);
-                _search.CurrentRewards++;
-                _search.TotalRewards++;
-                _mainForm.UpdateProgressBarRewards(_search);
+                _profile.Search.CurrentRewards++;
+                _profile.Search.TotalRewards++;
+                _mainForm.UpdateProgressBarRewards(_profile.Search);
 
                 // Asociar el evento de navegación completada
                 EventHandler<CoreWebView2NavigationCompletedEventArgs> handler = null;
@@ -116,8 +115,8 @@ namespace EdgeSearch.Business
                         //newWebView.CoreWebView2.NavigationCompleted -= handler; // Desvincular el evento
 
                         newWebView.Dispose();
-                        _search.CurrentRewards--;
-                        _mainForm.UpdateProgressBarRewards(_search);
+                        _profile.Search.CurrentRewards--;
+                        _mainForm.UpdateProgressBarRewards(_profile.Search);
                     }
                 };
 
@@ -136,7 +135,7 @@ namespace EdgeSearch.Business
 
         private void _mainForm_PlayRewardsClicked(object sender, EventArgs e)
         {
-            if (!_search.RewardsPlayed)
+            if (!_profile.Search.RewardsPlayed)
                 _mainForm.OpenRewards();
         }
 
@@ -154,7 +153,7 @@ namespace EdgeSearch.Business
 
         private void RefreshNextSearch()
         {
-            _search.NextSearch = CreateSearch();
+            _profile.Search.NextSearch = CreateSearch();
             _mainForm.UpdateInterface();
         }
 
@@ -163,30 +162,30 @@ namespace EdgeSearch.Business
             if (!CanDoSearch())
                 Stop();
 
-            string currentSearch = _search.NextSearch;
+            string currentSearch = _profile.Search.NextSearch;
             RefreshNextSearch();
-            _search.URL = new Uri($"https://www.bing.com/search?q={currentSearch}&form=QBLH&sp=-1&ghc=1&lq=0&pq={currentSearch}");
+            _profile.Search.URL = new Uri($"https://www.bing.com/search?q={currentSearch}&form=QBLH&sp=-1&ghc=1&lq=0&pq={currentSearch}");
 
             AddHistoricSearch(currentSearch);
 
-            if (_search.IsMobile)
-                _search.MobileSearchesCount++;
+            if (_profile.Search.IsMobile)
+                _profile.Search.MobileSearchesCount++;
             else
-                _search.DesktopSearchesCount++;
+                _profile.Search.DesktopSearchesCount++;
 
             _mainForm.UpdateInterface();
 
-            await _mainForm.OpenSearchesURL(_search.URL);
+            await _mainForm.OpenSearchesURL(_profile.Search.URL);
         }
 
         private void AddHistoricSearch(string currentSearch)
         {
-            _search.UsedSearchs.Add(new Tuple<DateTime, Preferences.Mode, string>(DateTime.Now, _search.CurrentMode, currentSearch));
+            _profile.Search.UsedSearchs.Add(new Tuple<DateTime, Preferences.Mode, string>(DateTime.Now, _profile.Search.CurrentMode, currentSearch));
         }
 
         private bool CanDoSearch()
         {
-            return _search.UsedSearchs.Count(x => Math.Abs((x.Item1 - DateTime.Now).TotalSeconds) < 10) < 3;
+            return _profile.Search.UsedSearchs.Count(x => Math.Abs((x.Item1 - DateTime.Now).TotalSeconds) < 10) < 3;
         }
 
         private void LoadSearchesFromFile(string filePath)
@@ -203,12 +202,12 @@ namespace EdgeSearch.Business
             {
                 var xml = XElement.Load(finalPath);
 
-                _search.ToSearch = xml.Element("searches")?.Elements("item").Select(e => e.Value).ToList() ?? new List<string>();
-                _search.Sagas = xml.Element("sagas")?.Elements("item").Select(e => e.Value).ToList() ?? new List<string>();
-                _search.Hardware = xml.Element("hardware")?.Elements("item").Select(e => e.Value).ToList() ?? new List<string>();
-                _search.Retro = xml.Element("retro")?.Elements("item").Select(e => e.Value).ToList() ?? new List<string>();
-                _search.Games = xml.Element("games")?.Elements("item").Select(e => e.Value).ToList() ?? new List<string>();
-                _search.Companies = xml.Element("companies")?.Elements("item").Select(e => e.Value).ToList() ?? new List<string>();
+                _profile.Search.ToSearch = xml.Element("searches")?.Elements("item").Select(e => e.Value).ToList() ?? new List<string>();
+                _profile.Search.Sagas = xml.Element("sagas")?.Elements("item").Select(e => e.Value).ToList() ?? new List<string>();
+                _profile.Search.Hardware = xml.Element("hardware")?.Elements("item").Select(e => e.Value).ToList() ?? new List<string>();
+                _profile.Search.Retro = xml.Element("retro")?.Elements("item").Select(e => e.Value).ToList() ?? new List<string>();
+                _profile.Search.Games = xml.Element("games")?.Elements("item").Select(e => e.Value).ToList() ?? new List<string>();
+                _profile.Search.Companies = xml.Element("companies")?.Elements("item").Select(e => e.Value).ToList() ?? new List<string>();
             }
             else
                 MessageBox.Show($"El archivo {finalPath} no existe.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -220,7 +219,7 @@ namespace EdgeSearch.Business
             do
             {
                 // Selecciona un elemento al azar de la lista
-                search = _search.ToSearch[_random.Next(0, _search.ToSearch.Count)];
+                search = _profile.Search.ToSearch[_random.Next(0, _profile.Search.ToSearch.Count)];
 
                 search = search.Replace("%year%", DateTime.Today.Year.ToString());
                 if (search.Contains("%saga%"))
@@ -234,48 +233,48 @@ namespace EdgeSearch.Business
                 if (search.Contains("%company%"))
                     search = search.Replace("%company%", GetCompany());
             }
-            while (_search.UsedSearchs.Any(x => x.Item3 == search));
+            while (_profile.Search.UsedSearchs.Any(x => x.Item3 == search));
 
             return search;
         }
 
         private async void RefreshTimer_Tick(object sender, EventArgs e)
         {
-            if (_search.Preferences.StrikeAmount > 0)
+            if (_profile.Preferences.StrikeAmount > 0)
             {
-                if (_search.StrikeCount >= _search.Preferences.StrikeAmount)
+                if (_profile.Search.StrikeCount >= _profile.Preferences.StrikeAmount)
                 {
                     DateTime now = DateTime.Now;
 
-                    if (_search.StrikeTime == null)
-                        _search.StrikeTime = now;
+                    if (_profile.Search.StrikeTime == null)
+                        _profile.Search.StrikeTime = now;
 
-                    if (Convert.ToInt32((now - _search.StrikeTime.Value).TotalSeconds) > _search.Preferences.StrikeDelay)
+                    if (Convert.ToInt32((now - _profile.Search.StrikeTime.Value).TotalSeconds) > _profile.Preferences.StrikeDelay)
                     {
-                        _search.StrikeCount = 0;
-                        _search.StrikeTime = null;
+                        _profile.Search.StrikeCount = 0;
+                        _profile.Search.StrikeTime = null;
                     }
                     else
                     {
-                        _mainForm.UpdateProgressBarSearches(_search);
+                        _mainForm.UpdateProgressBarSearches(_profile);
                         return;
                     }
                 }
             }
 
-            _search.ElapsedSeconds++;
+            _profile.Search.ElapsedSeconds++;
 
-            if (_search.ElapsedSeconds >= _search.SecondsToRefresh)
+            if (_profile.Search.ElapsedSeconds >= _profile.Search.SecondsToRefresh)
             {
-                if (_search.ToSearch.Count == 0)
+                if (_profile.Search.ToSearch.Count == 0)
                 {
                     PlayAndStop(false);
                     return;
                 }
 
-                bool desktopPointsReached = (_search.DesktopSearchesCount * _search.Preferences.DesktopPointsPersearch) >= _search.Preferences.DesktopTotalPoints;
-                bool mobilePointsReached = (_search.MobileSearchesCount * _search.Preferences.MobilePointsPersearch) >= _search.Preferences.MobileTotalPoints;
-                if (!Search.IsMobile && desktopPointsReached)
+                bool desktopPointsReached = (_profile.Search.DesktopSearchesCount * _profile.Preferences.DesktopPointsPersearch) >= _profile.Preferences.DesktopTotalPoints;
+                bool mobilePointsReached = (_profile.Search.MobileSearchesCount * _profile.Preferences.MobilePointsPersearch) >= _profile.Preferences.MobileTotalPoints;
+                if (!_profile.Search.IsMobile && desktopPointsReached)
                 {
                     if (!mobilePointsReached)
                     {
@@ -287,7 +286,7 @@ namespace EdgeSearch.Business
                         return;
                     }
                 }
-                else if (Search.IsMobile && mobilePointsReached)
+                else if (_profile.Search.IsMobile && mobilePointsReached)
                 {
                     if (!desktopPointsReached)
                     {
@@ -301,8 +300,8 @@ namespace EdgeSearch.Business
                 }
 
                 RestartLimits();
-                if (_search.Preferences.StrikeAmount > 0)
-                    _search.StrikeCount++;
+                if (_profile.Preferences.StrikeAmount > 0)
+                    _profile.Search.StrikeCount++;
 
                 await DoSearch();
 
@@ -320,9 +319,9 @@ namespace EdgeSearch.Business
             // Buscar primero "Búsqueda en PC"
             await _mainForm.WaitForTextToBeVisible("Búsqueda en PC");
             (int currentPoints, int maxPoints, int pointsPerSearch) desktop = await _mainForm.ExtractPoints("Búsqueda en PC");
-            _search.Preferences.DesktopPointsPersearch = desktop.pointsPerSearch;
-            _search.Preferences.DesktopTotalPoints = desktop.maxPoints;
-            _search.DesktopSearchesCount = desktop.currentPoints / _search.Preferences.DesktopPointsPersearch;
+            _profile.Preferences.DesktopPointsPersearch = desktop.pointsPerSearch;
+            _profile.Preferences.DesktopTotalPoints = desktop.maxPoints;
+            _profile.Search.DesktopSearchesCount = desktop.currentPoints / _profile.Preferences.DesktopPointsPersearch;
 
             // Intentar encontrar "Búsqueda en móviles" con un tiempo límite de 10 segundos
             bool mobileSearchVisible = await _mainForm.WaitForTextToBeVisible("Búsqueda en móviles", 1000);
@@ -330,16 +329,16 @@ namespace EdgeSearch.Business
             if (mobileSearchVisible)
             {
                 (int currentPoints, int maxPoints, int pointsPerSearch) mobile = await _mainForm.ExtractPoints("Búsqueda en móviles");
-                _search.Preferences.MobilePointsPersearch = mobile.pointsPerSearch;
-                _search.Preferences.MobileTotalPoints = mobile.maxPoints;
-                _search.MobileSearchesCount = mobile.currentPoints / _search.Preferences.MobilePointsPersearch;
+                _profile.Preferences.MobilePointsPersearch = mobile.pointsPerSearch;
+                _profile.Preferences.MobileTotalPoints = mobile.maxPoints;
+                _profile.Search.MobileSearchesCount = mobile.currentPoints / _profile.Preferences.MobilePointsPersearch;
             }
             else
             {
                 // Manejar el caso cuando "Búsqueda en móviles" no está disponible
-                _search.MobileSearchesCount = 0;
-                _search.Preferences.MobileTotalPoints = 0;
-                _search.Preferences.MobilePointsPersearch = 0;
+                _profile.Search.MobileSearchesCount = 0;
+                _profile.Preferences.MobileTotalPoints = 0;
+                _profile.Preferences.MobilePointsPersearch = 0;
             }
 
             _mainForm.BindFields();
@@ -348,13 +347,13 @@ namespace EdgeSearch.Business
 
         private async Task ChangeMobileMode(Preferences.Mode mode, bool reloadWeb)
         {
-            _search.CurrentMode = mode;
+            _profile.Search.CurrentMode = mode;
             await RefreshMobileMode(reloadWeb);
         }
 
         private void PlayAndStop(bool openRewards)
         {
-            if (!_search.IsPlaying)
+            if (!_profile.Search.IsPlaying)
             {
                 Play();
 
@@ -370,10 +369,10 @@ namespace EdgeSearch.Business
         private void Stop()
         {
             _refreshTimer.Stop(); // Detiene el temporizador si ya está activo
-            _search.IsPlaying = false;
-            _search.StrikeCount = 0;
-            _search.StrikeTime = null;
-            _search.ElapsedSeconds = 0;
+            _profile.Search.IsPlaying = false;
+            _profile.Search.StrikeCount = 0;
+            _profile.Search.StrikeTime = null;
+            _profile.Search.ElapsedSeconds = 0;
 
             _awaker.Stop();
         }
@@ -383,26 +382,26 @@ namespace EdgeSearch.Business
             RestartLimits();
 
             _refreshTimer.Start(); // Inicia el temporizador cuando se presiona el botón
-            _search.IsPlaying = true;
+            _profile.Search.IsPlaying = true;
             _awaker.Start();
         }
 
         public void RestartLimits()
         {
-            _search.ElapsedSeconds = 0;
-            _search.SecondsToRefresh = _random.Next(_search.Preferences.MinWait, _search.Preferences.MaxWait + 1);
+            _profile.Search.ElapsedSeconds = 0;
+            _profile.Search.SecondsToRefresh = _random.Next(_profile.Preferences.MinWait, _profile.Preferences.MaxWait + 1);
 
             _mainForm.UpdateInterface();
         }
 
         private async Task RefreshMobileMode(bool reloadWeb)
         {
-            _search.Preferences.Save();
+            _profile.Preferences.Save();
 
-            if (_search.IsMobile)
-                _mainForm.SetUserAgent(_search.Preferences.MobileUserAgent);
+            if (_profile.Search.IsMobile)
+                _mainForm.SetUserAgent(_profile.Preferences.MobileUserAgent);
             else
-                _mainForm.SetUserAgent(_search.Preferences.DesktopUserAgent);
+                _mainForm.SetUserAgent(_profile.Preferences.DesktopUserAgent);
 
             await _mainForm.DeleteSessionCookies();
 
@@ -414,18 +413,18 @@ namespace EdgeSearch.Business
 
             if (reloadWeb)
             {
-                AddHistoricSearch(_search.URL.ToString());
+                AddHistoricSearch(_profile.Search.URL.ToString());
                 await _mainForm.ReloadSearchsWeb();
             }
 
             _mainForm.UpdateInterface();
         }
 
-        private string GetSaga() => _search.Sagas[_random.Next(0, _search.Sagas.Count)];
-        private string GetGame() => _search.Games[_random.Next(0, _search.Games.Count)];
-        private string GetHardware() => _search.Hardware[_random.Next(0, _search.Hardware.Count)];
-        private string GetCompany() => _search.Companies[_random.Next(0, _search.Companies.Count)];
-        private string GetRetro() => _search.Retro[_random.Next(0, _search.Retro.Count)];
+        private string GetSaga() => _profile.Search.Sagas[_random.Next(0, _profile.Search.Sagas.Count)];
+        private string GetGame() => _profile.Search.Games[_random.Next(0, _profile.Search.Games.Count)];
+        private string GetHardware() => _profile.Search.Hardware[_random.Next(0, _profile.Search.Hardware.Count)];
+        private string GetCompany() => _profile.Search.Companies[_random.Next(0, _profile.Search.Companies.Count)];
+        private string GetRetro() => _profile.Search.Retro[_random.Next(0, _profile.Search.Retro.Count)];
 
         public void Show()
         {
@@ -449,8 +448,8 @@ namespace EdgeSearch.Business
         private async void _mainForm_Load(object sender, EventArgs e)
         {
             await _mainForm.EnsureCoreWebView2Async();
-            _search.URL = new Uri("https://www.bing.es/");
-            await _mainForm.OpenSearchesURL(_search.URL);
+            _profile.Search.URL = new Uri("https://www.bing.es/");
+            await _mainForm.OpenSearchesURL(_profile.Search.URL);
             await _mainForm.SetRewardsURL(new Uri("https://rewards.bing.com/pointsbreakdown"));
             _mainForm.SelectTabAndReturn(Common.TabType.Rewards);
 
@@ -476,7 +475,7 @@ namespace EdgeSearch.Business
 
         private async void _mainForm_MobileChanged(object sender, EventArgs e)
         {
-            _search.IsMobile = !_search.IsMobile;
+            _profile.Search.IsMobile = !_profile.Search.IsMobile;
             await RefreshMobileMode(true);
         }
 
@@ -492,19 +491,19 @@ namespace EdgeSearch.Business
 
         private async void _mainForm_ResetClicked(object sender, EventArgs e)
         {
-            _search.MobileSearchesCount = 0;
-            _search.DesktopSearchesCount = 0;
+            _profile.Search.MobileSearchesCount = 0;
+            _profile.Search.DesktopSearchesCount = 0;
             await ChangeMobileMode(Preferences.Mode.Desktop, true);
             _mainForm.UpdateInterface();
         }
 
         private void _mainForm_PreferencesClciked(object sender, EventArgs e)
         {
-            using (PreferencesForm form = new PreferencesForm(_search.Preferences))
-            using (PreferencesPresenter presenter = new PreferencesPresenter(form, _search.Preferences))
+            using (PreferencesForm form = new PreferencesForm(_profile.Preferences))
+            using (PreferencesPresenter presenter = new PreferencesPresenter(form, _profile.Preferences))
             {
                 form.ShowDialog();
-                _search.Preferences = new Preferences("Config\\config.json");
+                _profile.Preferences = new Preferences("Config\\config.json");
                 _mainForm.BindFields();
                 _mainForm.UpdateInterface();
             }
