@@ -1,10 +1,10 @@
 ﻿using EdgeSearch.src.Config;
-using EdgeSearch.Utils.Common;
 using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using Utils.Common;
 using static EdgeSearch.src.Models.Preferences;
 
 namespace EdgeSearch.src.Models
@@ -253,7 +253,6 @@ namespace EdgeSearch.src.Models
                 }
                 catch (JsonException ex)
                 {
-                    Console.WriteLine($"Error parsing JSON file: {ex.Message}. Using directory name as profile name.");
                     SetNameFromDirectory();
                 }
             }
@@ -263,7 +262,6 @@ namespace EdgeSearch.src.Models
                 SetNameFromDirectory();
                 // Save the new profile data
                 Save();
-                Console.WriteLine($"Profile file not found: {JsonPath}. Created a new one with name: {Name}");
             }
         }
 

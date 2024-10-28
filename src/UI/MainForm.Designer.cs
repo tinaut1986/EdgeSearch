@@ -1,4 +1,6 @@
 ﻿
+using Utils.UI;
+
 namespace EdgeSearch.UI
 {
     partial class MainForm

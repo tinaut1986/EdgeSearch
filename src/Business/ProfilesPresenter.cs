@@ -2,11 +2,11 @@
 using EdgeSearch.src.Interfaces;
 using EdgeSearch.src.Models;
 using EdgeSearch.UI;
-using EdgeSearch.Utils.Common;
 using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using Utils.Common;
 
 namespace EdgeSearch.src.Business
 {
