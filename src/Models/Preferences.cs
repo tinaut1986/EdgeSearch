@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.IO;
-using Utils.Common; // Asegúrate de tener la librería Newtonsoft.Json instalada
+using Utils.Common;
 
 namespace EdgeSearch.src.Models
 {

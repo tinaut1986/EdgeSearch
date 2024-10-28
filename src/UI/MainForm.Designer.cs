@@ -1,5 +1,5 @@
 ﻿
-using Utils.UI;
+using UtilsForms.Controls;
 
 namespace EdgeSearch.UI
 {
