@@ -15,54 +15,69 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.btnAccept = new System.Windows.Forms.Button();
-            this.btnCancel = new System.Windows.Forms.Button();
-            this.flpButtons = new System.Windows.Forms.FlowLayoutPanel();
-            this.flpButtons.SuspendLayout();
-            this.SuspendLayout();
+            btnAccept = new System.Windows.Forms.Button();
+            btnCancel = new System.Windows.Forms.Button();
+            flpButtons = new System.Windows.Forms.FlowLayoutPanel();
+            lblMessage = new System.Windows.Forms.Label();
+            flpButtons.SuspendLayout();
+            SuspendLayout();
             // 
             // btnAccept
             // 
-            this.btnAccept.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAccept.Location = new System.Drawing.Point(464, 3);
-            this.btnAccept.Name = "btnAccept";
-            this.btnAccept.Size = new System.Drawing.Size(75, 23);
-            this.btnAccept.TabIndex = 0;
-            this.btnAccept.Text = "Accept";
-            this.btnAccept.UseVisualStyleBackColor = true;
+            btnAccept.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            btnAccept.Location = new System.Drawing.Point(539, 3);
+            btnAccept.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            btnAccept.Name = "btnAccept";
+            btnAccept.Size = new System.Drawing.Size(88, 27);
+            btnAccept.TabIndex = 0;
+            btnAccept.Text = "Accept";
+            btnAccept.UseVisualStyleBackColor = true;
             // 
             // btnCancel
             // 
-            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancel.Location = new System.Drawing.Point(545, 3);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 0;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
+            btnCancel.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            btnCancel.Location = new System.Drawing.Point(635, 3);
+            btnCancel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            btnCancel.Name = "btnCancel";
+            btnCancel.Size = new System.Drawing.Size(88, 27);
+            btnCancel.TabIndex = 0;
+            btnCancel.Text = "Cancel";
+            btnCancel.UseVisualStyleBackColor = true;
             // 
             // flpButtons
             // 
-            this.flpButtons.Controls.Add(this.btnCancel);
-            this.flpButtons.Controls.Add(this.btnAccept);
-            this.flpButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.flpButtons.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flpButtons.Location = new System.Drawing.Point(0, 169);
-            this.flpButtons.Name = "flpButtons";
-            this.flpButtons.Size = new System.Drawing.Size(623, 29);
-            this.flpButtons.TabIndex = 1;
+            flpButtons.Controls.Add(btnCancel);
+            flpButtons.Controls.Add(btnAccept);
+            flpButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
+            flpButtons.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            flpButtons.Location = new System.Drawing.Point(0, 172);
+            flpButtons.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            flpButtons.Name = "flpButtons";
+            flpButtons.Size = new System.Drawing.Size(727, 33);
+            flpButtons.TabIndex = 1;
+            // 
+            // lblMessage
+            // 
+            lblMessage.Dock = System.Windows.Forms.DockStyle.Fill;
+            lblMessage.Location = new System.Drawing.Point(0, 0);
+            lblMessage.Name = "lblMessage";
+            lblMessage.Size = new System.Drawing.Size(727, 172);
+            lblMessage.TabIndex = 2;
+            lblMessage.Text = "Initial message";
+            lblMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            lblMessage.Visible = false;
             // 
             // AcceptCancelForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(623, 198);
-            this.Controls.Add(this.flpButtons);
-            this.Name = "AcceptCancelForm";
-            this.Text = "GenericForm";
-            this.flpButtons.ResumeLayout(false);
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(727, 205);
+            Controls.Add(lblMessage);
+            Controls.Add(flpButtons);
+            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            Name = "AcceptCancelForm";
+            flpButtons.ResumeLayout(false);
+            ResumeLayout(false);
         }
 
         #endregion
@@ -70,5 +85,6 @@
         private System.Windows.Forms.Button btnAccept;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.FlowLayoutPanel flpButtons;
+        private System.Windows.Forms.Label lblMessage;
     }
 }

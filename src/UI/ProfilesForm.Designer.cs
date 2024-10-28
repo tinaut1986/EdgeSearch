@@ -38,7 +38,6 @@
             colName.DataPropertyName = "Name";
             colName.HeaderText = "Name";
             colName.Name = "colName";
-            colName.ReadOnly = true;
             colName.Width = 64;
             // 
             // colPath
