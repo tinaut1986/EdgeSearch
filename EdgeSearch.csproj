@@ -18,6 +18,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Utils">
+      <HintPath>libs\Utils.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="UtilsForms">
+      <HintPath>libs\UtilsForms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="src\Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
