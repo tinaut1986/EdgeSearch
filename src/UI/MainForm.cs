@@ -1,0 +1,563 @@
+﻿using EdgeSearch.src.Common;
+using EdgeSearch.src.Models;
+using EdgeSearch.src.Properties;
+using EdgeSearch.src.Utils;
+using Microsoft.Web.WebView2.Core;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Utils.Extensions;
+
+namespace EdgeSearch.UI
+{
+    public partial class MainForm : Form
+    {
+        #region Members
+        private Profile _profile;
+
+        public event EventHandler PlayClicked;
+        public event EventHandler FullPlayClicked;
+        public event EventHandler ForceClicked;
+        public event EventHandler ResetClicked;
+        public event EventHandler PlaySearchesClicked;
+        public event EventHandler PlayRewardsClicked;
+        public event EventHandler NextSearchClicked;
+        public event EventHandler PreferencesClciked;
+        public event EventHandler MobileChanged;
+        public event EventHandler<CoreWebView2InitializationCompletedEventArgs> SearchesCoreWebView2InitializationCompleted;
+        public event EventHandler<CoreWebView2InitializationCompletedEventArgs> RewardsCoreWebView2InitializationCompleted;
+        public event EventHandler<CoreWebView2NewWindowRequestedEventArgs> RewardsNewWindowRequested;
+        public event EventHandler<CoreWebView2NavigationCompletedEventArgs> SearchesNavigationCompleted;
+
+        #endregion
+
+        #region Constructors & destructor
+        public MainForm(Profile profile)
+        {
+            InitializeComponent();
+
+            _profile = profile;
+
+            FixButtons();
+
+            InitializeEvents();
+
+            this.Text = $"Edge Search - {_profile.Name}";
+
+#if DEBUG
+            Icon = Resources.EdgeSearch_dev;
+#else
+            Icon = Resources.EdgeSearch;
+#endif
+        }
+
+        /// <summary>
+        ///  Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                FinalizeEvents();
+
+                components?.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+        #endregion
+
+        #region Methods
+
+        public void SelectTab(TabType tabType)
+        {
+            tabControl1.SelectedTab = GetTabPage(tabType);
+        }
+
+        public void SelectTabAndReturn(TabType tabType)
+        {
+            TabPage selectedTab = tabControl1.SelectedTab;
+            TabPage tabPage = GetTabPage(tabType);
+
+            if (selectedTab == tabPage)
+                return;
+
+            SelectTab(tabType);
+            tabControl1.SelectedTab = selectedTab;
+        }
+
+        public TabPage GetTabPage(TabType tabType)
+        {
+            switch (tabType)
+            {
+                case TabType.Searches:
+                    return tpSearches;
+                case TabType.Rewards:
+                    return tpRewards;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(tabType), tabType, null);
+            };
+        }
+
+        private void FixButtons()
+        {
+            btnPlay.FitImage();
+            chkMobile.FitImage();
+            btnSearch.FitImage();
+            btnNext.FitImage();
+        }
+
+        public void BindFields()
+        {
+            txtURL.DataBindings.Clear();
+            txtURL.DataBindings.Add(nameof(txtURL.Text), _profile.Search, nameof(_profile.Search.URL));
+
+            txtNextSearch.DataBindings.Clear();
+            txtNextSearch.DataBindings.Add(nameof(txtNextSearch.Text), _profile.Search, nameof(_profile.Search.NextSearch));
+
+            chkMobile.DataBindings.Clear();
+            chkMobile.DataBindings.Add(nameof(chkMobile.Checked), _profile.Search, nameof(_profile.Search.IsMobile));
+        }
+
+        private void InitializeEvents()
+        {
+            // Evento de inicialización del WebView2
+            wvSearches.CoreWebView2InitializationCompleted += WvSearches_CoreWebView2InitializationCompleted;
+            wvRewards.CoreWebView2InitializationCompleted += WvRewards_CoreWebView2InitializationCompleted;
+
+            // Eventos de menú
+            var menuItems = new (ToolStripMenuItem item, EventHandler handler)[]
+            {
+                (tsmiPlayRewards, TsmiPlayRewards_Click),
+                (tsmiPlaySearches, TsmiPlaySearches_Click),
+                (tsmiPreferences, TsmiPreferences_Click),
+                (tsmiPlay, TsmiPlay_Click),
+                (tsmiReset, TsmiReset_Click)
+            };
+
+            foreach (var (item, handler) in menuItems)
+                item.Click += handler;
+
+            // Eventos de botones
+            var buttons = new (Button button, EventHandler handler)[]
+            {
+                (btnPlay, btnPlay_Click),
+                (btnSearch, btnForce_Click),
+                (btnNext, btnNext_Click)
+            };
+
+            foreach (var (button, handler) in buttons)
+                button.Click += handler;
+
+            // Evento para el checkbox
+            chkMobile.Click += ChkMobile_Click;
+        }
+
+
+        private void FinalizeEvents()
+        {
+            // Evento de inicialización del WebView2
+            wvSearches.CoreWebView2InitializationCompleted -= WvSearches_CoreWebView2InitializationCompleted;
+            wvRewards.CoreWebView2InitializationCompleted -= WvRewards_CoreWebView2InitializationCompleted;
+
+            // Eventos de menú
+            var menuItems = new (ToolStripMenuItem item, EventHandler handler)[]
+            {
+                (tsmiPlayRewards, TsmiPlayRewards_Click),
+                (tsmiPlaySearches, TsmiPlaySearches_Click),
+                (tsmiPreferences, TsmiPreferences_Click),
+                (tsmiPlay, TsmiPlay_Click),
+                (tsmiReset, TsmiReset_Click)
+            };
+
+            foreach (var (item, handler) in menuItems)
+                item.Click -= handler;
+
+            // Eventos de botones
+            var buttons = new (Button button, EventHandler handler)[]
+            {
+                (btnPlay, btnPlay_Click),
+                (btnSearch, btnForce_Click),
+                (btnNext, btnNext_Click)
+            };
+
+            foreach (var (button, handler) in buttons)
+                button.Click -= handler;
+
+            // Evento para el checkbox
+            chkMobile.Click -= ChkMobile_Click;
+        }
+
+        public void SetUserAgent(string userAgent)
+        {
+            if (wvSearches.CoreWebView2?.Settings != null)
+                wvSearches.CoreWebView2.Settings.UserAgent = userAgent;
+        }
+
+        public async Task EnsureCoreWebView2Async()
+        {
+            // Crea el entorno de WebView2 con la carpeta de datos especificada
+            var env = await CoreWebView2Environment.CreateAsync(null, _profile.Path);
+
+            await wvSearches.EnsureCoreWebView2Async(env);
+            await wvRewards.EnsureCoreWebView2Async(env);
+
+            wvRewards.CoreWebView2.NewWindowRequested += Rewards_CoreWebView2_NewWindowRequested;
+            wvSearches.NavigationCompleted += wvSearches_NavigationCompleted;
+        }
+
+        public async Task OpenSearchesURL(Uri url)
+        {
+            if (wvSearches.Source != url)
+                wvSearches.Source = url;
+
+            await ReloadSearchsWeb();
+        }
+
+        public void RefreshSearchesURL()
+        {
+            _profile.Search.URL = wvSearches.Source;
+        }
+
+        public async Task SetRewardsURL(Uri url)
+        {
+            if (wvRewards.Source != url)
+                wvRewards.Source = url;
+            else
+                await ReloadRewardsWeb();
+        }
+
+        public async void OpenRewards()
+        {
+            if (_profile.Search.RewardsPlayed)
+                return;
+
+            _profile.Search.RewardsPlayed = true;
+
+            SetRewardsProgressBarState(true);
+
+            // Definir la clase CSS que se va a usar
+            string className = "mee-icon-AddMedium";
+            string excludeClassName = "exclusiveLockedPts";
+
+
+            while (true)
+            {
+                // Definir el script de JavaScript para ejecutar en la página usando string.Format
+                string script = string.Format(@"
+                    (function() {{
+                        // Obtener una referencia a los botones por su clase CSS
+                        var buttons = document.getElementsByClassName('{0}');
+
+                        // Filtrar los botones que no tengan la clase 'exclusiveLockedPts'
+                        var validButtons = Array.prototype.filter.call(buttons, function(button) {{
+                            return !button.classList.contains('{1}');
+                        }});
+
+                        // Verificar si hay elementos con esa clase filtrados
+                        if (validButtons.length > 0) {{
+                            // Mostrar en la consola el número de elementos válidos encontrados
+                            console.log('Elementos válidos encontrados con la clase {0}: ' + validButtons.length);
+
+                            // Simular el clic en el primer botón válido encontrado
+                            validButtons[0].click();
+
+                            // Esperar 5 segundos antes de recargar
+                            setTimeout(function() {{
+                                // Refrescar la página después de que el bucle haya terminado
+                                location.reload();
+                            }}, 5000);
+
+                            // Guardar el resultado en window para accederlo más tarde
+                            window.scriptResult = true;
+                        }} else {{
+                            console.log('No se encontraron elementos válidos con la clase {0}');
+                            // Guardar el resultado en window para accederlo más tarde
+                            window.scriptResult = false;
+                        }}
+                    }})();
+                ", className, excludeClassName);
+
+                // Ejecutar el script
+                await wvRewards.ExecuteScriptAsync(script);
+
+                // Esperar un breve momento para asegurarse de que el script se ejecuta
+                await Task.Delay(100);
+
+                // Recuperar el resultado almacenado en window.scriptResult
+                var result = await wvRewards.ExecuteScriptAsync("window.scriptResult");
+
+                // Verificar el resultado y salir si ya no quedan más elementos
+                if (result == null || result.ToString().ToLower() != "true")
+                {
+                    Console.WriteLine("No quedan más botones para pulsar.");
+                    break;
+                }
+
+                await Task.Delay(6000); // Espera 6 segundos antes de volver a ejecutar la función
+            }
+
+            _profile.Search.RewardsPlayed = false;
+            SetRewardsProgressBarState(false);
+        }
+
+        public void UpdateInterface()
+        {
+            if (!_profile.Search.IsPlaying)
+            {
+                btnPlay.Image = Resources.play;
+
+                tsmiPlay.Text = "Play";
+                tsmiPlay.Image = Resources.play;
+
+                tsmiPlaySearches.Text = "Play searches";
+                tsmiPlaySearches.Image = Resources.play;
+            }
+            else
+            {
+                btnPlay.Image = Resources.stop;
+
+                tsmiPlay.Text = "Stop";
+                tsmiPlay.Image = Resources.stop;
+
+                tsmiPlaySearches.Text = "Stop searches";
+                tsmiPlaySearches.Image = Resources.stop;
+            }
+
+            btnPlay.FitImage();
+
+            txtURL.Text = wvSearches.Source.AbsoluteUri;
+
+            UpdateProgressBarSearches(_profile);
+
+            UpdateProgressBarRewards(_profile.Search);
+
+            lblSearches.Text = $"Searches: {_profile.Search.SearchesCount} (x{_profile.PointsPersearch}) | Points: {_profile.CurrentPoints} / {_profile.PointsLimit} | Refresh range (s): {_profile.Preferences.MinWait} / {_profile.Preferences.MaxWait}";
+        }
+
+        public void UpdateProgressBarRewards(Search search)
+        {
+            pbRewards.Text = search.RewardsString;
+        }
+
+        public void UpdateProgressBarSearches(Profile profile)
+        {
+            DateTime now = DateTime.Now;
+            DateTime strikeTime = (profile.Search.StrikeTime ?? now);
+
+            string strikeCount = $"{profile.Search.StrikeCount}/{profile.Preferences.StrikeAmount}";
+            string strikeSeconds = $"{Convert.ToInt32((now - strikeTime).TotalSeconds)}/{profile.Preferences.StrikeDelay} sec";
+            string searchsSeconds = $"{profile.Search.ElapsedSeconds}/{profile.Search.SecondsToRefresh} sec";
+
+            pbSearches.Text = $"Searches: {strikeCount} ({strikeSeconds}) - {searchsSeconds} | Expected time: {ExecutionTimeCalculator.GetTotalExpectedTime(profile)}";
+
+            pbSearches.Maximum = profile.SearchesProgressBarMax;
+            pbSearches.Value = profile.SearchesProgressBarValue;
+            pbSearches.PaintedColor = profile.Search.SearchesProgressBarColor;
+            pbSearches.ForeColor = System.Drawing.Color.Black;
+        }
+
+        public async Task ReloadSearchsWeb()
+        {
+            if ((wvSearches.Source?.ToString() ?? "about:blank") != "about:blank")
+            {
+                while ((wvSearches?.CoreWebView2?.Source ?? "about:blank") == "about:blank" || wvSearches.Source.ToString() != Uri.UnescapeDataString(wvSearches.CoreWebView2.Source))
+                    await Task.Delay(500);
+
+                wvSearches.Reload();
+            }
+        }
+
+        public async Task ReloadRewardsWeb()
+        {
+            if ((wvRewards.Source?.ToString() ?? "about:blank") != "about:blank")
+            {
+                while ((wvRewards?.CoreWebView2?.Source ?? "about:blank") == "about:blank" || wvRewards.Source.ToString() != Uri.UnescapeDataString(wvRewards.CoreWebView2.Source))
+                    await Task.Delay(500);
+
+                wvRewards.Reload();
+            }
+        }
+
+        public async Task DeleteSessionCookies()
+        {
+            if (wvSearches.CoreWebView2?.Settings != null)
+            {
+                foreach (CoreWebView2Cookie cookie in (await wvSearches.CoreWebView2.CookieManager.GetCookiesAsync(null)).ToList())
+                {
+                    if (cookie.IsSession)
+                        wvSearches.CoreWebView2.CookieManager.DeleteCookie(cookie);
+                }
+            }
+        }
+
+        public void SetRewardsProgressBarState(bool play)
+        {
+            if (play)
+                pbRewards.Style = ProgressBarStyle.Marquee;
+            else
+                pbRewards.Style = ProgressBarStyle.Continuous;
+        }
+
+        public async Task<(int currentPoints, int maxPoints, int pointsPerSearch)> ExtractPoints(string searchType)
+        {
+            string jsCode = $@"
+                (function() {{
+                    var result = {{}};
+                    // Buscar el contenedor que contiene el texto específico
+                    var pointElements = document.querySelectorAll('.pointsBreakdownCard');
+    
+                    pointElements.forEach(function(element) {{
+                        var label = element.querySelector('a').innerText;
+                        if (label.includes('{searchType}')) {{
+                            // Extraer los puntos
+                            var pointsText = element.querySelector('.pointsDetail p.pointsDetail').innerText;
+                            result.points = pointsText.trim();
+
+                            // Extraer los puntos por búsqueda
+                            var descriptionText = element.querySelector('.description').innerText;
+                            var match = descriptionText.match(/(\d+)\s+puntos?\s+por\s+búsqueda/);
+                            if (match) {{
+                                result.pointsPerSearch = match[1];
+                            }}
+                        }}
+                    }});
+
+                    return JSON.stringify(result);
+                }})();";
+
+            string resultJson = await wvRewards.CoreWebView2.ExecuteScriptAsync(jsCode);
+
+            resultJson = resultJson.Trim('"').Replace("\\\"", "\"");
+
+            // Deserializar el resultado JSON
+            var resultObj = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(resultJson);
+
+            if (resultObj != null && resultObj.ContainsKey("points") && resultObj.ContainsKey("pointsPerSearch"))
+            {
+                string[] pointsArray = resultObj["points"].Split('/');
+                if (pointsArray.Length == 2)
+                {
+                    int currentPoints = int.Parse(pointsArray[0].Trim());
+                    int maxPoints = int.Parse(pointsArray[1].Trim());
+                    int pointsPerSearch = int.Parse(resultObj["pointsPerSearch"]);
+
+                    return (currentPoints, maxPoints, pointsPerSearch);
+                }
+            }
+
+            // Si no se encuentran valores o hay un error, devolver 0, 0, 0
+            return (0, 0, 0);
+        }
+
+        public async Task<bool> WaitForTextToBeVisible(string textToFind, int? timeoutMilliseconds = null)
+        {
+            // Esperar hasta que la página en el WebView2 esté cargada y no sea "about:blank"
+            while ((wvRewards?.CoreWebView2?.Source ?? "about:blank") == "about:blank")
+                await Task.Delay(1000);
+
+            // Tiempo máximo de espera
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+            // Si el tiempo de espera es especificado, configurar el CancellationToken
+            if (timeoutMilliseconds.HasValue)
+            {
+                cancellationTokenSource.CancelAfter(timeoutMilliseconds.Value);
+            }
+
+            // Bucle para comprobar si el texto está presente
+            while (!cancellationTokenSource.IsCancellationRequested)
+            {
+                // Código JavaScript que comprueba si el texto está presente
+                string jsCode = $@"
+                    (function() {{
+                        return document.body.innerText.includes('{textToFind}');
+                    }})();";
+
+                // Ejecutar el script y obtener el resultado como string ("true" o "false")
+                string result = await wvRewards.CoreWebView2?.ExecuteScriptAsync(jsCode);
+
+                if (result == "true")
+                    return true;
+
+                // Espera antes de volver a comprobar
+                await Task.Delay(1000);
+            }
+
+            // Si no se encontró el texto dentro del tiempo límite (si se especificó)
+            return false;
+        }
+
+        #endregion
+
+        #region Events
+        private void WvSearches_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
+        {
+            SearchesCoreWebView2InitializationCompleted?.Invoke(sender, e);
+        }
+
+        private void WvRewards_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
+        {
+            RewardsCoreWebView2InitializationCompleted?.Invoke(sender, e);
+        }
+
+        private void Rewards_CoreWebView2_NewWindowRequested(object sender, CoreWebView2NewWindowRequestedEventArgs e)
+        {
+            RewardsNewWindowRequested?.Invoke(sender, e);
+        }
+
+        private void wvSearches_NavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
+        {
+            SearchesNavigationCompleted?.Invoke(sender, e);
+        }
+
+        private void TsmiPlayRewards_Click(object sender, EventArgs e)
+        {
+            PlayRewardsClicked?.Invoke(sender, e);
+        }
+
+        private void TsmiPlaySearches_Click(object sender, EventArgs e)
+        {
+            PlaySearchesClicked?.Invoke(sender, e);
+        }
+
+        private void TsmiPreferences_Click(object sender, EventArgs e)
+        {
+            PreferencesClciked?.Invoke(sender, e);
+        }
+
+        private void TsmiPlay_Click(object sender, EventArgs e)
+        {
+            FullPlayClicked?.Invoke(sender, e);
+        }
+
+        private void TsmiReset_Click(object sender, EventArgs e)
+        {
+            ResetClicked?.Invoke(sender, e);
+        }
+
+        private void btnPlay_Click(object sender, EventArgs e)
+        {
+            FullPlayClicked?.Invoke(sender, e);
+        }
+
+        private void btnNext_Click(object sender, EventArgs e)
+        {
+            NextSearchClicked?.Invoke(sender, e);
+        }
+
+        private void ChkMobile_Click(object sender, EventArgs e)
+        {
+            MobileChanged?.Invoke(sender, e);
+        }
+
+        private void btnForce_Click(object sender, EventArgs e)
+        {
+            ForceClicked?.Invoke(this, EventArgs.Empty);
+        }
+        #endregion
+    }
+}
