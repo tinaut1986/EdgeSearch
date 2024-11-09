@@ -61,11 +61,26 @@ namespace EdgeSearch.UI
             txtMaxWait.DataBindings.Clear();
             txtMaxWait.DataBindings.Add(nameof(txtMaxWait.Text), _model, nameof(_model.MaxWait), true, DataSourceUpdateMode.OnPropertyChanged);
 
-            txtStrikeAmount.DataBindings.Clear();
-            txtStrikeAmount.DataBindings.Add(nameof(txtStrikeAmount.Text), _model, nameof(_model.StrikeAmount), true, DataSourceUpdateMode.OnPropertyChanged);
+            txtMarginWait.DataBindings.Clear();
+            txtMarginWait.DataBindings.Add(nameof(txtMarginWait.Text), _model, nameof(_model.MarginWait), true, DataSourceUpdateMode.OnPropertyChanged);
 
-            txtStrikeDelay.DataBindings.Clear();
-            txtStrikeDelay.DataBindings.Add(nameof(txtStrikeDelay.Text), _model, nameof(_model.StrikeDelay), true, DataSourceUpdateMode.OnPropertyChanged);
+            txtMinStreakAmount.DataBindings.Clear();
+            txtMinStreakAmount.DataBindings.Add(nameof(txtMinStreakAmount.Text), _model, nameof(_model.MinStreakAmount), true, DataSourceUpdateMode.OnPropertyChanged);
+
+            txtMaxStreakAmount.DataBindings.Clear();
+            txtMaxStreakAmount.DataBindings.Add(nameof(txtMaxStreakAmount.Text), _model, nameof(_model.MaxStreakAmount), true, DataSourceUpdateMode.OnPropertyChanged);
+
+            txtMarginStreakAmount.DataBindings.Clear();
+            txtMarginStreakAmount.DataBindings.Add(nameof(txtMarginStreakAmount.Text), _model, nameof(_model.MarginStreakAmount), true, DataSourceUpdateMode.OnPropertyChanged);
+
+            txtMinStreakDelay.DataBindings.Clear();
+            txtMinStreakDelay.DataBindings.Add(nameof(txtMinStreakDelay.Text), _model, nameof(_model.MinStreakDelay), true, DataSourceUpdateMode.OnPropertyChanged);
+
+            txtMaxStreakDelay.DataBindings.Clear();
+            txtMaxStreakDelay.DataBindings.Add(nameof(txtMaxStreakDelay.Text), _model, nameof(_model.MaxStreakDelay), true, DataSourceUpdateMode.OnPropertyChanged);
+
+            txtMarginStreakDelay.DataBindings.Clear();
+            txtMarginStreakDelay.DataBindings.Add(nameof(txtMarginStreakDelay.Text), _model, nameof(_model.MarginStreakDelay), true, DataSourceUpdateMode.OnPropertyChanged);
 
             txtMobileUserAgent.DataBindings.Clear();
             txtMobileUserAgent.DataBindings.Add(nameof(txtMobileUserAgent.Text), _model, nameof(_model.MobileUserAgent), true, DataSourceUpdateMode.OnPropertyChanged);

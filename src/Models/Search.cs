@@ -1,25 +1,29 @@
-﻿using System;
+﻿using EdgeSearch.src.Common;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using static EdgeSearch.src.Models.Preferences;
 
 namespace EdgeSearch.src.Models
 {
     public class Search : INotifyPropertyChanged
     {
+        #region Members
         private int _desktopSearchesCount;
         private int _mobileSearchesCount;
-        private Mode _currentMode;
+        private SearchMode _currentMode;
         private int _elapsedSeconds;
-        private int _secondsToRefresh;
+        private int _secondsToWait;
         private bool _isPlaying;
         private string _nextSearch;
         private Uri _url;
         private bool _rewardsPlayed;
-        private int _strikeCount;
-        private DateTime? _strikeTime;
+        private int _streakCount;
+        private int? _streakAmount;
+        private DateTime? _streakTime;
+        private int _streakDelay;
 
         private int _currentRewards;
         private int _totalRewards;
@@ -28,22 +32,9 @@ namespace EdgeSearch.src.Models
         private int _totalAmbassadors;
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        // This method is called by the Set accessor of each property.  
-        // The CallerMemberName attribute that is applied to the optional propertyName  
-        // parameter causes the property name of the caller to be substituted as an argument.  
-        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        #region Constructors
-        public Search()
-        {
-            CurrentMode = Mode.Desktop;
-        }
         #endregion
 
+        #region Properties
         public int DesktopSearchesCount
         {
             get => _desktopSearchesCount;
@@ -64,7 +55,7 @@ namespace EdgeSearch.src.Models
             }
         }
 
-        public Mode CurrentMode
+        public SearchMode CurrentMode
         {
             get => _currentMode;
             set
@@ -88,41 +79,57 @@ namespace EdgeSearch.src.Models
         {
             get
             {
-                if (StrikeTime != null)
+                if (StreakTime != null)
                     return Color.Orange;
                 else
                     return Color.Green;
             }
         }
 
-        public int SecondsToRefresh
+        public int SecondsToWait
         {
-            get => _secondsToRefresh;
+            get => _secondsToWait;
             set
             {
-                _secondsToRefresh = value;
+                _secondsToWait = value;
                 NotifyPropertyChanged();
             }
         }
 
-        public DateTime? StrikeTime
+        public DateTime? StreakTime
         {
-            get => _strikeTime;
+            get => _streakTime;
             set
             {
-                _strikeTime = value;
+                _streakTime = value;
                 NotifyPropertyChanged();
             }
         }
 
-        public int StrikeCount
+        public int StreakDelay
         {
-            get => _strikeCount;
+            get => _streakDelay;
             set
             {
-                _strikeCount = value;
+                _streakDelay = value;
                 NotifyPropertyChanged();
             }
+        }
+
+        public int StreakCount
+        {
+            get => _streakCount;
+            set
+            {
+                _streakCount = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public int? StreakAmount
+        {
+            get => _streakAmount;
+            set { _streakAmount = value; NotifyPropertyChanged(); }
         }
 
         public bool IsPlaying
@@ -134,6 +141,7 @@ namespace EdgeSearch.src.Models
                 NotifyPropertyChanged();
             }
         }
+
         public string NextSearch
         {
             get => _nextSearch;
@@ -143,6 +151,7 @@ namespace EdgeSearch.src.Models
                 NotifyPropertyChanged();
             }
         }
+
         public Uri URL
         {
             get => _url;
@@ -153,36 +162,43 @@ namespace EdgeSearch.src.Models
             }
         }
 
-        public List<string> ToSearch { get; set; } = new List<string>();
-        public List<string> Sagas { get; set; } = new List<string>();
-        public List<string> Hardware { get; set; } = new List<string>();
-        public List<string> Retro { get; set; } = new List<string>();
-        public List<string> Games { get; set; } = new List<string>();
-        public List<string> Companies { get; set; } = new List<string>();
-        public List<Tuple<DateTime, Mode, string>> UsedSearchs { get; set; } = new List<Tuple<DateTime, Mode, string>>();
+        public IEnumerable<string> ToSearch { get; set; } = new List<string>();
+
+        public IEnumerable<string> Sagas { get; set; } = new List<string>();
+
+        public IEnumerable<string> Hardware { get; set; } = new List<string>();
+
+        public IEnumerable<string> Retro { get; set; } = new List<string>();
+
+        public IEnumerable<string> Games { get; set; } = new List<string>();
+
+        public IEnumerable<string> Companies { get; set; } = new List<string>();
+
+        public List<Tuple<DateTime, SearchMode, string>> UsedSearchs { get; set; } = new List<Tuple<DateTime, SearchMode, string>>();
+
         public bool IsMobile
         {
-            get => CurrentMode == Mode.Mobile;
+            get => CurrentMode == SearchMode.Mobile;
             set
             {
-                CurrentMode = value ? Mode.Mobile : Mode.Desktop;
+                CurrentMode = value ? SearchMode.Mobile : SearchMode.Desktop;
                 NotifyPropertyChanged();
             }
         }
 
         public bool IsDesktop
         {
-            get => CurrentMode == Mode.Desktop;
+            get => CurrentMode == SearchMode.Desktop;
             set
             {
-                CurrentMode = true ? Mode.Desktop : Mode.Mobile;
+                CurrentMode = true ? SearchMode.Desktop : SearchMode.Mobile;
                 NotifyPropertyChanged();
             }
         }
 
         public int SearchesCount
         {
-            get => CurrentMode == Mode.Mobile ? MobileSearchesCount : DesktopSearchesCount;
+            get => CurrentMode == SearchMode.Mobile ? MobileSearchesCount : DesktopSearchesCount;
             set
             {
                 if (IsMobile)
@@ -192,7 +208,6 @@ namespace EdgeSearch.src.Models
                 NotifyPropertyChanged();
             }
         }
-
 
         public bool RewardsPlayed
         {
@@ -227,5 +242,84 @@ namespace EdgeSearch.src.Models
         }
 
         public string RewardsString => $"Rewards: {CurrentRewards}/{TotalRewards}";
+
+        #endregion
+
+        #region Constructors
+        public Search()
+        {
+            CurrentMode = SearchMode.Desktop;
+        }
+        #endregion
+
+        #region Methods
+        public string GetRandomElement(IEnumerable<string> list)
+        {
+            return list.ElementAt(new Random().Next(0, list.Count()));
+        }
+
+        public string GetSearch() => GetRandomElement(ToSearch);
+
+        public string GetSaga() => GetRandomElement(Sagas);
+
+        public string GetGame() => GetRandomElement(Games);
+
+        public string GetHardware() => GetRandomElement(Hardware);
+
+        public string GetCompany() => GetRandomElement(Companies);
+
+        public string GetRetro() => GetRandomElement(Retro);
+
+        public string CreateSearch()
+        {
+            string search = "";
+            do
+            {
+                // Selecciona un elemento al azar de la lista
+                search = GetSearch();
+
+                search = search.Replace("%year%", DateTime.Today.Year.ToString());
+                if (search.Contains("%saga%"))
+                    search = search.Replace("%saga%", GetSaga());
+                if (search.Contains("%game%"))
+                    search = search.Replace("%game%", GetGame());
+                if (search.Contains("%retro%"))
+                    search = search.Replace("%retro%", GetRetro());
+                if (search.Contains("%hardware%"))
+                    search = search.Replace("%hardware%", GetHardware());
+                if (search.Contains("%company%"))
+                    search = search.Replace("%company%", GetCompany());
+            }
+            while (UsedSearchs.Any(x => x.Item3 == search));
+
+            return search;
+        }
+
+        public void AddHistoricSearch(string currentSearch)
+        {
+            UsedSearchs.Add(new Tuple<DateTime, SearchMode, string>(DateTime.Now, CurrentMode, currentSearch));
+        }
+
+        public bool CanDoSearch()
+        {
+            return UsedSearchs.Count(x => Math.Abs((x.Item1 - DateTime.Now).TotalSeconds) < 10) < 3;
+        }
+
+        public void IncreaseSearchCount()
+        {
+            if (IsMobile)
+                MobileSearchesCount++;
+            else
+                DesktopSearchesCount++;
+        }
+
+        // This method is called by the Set accessor of each property.  
+        // The CallerMemberName attribute that is applied to the optional propertyName  
+        // parameter causes the property name of the caller to be substituted as an argument.  
+        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
     }
 }

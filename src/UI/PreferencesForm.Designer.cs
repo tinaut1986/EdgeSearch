@@ -28,10 +28,10 @@ namespace EdgeSearch.UI
             grpMobile = new GroupBox();
             txtMobileTotalPoints = new TextBox();
             lblMobileTotalPoints = new Label();
-            txtStrikeAmount = new TextBox();
-            lblStrikeAmount = new Label();
-            txtStrikeDelay = new TextBox();
-            lblStrikeDelay = new Label();
+            txtMinStreakAmount = new TextBox();
+            lblMinStreakAmount = new Label();
+            txtMinStreakDelay = new TextBox();
+            lblMinStreakDelay = new Label();
             grpDesktop = new GroupBox();
             txtDesktopUserAgent = new TextBox();
             lblDesktopUserAgent = new Label();
@@ -40,6 +40,16 @@ namespace EdgeSearch.UI
             txtDesktopPointsPerSearch = new TextBox();
             lblDesktopPointsPerSearch = new Label();
             grpGeneral = new GroupBox();
+            lblMarginWait = new Label();
+            txtMarginWait = new TextBox();
+            lblMarginStreakDelay = new Label();
+            lblMaxStreakDelay = new Label();
+            txtMarginStreakAmount = new TextBox();
+            lblMarginStreakAmount = new Label();
+            txtMaxStreakAmount = new TextBox();
+            lblMaxStreakAmount = new Label();
+            txtMarginStreakDelay = new TextBox();
+            txtMaxStreakDelay = new TextBox();
             grpMobile.SuspendLayout();
             grpDesktop.SuspendLayout();
             grpGeneral.SuspendLayout();
@@ -52,7 +62,7 @@ namespace EdgeSearch.UI
             txtMobileUserAgent.Margin = new Padding(4, 3, 4, 3);
             txtMobileUserAgent.Name = "txtMobileUserAgent";
             txtMobileUserAgent.Size = new System.Drawing.Size(832, 23);
-            txtMobileUserAgent.TabIndex = 2;
+            txtMobileUserAgent.TabIndex = 0;
             // 
             // lblMobileUserAgent
             // 
@@ -66,39 +76,39 @@ namespace EdgeSearch.UI
             // 
             // txtMinWait
             // 
-            txtMinWait.Location = new System.Drawing.Point(110, 15);
+            txtMinWait.Location = new System.Drawing.Point(158, 22);
             txtMinWait.Margin = new Padding(4, 3, 4, 3);
             txtMinWait.Name = "txtMinWait";
             txtMinWait.Size = new System.Drawing.Size(67, 23);
-            txtMinWait.TabIndex = 2;
+            txtMinWait.TabIndex = 0;
             // 
             // lblMinWait
             // 
             lblMinWait.AutoSize = true;
-            lblMinWait.Location = new System.Drawing.Point(21, 19);
+            lblMinWait.Location = new System.Drawing.Point(21, 26);
             lblMinWait.Margin = new Padding(4, 0, 4, 0);
             lblMinWait.Name = "lblMinWait";
-            lblMinWait.Size = new System.Drawing.Size(69, 15);
+            lblMinWait.Size = new System.Drawing.Size(72, 15);
             lblMinWait.TabIndex = 3;
-            lblMinWait.Text = "Min wait (s)";
+            lblMinWait.Text = "Min. wait (s)";
             // 
             // txtMaxWait
             // 
-            txtMaxWait.Location = new System.Drawing.Point(291, 15);
+            txtMaxWait.Location = new System.Drawing.Point(388, 22);
             txtMaxWait.Margin = new Padding(4, 3, 4, 3);
             txtMaxWait.Name = "txtMaxWait";
             txtMaxWait.Size = new System.Drawing.Size(67, 23);
-            txtMaxWait.TabIndex = 2;
+            txtMaxWait.TabIndex = 1;
             // 
             // lblMaxWait
             // 
             lblMaxWait.AutoSize = true;
-            lblMaxWait.Location = new System.Drawing.Point(200, 19);
+            lblMaxWait.Location = new System.Drawing.Point(269, 26);
             lblMaxWait.Margin = new Padding(4, 0, 4, 0);
             lblMaxWait.Name = "lblMaxWait";
-            lblMaxWait.Size = new System.Drawing.Size(71, 15);
+            lblMaxWait.Size = new System.Drawing.Size(74, 15);
             lblMaxWait.TabIndex = 3;
-            lblMaxWait.Text = "Max wait (s)";
+            lblMaxWait.Text = "Max. wait (s)";
             // 
             // txtMobilePointsPerSearch
             // 
@@ -107,7 +117,7 @@ namespace EdgeSearch.UI
             txtMobilePointsPerSearch.Name = "txtMobilePointsPerSearch";
             txtMobilePointsPerSearch.ReadOnly = true;
             txtMobilePointsPerSearch.Size = new System.Drawing.Size(66, 23);
-            txtMobilePointsPerSearch.TabIndex = 2;
+            txtMobilePointsPerSearch.TabIndex = 1;
             // 
             // lblMobilePointsPerSearch
             // 
@@ -127,10 +137,10 @@ namespace EdgeSearch.UI
             grpMobile.Controls.Add(lblMobileTotalPoints);
             grpMobile.Controls.Add(txtMobilePointsPerSearch);
             grpMobile.Controls.Add(lblMobilePointsPerSearch);
-            grpMobile.Location = new System.Drawing.Point(12, 223);
+            grpMobile.Location = new System.Drawing.Point(12, 302);
             grpMobile.Name = "grpMobile";
             grpMobile.Size = new System.Drawing.Size(951, 108);
-            grpMobile.TabIndex = 4;
+            grpMobile.TabIndex = 2;
             grpMobile.TabStop = false;
             grpMobile.Text = "Mobile";
             // 
@@ -153,41 +163,41 @@ namespace EdgeSearch.UI
             lblMobileTotalPoints.TabIndex = 3;
             lblMobileTotalPoints.Text = "Total points";
             // 
-            // txtStrikeAmount
+            // txtMinStreakAmount
             // 
-            txtStrikeAmount.Location = new System.Drawing.Point(110, 44);
-            txtStrikeAmount.Margin = new Padding(4, 3, 4, 3);
-            txtStrikeAmount.Name = "txtStrikeAmount";
-            txtStrikeAmount.Size = new System.Drawing.Size(67, 23);
-            txtStrikeAmount.TabIndex = 2;
+            txtMinStreakAmount.Location = new System.Drawing.Point(158, 51);
+            txtMinStreakAmount.Margin = new Padding(4, 3, 4, 3);
+            txtMinStreakAmount.Name = "txtMinStreakAmount";
+            txtMinStreakAmount.Size = new System.Drawing.Size(67, 23);
+            txtMinStreakAmount.TabIndex = 3;
             // 
-            // lblStrikeAmount
+            // lblMinStreakAmount
             // 
-            lblStrikeAmount.AutoSize = true;
-            lblStrikeAmount.Location = new System.Drawing.Point(21, 48);
-            lblStrikeAmount.Margin = new Padding(4, 0, 4, 0);
-            lblStrikeAmount.Name = "lblStrikeAmount";
-            lblStrikeAmount.Size = new System.Drawing.Size(81, 15);
-            lblStrikeAmount.TabIndex = 3;
-            lblStrikeAmount.Text = "Strike amount";
+            lblMinStreakAmount.AutoSize = true;
+            lblMinStreakAmount.Location = new System.Drawing.Point(21, 55);
+            lblMinStreakAmount.Margin = new Padding(4, 0, 4, 0);
+            lblMinStreakAmount.Name = "lblMinStreakAmount";
+            lblMinStreakAmount.Size = new System.Drawing.Size(107, 15);
+            lblMinStreakAmount.TabIndex = 3;
+            lblMinStreakAmount.Text = "Min. streak amount";
             // 
-            // txtStrikeDelay
+            // txtMinStreakDelay
             // 
-            txtStrikeDelay.Location = new System.Drawing.Point(291, 44);
-            txtStrikeDelay.Margin = new Padding(4, 3, 4, 3);
-            txtStrikeDelay.Name = "txtStrikeDelay";
-            txtStrikeDelay.Size = new System.Drawing.Size(67, 23);
-            txtStrikeDelay.TabIndex = 2;
+            txtMinStreakDelay.Location = new System.Drawing.Point(158, 80);
+            txtMinStreakDelay.Margin = new Padding(4, 3, 4, 3);
+            txtMinStreakDelay.Name = "txtMinStreakDelay";
+            txtMinStreakDelay.Size = new System.Drawing.Size(67, 23);
+            txtMinStreakDelay.TabIndex = 6;
             // 
-            // lblStrikeDelay
+            // lblMinStreakDelay
             // 
-            lblStrikeDelay.AutoSize = true;
-            lblStrikeDelay.Location = new System.Drawing.Point(200, 48);
-            lblStrikeDelay.Margin = new Padding(4, 0, 4, 0);
-            lblStrikeDelay.Name = "lblStrikeDelay";
-            lblStrikeDelay.Size = new System.Drawing.Size(83, 15);
-            lblStrikeDelay.TabIndex = 3;
-            lblStrikeDelay.Text = "Strike delay (s)";
+            lblMinStreakDelay.AutoSize = true;
+            lblMinStreakDelay.Location = new System.Drawing.Point(21, 84);
+            lblMinStreakDelay.Margin = new Padding(4, 0, 4, 0);
+            lblMinStreakDelay.Name = "lblMinStreakDelay";
+            lblMinStreakDelay.Size = new System.Drawing.Size(109, 15);
+            lblMinStreakDelay.TabIndex = 3;
+            lblMinStreakDelay.Text = "Min. streak delay (s)";
             // 
             // grpDesktop
             // 
@@ -197,10 +207,10 @@ namespace EdgeSearch.UI
             grpDesktop.Controls.Add(lblDesktopTotalPoints);
             grpDesktop.Controls.Add(txtDesktopPointsPerSearch);
             grpDesktop.Controls.Add(lblDesktopPointsPerSearch);
-            grpDesktop.Location = new System.Drawing.Point(12, 109);
+            grpDesktop.Location = new System.Drawing.Point(12, 188);
             grpDesktop.Name = "grpDesktop";
             grpDesktop.Size = new System.Drawing.Size(951, 108);
-            grpDesktop.TabIndex = 4;
+            grpDesktop.TabIndex = 1;
             grpDesktop.TabStop = false;
             grpDesktop.Text = "Desktop";
             // 
@@ -211,7 +221,7 @@ namespace EdgeSearch.UI
             txtDesktopUserAgent.Margin = new Padding(4, 3, 4, 3);
             txtDesktopUserAgent.Name = "txtDesktopUserAgent";
             txtDesktopUserAgent.Size = new System.Drawing.Size(832, 23);
-            txtDesktopUserAgent.TabIndex = 2;
+            txtDesktopUserAgent.TabIndex = 0;
             // 
             // lblDesktopUserAgent
             // 
@@ -249,7 +259,7 @@ namespace EdgeSearch.UI
             txtDesktopPointsPerSearch.Name = "txtDesktopPointsPerSearch";
             txtDesktopPointsPerSearch.ReadOnly = true;
             txtDesktopPointsPerSearch.Size = new System.Drawing.Size(66, 23);
-            txtDesktopPointsPerSearch.TabIndex = 2;
+            txtDesktopPointsPerSearch.TabIndex = 1;
             // 
             // lblDesktopPointsPerSearch
             // 
@@ -263,26 +273,126 @@ namespace EdgeSearch.UI
             // 
             // grpGeneral
             // 
+            grpGeneral.Controls.Add(lblMarginWait);
             grpGeneral.Controls.Add(lblMaxWait);
             grpGeneral.Controls.Add(txtMinWait);
+            grpGeneral.Controls.Add(txtMarginWait);
             grpGeneral.Controls.Add(txtMaxWait);
-            grpGeneral.Controls.Add(lblStrikeDelay);
-            grpGeneral.Controls.Add(txtStrikeAmount);
-            grpGeneral.Controls.Add(lblStrikeAmount);
-            grpGeneral.Controls.Add(txtStrikeDelay);
+            grpGeneral.Controls.Add(lblMarginStreakDelay);
+            grpGeneral.Controls.Add(lblMaxStreakDelay);
+            grpGeneral.Controls.Add(lblMinStreakDelay);
+            grpGeneral.Controls.Add(txtMarginStreakAmount);
+            grpGeneral.Controls.Add(lblMarginStreakAmount);
+            grpGeneral.Controls.Add(txtMaxStreakAmount);
+            grpGeneral.Controls.Add(lblMaxStreakAmount);
+            grpGeneral.Controls.Add(txtMinStreakAmount);
+            grpGeneral.Controls.Add(lblMinStreakAmount);
+            grpGeneral.Controls.Add(txtMarginStreakDelay);
+            grpGeneral.Controls.Add(txtMaxStreakDelay);
+            grpGeneral.Controls.Add(txtMinStreakDelay);
             grpGeneral.Controls.Add(lblMinWait);
             grpGeneral.Location = new System.Drawing.Point(12, 12);
             grpGeneral.Name = "grpGeneral";
-            grpGeneral.Size = new System.Drawing.Size(394, 91);
-            grpGeneral.TabIndex = 5;
+            grpGeneral.Size = new System.Drawing.Size(951, 158);
+            grpGeneral.TabIndex = 0;
             grpGeneral.TabStop = false;
             grpGeneral.Text = "General";
+            // 
+            // lblMarginWait
+            // 
+            lblMarginWait.AutoSize = true;
+            lblMarginWait.Location = new System.Drawing.Point(532, 26);
+            lblMarginWait.Margin = new Padding(4, 0, 4, 0);
+            lblMarginWait.Name = "lblMarginWait";
+            lblMarginWait.Size = new System.Drawing.Size(86, 15);
+            lblMarginWait.TabIndex = 3;
+            lblMarginWait.Text = "Margin wait (s)";
+            // 
+            // txtMarginWait
+            // 
+            txtMarginWait.Location = new System.Drawing.Point(663, 22);
+            txtMarginWait.Margin = new Padding(4, 3, 4, 3);
+            txtMarginWait.Name = "txtMarginWait";
+            txtMarginWait.Size = new System.Drawing.Size(67, 23);
+            txtMarginWait.TabIndex = 2;
+            // 
+            // lblMarginStreakDelay
+            // 
+            lblMarginStreakDelay.AutoSize = true;
+            lblMarginStreakDelay.Location = new System.Drawing.Point(532, 84);
+            lblMarginStreakDelay.Margin = new Padding(4, 0, 4, 0);
+            lblMarginStreakDelay.Name = "lblMarginStreakDelay";
+            lblMarginStreakDelay.Size = new System.Drawing.Size(123, 15);
+            lblMarginStreakDelay.TabIndex = 3;
+            lblMarginStreakDelay.Text = "Margin streak delay (s)";
+            // 
+            // lblMaxStreakDelay
+            // 
+            lblMaxStreakDelay.AutoSize = true;
+            lblMaxStreakDelay.Location = new System.Drawing.Point(269, 84);
+            lblMaxStreakDelay.Margin = new Padding(4, 0, 4, 0);
+            lblMaxStreakDelay.Name = "lblMaxStreakDelay";
+            lblMaxStreakDelay.Size = new System.Drawing.Size(111, 15);
+            lblMaxStreakDelay.TabIndex = 3;
+            lblMaxStreakDelay.Text = "Max. streak delay (s)";
+            // 
+            // txtMarginStreakAmount
+            // 
+            txtMarginStreakAmount.Location = new System.Drawing.Point(663, 51);
+            txtMarginStreakAmount.Margin = new Padding(4, 3, 4, 3);
+            txtMarginStreakAmount.Name = "txtMarginStreakAmount";
+            txtMarginStreakAmount.Size = new System.Drawing.Size(67, 23);
+            txtMarginStreakAmount.TabIndex = 5;
+            // 
+            // lblMarginStreakAmount
+            // 
+            lblMarginStreakAmount.AutoSize = true;
+            lblMarginStreakAmount.Location = new System.Drawing.Point(532, 55);
+            lblMarginStreakAmount.Margin = new Padding(4, 0, 4, 0);
+            lblMarginStreakAmount.Name = "lblMarginStreakAmount";
+            lblMarginStreakAmount.Size = new System.Drawing.Size(121, 15);
+            lblMarginStreakAmount.TabIndex = 3;
+            lblMarginStreakAmount.Text = "Margin streak amount";
+            // 
+            // txtMaxStreakAmount
+            // 
+            txtMaxStreakAmount.Location = new System.Drawing.Point(388, 51);
+            txtMaxStreakAmount.Margin = new Padding(4, 3, 4, 3);
+            txtMaxStreakAmount.Name = "txtMaxStreakAmount";
+            txtMaxStreakAmount.Size = new System.Drawing.Size(67, 23);
+            txtMaxStreakAmount.TabIndex = 4;
+            // 
+            // lblMaxStreakAmount
+            // 
+            lblMaxStreakAmount.AutoSize = true;
+            lblMaxStreakAmount.Location = new System.Drawing.Point(269, 55);
+            lblMaxStreakAmount.Margin = new Padding(4, 0, 4, 0);
+            lblMaxStreakAmount.Name = "lblMaxStreakAmount";
+            lblMaxStreakAmount.Size = new System.Drawing.Size(109, 15);
+            lblMaxStreakAmount.TabIndex = 3;
+            lblMaxStreakAmount.Text = "Max. streak amount";
+            // 
+            // txtMarginStreakDelay
+            // 
+            txtMarginStreakDelay.Location = new System.Drawing.Point(663, 80);
+            txtMarginStreakDelay.Margin = new Padding(4, 3, 4, 3);
+            txtMarginStreakDelay.Name = "txtMarginStreakDelay";
+            txtMarginStreakDelay.Size = new System.Drawing.Size(67, 23);
+            txtMarginStreakDelay.TabIndex = 8;
+            // 
+            // txtMaxStreakDelay
+            // 
+            txtMaxStreakDelay.Location = new System.Drawing.Point(388, 80);
+            txtMaxStreakDelay.Margin = new Padding(4, 3, 4, 3);
+            txtMaxStreakDelay.Name = "txtMaxStreakDelay";
+            txtMaxStreakDelay.Size = new System.Drawing.Size(67, 23);
+            txtMaxStreakDelay.TabIndex = 7;
             // 
             // PreferencesForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(975, 374);
+            ClientSize = new System.Drawing.Size(975, 449);
             Controls.Add(grpGeneral);
             Controls.Add(grpDesktop);
             Controls.Add(grpMobile);
@@ -312,10 +422,10 @@ namespace EdgeSearch.UI
         private TextBox txtMobilePointsPerSearch;
         private Label lblMobilePointsPerSearch;
         private GroupBox grpMobile;
-        private TextBox txtStrikeAmount;
-        private Label lblStrikeAmount;
-        private TextBox txtStrikeDelay;
-        private Label lblStrikeDelay;
+        private TextBox txtMinStreakAmount;
+        private Label lblMinStreakAmount;
+        private TextBox txtMinStreakDelay;
+        private Label lblMinStreakDelay;
         private TextBox txtMobileTotalPoints;
         private Label lblMobileTotalPoints;
         private GroupBox grpDesktop;
@@ -326,5 +436,15 @@ namespace EdgeSearch.UI
         private TextBox txtDesktopPointsPerSearch;
         private Label lblDesktopPointsPerSearch;
         private GroupBox grpGeneral;
+        private Label lblMarginWait;
+        private TextBox txtMarginWait;
+        private Label lblMarginStreakDelay;
+        private Label lblMaxStreakDelay;
+        private TextBox txtMarginStreakAmount;
+        private Label lblMarginStreakAmount;
+        private TextBox txtMaxStreakAmount;
+        private Label lblMaxStreakAmount;
+        private TextBox txtMarginStreakDelay;
+        private TextBox txtMaxStreakDelay;
     }
 }

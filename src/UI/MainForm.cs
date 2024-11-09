@@ -346,13 +346,13 @@ namespace EdgeSearch.UI
         public void UpdateProgressBarSearches(Profile profile)
         {
             DateTime now = DateTime.Now;
-            DateTime strikeTime = (profile.Search.StrikeTime ?? now);
+            DateTime streakTime = (profile.Search.StreakTime ?? now);
 
-            string strikeCount = $"{profile.Search.StrikeCount}/{profile.Preferences.StrikeAmount}";
-            string strikeSeconds = $"{Convert.ToInt32((now - strikeTime).TotalSeconds)}/{profile.Preferences.StrikeDelay} sec";
-            string searchsSeconds = $"{profile.Search.ElapsedSeconds}/{profile.Search.SecondsToRefresh} sec";
+            string streakCount = $"{profile.Search.StreakCount}/{profile.Search.StreakAmount}";
+            string streakSeconds = $"{Convert.ToInt32((now - streakTime).TotalSeconds)}/{profile.Search.StreakDelay} sec";
+            string searchsSeconds = $"{profile.Search.ElapsedSeconds}/{profile.Search.SecondsToWait} sec";
 
-            pbSearches.Text = $"Searches: {strikeCount} ({strikeSeconds}) - {searchsSeconds} | Expected time: {ExecutionTimeCalculator.GetTotalExpectedTime(profile)}";
+            pbSearches.Text = $"Searches: {streakCount} ({streakSeconds}) - {searchsSeconds} | Expected time: {ExecutionTimeCalculator.GetTotalExpectedTime(profile)}";
 
             pbSearches.Maximum = profile.SearchesProgressBarMax;
             pbSearches.Value = profile.SearchesProgressBarValue;

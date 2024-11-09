@@ -1,4 +1,5 @@
-﻿using EdgeSearch.src.Config;
+﻿using EdgeSearch.src.Common;
+using EdgeSearch.src.Config;
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -128,8 +129,8 @@ namespace EdgeSearch.src.Models
         {
             get
             {
-                if (_search.StrikeTime != null)
-                    return Math.Max(0, _preferences.StrikeDelay - Convert.ToInt32((DateTime.Now - _search.StrikeTime.Value).TotalSeconds));
+                if (_search.StreakTime != null)
+                    return Math.Max(0, _search.StreakDelay - Convert.ToInt32((DateTime.Now - _search.StreakTime.Value).TotalSeconds));
                 else
                     return _search.ElapsedSeconds;
             }
@@ -139,10 +140,10 @@ namespace EdgeSearch.src.Models
         {
             get
             {
-                if (_search.StrikeTime != null)
-                    return _preferences.StrikeDelay;
+                if (_search.StreakTime != null)
+                    return _search.StreakDelay;
                 else
-                    return _search.SecondsToRefresh;
+                    return _search.SecondsToWait;
             }
         }
 
@@ -150,10 +151,10 @@ namespace EdgeSearch.src.Models
         {
             get
             {
-                if (_search.StrikeCount < _preferences.StrikeAmount)
-                    return _search.SecondsToRefresh;
+                if (_search.StreakCount < _search.StreakAmount)
+                    return _search.SecondsToWait;
                 else
-                    return _preferences.StrikeDelay;
+                    return _search.StreakDelay;
             }
         }
 
@@ -161,16 +162,16 @@ namespace EdgeSearch.src.Models
         {
             get
             {
-                if (_search.StrikeCount < _preferences.StrikeAmount)
-                    return _search.SecondsToRefresh;
+                if (_search.StreakCount < _preferences.MinStreakAmount)
+                    return _search.SecondsToWait;
                 else
-                    return _preferences.StrikeDelay;
+                    return _preferences.MaxStreakDelay;
             }
         }
 
         public int PointsPersearch
         {
-            get => _search.CurrentMode == Mode.Mobile ? _preferences.MobilePointsPersearch : _preferences.DesktopPointsPersearch;
+            get => _search.CurrentMode == SearchMode.Mobile ? _preferences.MobilePointsPersearch : _preferences.DesktopPointsPersearch;
             set
             {
                 if (_search.IsMobile)
@@ -193,7 +194,7 @@ namespace EdgeSearch.src.Models
 
         public int PointsLimit
         {
-            get => _search.CurrentMode == Mode.Mobile ? _preferences.MobileTotalPoints : _preferences.DesktopTotalPoints;
+            get => _search.CurrentMode == SearchMode.Mobile ? _preferences.MobileTotalPoints : _preferences.DesktopTotalPoints;
             set
             {
                 if (_search.IsMobile)
@@ -215,6 +216,12 @@ namespace EdgeSearch.src.Models
 
             if (_search == null)
                 _search = new Search();
+        }
+
+        public void RestartLimits()
+        {
+            _search.ElapsedSeconds = 0;
+            _search.SecondsToWait = _preferences.GetSearchWaitTime();
         }
 
         public void Delete()
