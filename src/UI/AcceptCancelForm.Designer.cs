@@ -85,6 +85,6 @@
         private System.Windows.Forms.Button btnAccept;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.FlowLayoutPanel flpButtons;
-        private System.Windows.Forms.Label lblMessage;
+        public System.Windows.Forms.Label lblMessage;
     }
 }

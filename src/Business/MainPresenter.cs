@@ -205,7 +205,7 @@ namespace EdgeSearch.src.Business
         {
             DateTime now = DateTime.Now;
 
-            if(_profile.Search.StreakTime != null)
+            if (_profile.Search.StreakTime != null)
             {
                 if (Convert.ToInt32((now - _profile.Search.StreakTime.Value).TotalSeconds) <= _profile.Search.StreakDelay)
                 {
@@ -467,7 +467,7 @@ namespace EdgeSearch.src.Business
 
         private void _mainForm_PreferencesClciked(object sender, EventArgs e)
         {
-            using (PreferencesForm form = new PreferencesForm(_profile.Preferences))
+            using (PreferencesForm form = new PreferencesForm())
             using (PreferencesPresenter presenter = new PreferencesPresenter(form, _profile.Preferences))
             {
                 form.ShowDialog();

@@ -4,6 +4,9 @@
     <Compile Update="src\UI\AcceptCancelForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="src\UI\CustomProgressBarSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="src\UI\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

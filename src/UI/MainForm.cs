@@ -352,12 +352,36 @@ namespace EdgeSearch.UI
             string streakSeconds = $"{Convert.ToInt32((now - streakTime).TotalSeconds)}/{profile.Search.StreakDelay} sec";
             string searchsSeconds = $"{profile.Search.ElapsedSeconds}/{profile.Search.SecondsToWait} sec";
 
+            UpdateProgressBar(profile, streakCount, streakSeconds, searchsSeconds);
+        }
+
+        private void UpdateProgressBar(Profile profile, string streakCount, string streakSeconds, string searchsSeconds)
+        {
             pbSearches.Text = $"Searches: {streakCount} ({streakSeconds}) - {searchsSeconds} | Expected time: {ExecutionTimeCalculator.GetTotalExpectedTime(profile)}";
 
             pbSearches.Maximum = profile.SearchesProgressBarMax;
             pbSearches.Value = profile.SearchesProgressBarValue;
-            pbSearches.PaintedColor = profile.Search.SearchesProgressBarColor;
-            pbSearches.ForeColor = System.Drawing.Color.Black;
+            if (profile.Search.IsMobile)
+            {
+                if (profile.Search.StreakTime == null)
+                    UpdateProgressBarColors(profile.Preferences.mobileNormalProgressBarColors);
+                else
+                    UpdateProgressBarColors(profile.Preferences.mobileReverseProgressBarColors);
+            }
+            else // IsDesktop
+            {
+                if (profile.Search.StreakTime == null)
+                    UpdateProgressBarColors(profile.Preferences.desktopNormalProgressBarColors);
+                else
+                    UpdateProgressBarColors(profile.Preferences.desktopReverseProgressBarColors);
+            }
+        }
+
+        private void UpdateProgressBarColors(ProgressBarColors colors)
+        {
+            pbSearches.PaintedColor = colors.FilledColor;
+            pbSearches.ForeColor = colors.TextColor;
+            pbSearches.PaintedForeColor = colors.FilledTextColor;
         }
 
         public async Task ReloadSearchsWeb()

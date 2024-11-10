@@ -1,5 +1,6 @@
 ﻿using EdgeSearch.src.Interfaces;
 using EdgeSearch.src.Models;
+using System;
 
 namespace EdgeSearch.src.Business
 {
@@ -28,21 +29,26 @@ namespace EdgeSearch.src.Business
         {
             base.InitializeEvents();
 
-            _mainForm.AcceptClick += _mainForm_AcceptClick;
+            _mainForm.AcceptClick += MainForm_AcceptClick;
         }
 
         internal protected override void FinalizeEvents()
         {
             base.FinalizeEvents();
 
-            _mainForm.AcceptClick -= _mainForm_AcceptClick;
+            _mainForm.AcceptClick -= MainForm_AcceptClick;
         }
 
         #endregion
 
         #region Events
 
-        private void _mainForm_AcceptClick(object sender, System.EventArgs e)
+        protected internal override void MainForm_Load(object sender, EventArgs e)
+        {
+            PreferencesForm.BindFields(_model);
+        }
+
+        private void MainForm_AcceptClick(object sender, System.EventArgs e)
         {
             _model.Save();
         }

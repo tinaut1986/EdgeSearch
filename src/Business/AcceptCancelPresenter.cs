@@ -27,6 +27,7 @@ namespace EdgeSearch.src.Business
 
         internal protected virtual void InitializeEvents()
         {
+            _mainForm.Load += MainForm_Load;
             _mainForm.AcceptClick += _mainForm_AcceptClick;
             _mainForm.CancelClick += _mainForm_CancelClick;
         }
@@ -36,6 +37,14 @@ namespace EdgeSearch.src.Business
             _mainForm.AcceptClick -= _mainForm_AcceptClick;
             _mainForm.CancelClick -= _mainForm_CancelClick;
         }
+        #endregion
+
+        #region Events
+        internal protected virtual void MainForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
         internal protected virtual void _mainForm_CancelClick(object sender, EventArgs e)
         {
             _mainForm.CloseFormAsCanceled();
@@ -45,7 +54,6 @@ namespace EdgeSearch.src.Business
         {
             _mainForm.CloseFormAsAccepted();
         }
-
         #endregion
     }
 }

@@ -1,7 +1,9 @@
-﻿namespace EdgeSearch.src.Interfaces
+﻿using EdgeSearch.src.Models;
+
+namespace EdgeSearch.src.Interfaces
 {
     public interface IPreferencesForm : IAcceptCancelForm
     {
-        void BindFields();
+        void BindFields(Preferences model);
     }
 }

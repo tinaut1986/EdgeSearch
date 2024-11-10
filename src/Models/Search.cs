@@ -75,17 +75,6 @@ namespace EdgeSearch.src.Models
             }
         }
 
-        public Color SearchesProgressBarColor
-        {
-            get
-            {
-                if (StreakTime != null)
-                    return Color.Orange;
-                else
-                    return Color.Green;
-            }
-        }
-
         public int SecondsToWait
         {
             get => _secondsToWait;

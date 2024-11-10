@@ -26,6 +26,8 @@ namespace EdgeSearch.UI
             txtMobilePointsPerSearch = new TextBox();
             lblMobilePointsPerSearch = new Label();
             grpMobile = new GroupBox();
+            cpbsMobileReverse = new src.UI.CustomProgressBarSettings();
+            cpbsMobileNormal = new src.UI.CustomProgressBarSettings();
             txtMobileTotalPoints = new TextBox();
             lblMobileTotalPoints = new Label();
             txtMinStreakAmount = new TextBox();
@@ -33,6 +35,8 @@ namespace EdgeSearch.UI
             txtMinStreakDelay = new TextBox();
             lblMinStreakDelay = new Label();
             grpDesktop = new GroupBox();
+            cpbsDesktopReverse = new src.UI.CustomProgressBarSettings();
+            cpbsDesktopNormal = new src.UI.CustomProgressBarSettings();
             txtDesktopUserAgent = new TextBox();
             lblDesktopUserAgent = new Label();
             txtDesktopTotalPoints = new TextBox();
@@ -54,6 +58,10 @@ namespace EdgeSearch.UI
             grpDesktop.SuspendLayout();
             grpGeneral.SuspendLayout();
             SuspendLayout();
+            // 
+            // lblMessage
+            // 
+            lblMessage.Size = new System.Drawing.Size(975, 494);
             // 
             // txtMobileUserAgent
             // 
@@ -131,18 +139,45 @@ namespace EdgeSearch.UI
             // 
             // grpMobile
             // 
+            grpMobile.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            grpMobile.Controls.Add(cpbsMobileReverse);
             grpMobile.Controls.Add(txtMobileUserAgent);
+            grpMobile.Controls.Add(cpbsMobileNormal);
             grpMobile.Controls.Add(lblMobileUserAgent);
             grpMobile.Controls.Add(txtMobileTotalPoints);
             grpMobile.Controls.Add(lblMobileTotalPoints);
             grpMobile.Controls.Add(txtMobilePointsPerSearch);
             grpMobile.Controls.Add(lblMobilePointsPerSearch);
-            grpMobile.Location = new System.Drawing.Point(12, 302);
+            grpMobile.Location = new System.Drawing.Point(12, 323);
             grpMobile.Name = "grpMobile";
-            grpMobile.Size = new System.Drawing.Size(951, 108);
+            grpMobile.Size = new System.Drawing.Size(951, 164);
             grpMobile.TabIndex = 2;
             grpMobile.TabStop = false;
             grpMobile.Text = "Mobile";
+            // 
+            // cpbsMobileReverse
+            // 
+            cpbsMobileReverse.BorderStyle = BorderStyle.FixedSingle;
+            cpbsMobileReverse.Location = new System.Drawing.Point(319, 80);
+            cpbsMobileReverse.Name = "cpbsMobileReverse";
+            cpbsMobileReverse.ProgressBarColor = System.Drawing.Color.Khaki;
+            cpbsMobileReverse.ProgressBarText = "Reverse";
+            cpbsMobileReverse.ProgressBarTextColor = System.Drawing.SystemColors.ControlText;
+            cpbsMobileReverse.ProgressBarTextFilledColor = System.Drawing.Color.DarkOrchid;
+            cpbsMobileReverse.Size = new System.Drawing.Size(302, 66);
+            cpbsMobileReverse.TabIndex = 4;
+            // 
+            // cpbsMobileNormal
+            // 
+            cpbsMobileNormal.BorderStyle = BorderStyle.FixedSingle;
+            cpbsMobileNormal.Location = new System.Drawing.Point(7, 80);
+            cpbsMobileNormal.Name = "cpbsMobileNormal";
+            cpbsMobileNormal.ProgressBarColor = System.Drawing.Color.DodgerBlue;
+            cpbsMobileNormal.ProgressBarText = "Normal";
+            cpbsMobileNormal.ProgressBarTextColor = System.Drawing.SystemColors.ControlText;
+            cpbsMobileNormal.ProgressBarTextFilledColor = System.Drawing.Color.White;
+            cpbsMobileNormal.Size = new System.Drawing.Size(302, 66);
+            cpbsMobileNormal.TabIndex = 4;
             // 
             // txtMobileTotalPoints
             // 
@@ -177,7 +212,7 @@ namespace EdgeSearch.UI
             lblMinStreakAmount.Location = new System.Drawing.Point(21, 55);
             lblMinStreakAmount.Margin = new Padding(4, 0, 4, 0);
             lblMinStreakAmount.Name = "lblMinStreakAmount";
-            lblMinStreakAmount.Size = new System.Drawing.Size(107, 15);
+            lblMinStreakAmount.Size = new System.Drawing.Size(110, 15);
             lblMinStreakAmount.TabIndex = 3;
             lblMinStreakAmount.Text = "Min. streak amount";
             // 
@@ -195,24 +230,51 @@ namespace EdgeSearch.UI
             lblMinStreakDelay.Location = new System.Drawing.Point(21, 84);
             lblMinStreakDelay.Margin = new Padding(4, 0, 4, 0);
             lblMinStreakDelay.Name = "lblMinStreakDelay";
-            lblMinStreakDelay.Size = new System.Drawing.Size(109, 15);
+            lblMinStreakDelay.Size = new System.Drawing.Size(112, 15);
             lblMinStreakDelay.TabIndex = 3;
             lblMinStreakDelay.Text = "Min. streak delay (s)";
             // 
             // grpDesktop
             // 
+            grpDesktop.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            grpDesktop.Controls.Add(cpbsDesktopReverse);
+            grpDesktop.Controls.Add(cpbsDesktopNormal);
             grpDesktop.Controls.Add(txtDesktopUserAgent);
             grpDesktop.Controls.Add(lblDesktopUserAgent);
             grpDesktop.Controls.Add(txtDesktopTotalPoints);
             grpDesktop.Controls.Add(lblDesktopTotalPoints);
             grpDesktop.Controls.Add(txtDesktopPointsPerSearch);
             grpDesktop.Controls.Add(lblDesktopPointsPerSearch);
-            grpDesktop.Location = new System.Drawing.Point(12, 188);
+            grpDesktop.Location = new System.Drawing.Point(12, 137);
             grpDesktop.Name = "grpDesktop";
-            grpDesktop.Size = new System.Drawing.Size(951, 108);
+            grpDesktop.Size = new System.Drawing.Size(951, 180);
             grpDesktop.TabIndex = 1;
             grpDesktop.TabStop = false;
             grpDesktop.Text = "Desktop";
+            // 
+            // cpbsDesktopReverse
+            // 
+            cpbsDesktopReverse.BorderStyle = BorderStyle.FixedSingle;
+            cpbsDesktopReverse.Location = new System.Drawing.Point(319, 97);
+            cpbsDesktopReverse.Name = "cpbsDesktopReverse";
+            cpbsDesktopReverse.ProgressBarColor = System.Drawing.Color.Orange;
+            cpbsDesktopReverse.ProgressBarText = "Reverse";
+            cpbsDesktopReverse.ProgressBarTextColor = System.Drawing.SystemColors.ControlText;
+            cpbsDesktopReverse.ProgressBarTextFilledColor = System.Drawing.Color.White;
+            cpbsDesktopReverse.Size = new System.Drawing.Size(302, 66);
+            cpbsDesktopReverse.TabIndex = 4;
+            // 
+            // cpbsDesktopNormal
+            // 
+            cpbsDesktopNormal.BorderStyle = BorderStyle.FixedSingle;
+            cpbsDesktopNormal.Location = new System.Drawing.Point(7, 97);
+            cpbsDesktopNormal.Name = "cpbsDesktopNormal";
+            cpbsDesktopNormal.ProgressBarColor = System.Drawing.Color.Green;
+            cpbsDesktopNormal.ProgressBarText = "Normal";
+            cpbsDesktopNormal.ProgressBarTextColor = System.Drawing.SystemColors.ControlText;
+            cpbsDesktopNormal.ProgressBarTextFilledColor = System.Drawing.Color.White;
+            cpbsDesktopNormal.Size = new System.Drawing.Size(302, 66);
+            cpbsDesktopNormal.TabIndex = 4;
             // 
             // txtDesktopUserAgent
             // 
@@ -293,7 +355,7 @@ namespace EdgeSearch.UI
             grpGeneral.Controls.Add(lblMinWait);
             grpGeneral.Location = new System.Drawing.Point(12, 12);
             grpGeneral.Name = "grpGeneral";
-            grpGeneral.Size = new System.Drawing.Size(951, 158);
+            grpGeneral.Size = new System.Drawing.Size(951, 119);
             grpGeneral.TabIndex = 0;
             grpGeneral.TabStop = false;
             grpGeneral.Text = "General";
@@ -322,7 +384,7 @@ namespace EdgeSearch.UI
             lblMarginStreakDelay.Location = new System.Drawing.Point(532, 84);
             lblMarginStreakDelay.Margin = new Padding(4, 0, 4, 0);
             lblMarginStreakDelay.Name = "lblMarginStreakDelay";
-            lblMarginStreakDelay.Size = new System.Drawing.Size(123, 15);
+            lblMarginStreakDelay.Size = new System.Drawing.Size(126, 15);
             lblMarginStreakDelay.TabIndex = 3;
             lblMarginStreakDelay.Text = "Margin streak delay (s)";
             // 
@@ -332,7 +394,7 @@ namespace EdgeSearch.UI
             lblMaxStreakDelay.Location = new System.Drawing.Point(269, 84);
             lblMaxStreakDelay.Margin = new Padding(4, 0, 4, 0);
             lblMaxStreakDelay.Name = "lblMaxStreakDelay";
-            lblMaxStreakDelay.Size = new System.Drawing.Size(111, 15);
+            lblMaxStreakDelay.Size = new System.Drawing.Size(114, 15);
             lblMaxStreakDelay.TabIndex = 3;
             lblMaxStreakDelay.Text = "Max. streak delay (s)";
             // 
@@ -350,7 +412,7 @@ namespace EdgeSearch.UI
             lblMarginStreakAmount.Location = new System.Drawing.Point(532, 55);
             lblMarginStreakAmount.Margin = new Padding(4, 0, 4, 0);
             lblMarginStreakAmount.Name = "lblMarginStreakAmount";
-            lblMarginStreakAmount.Size = new System.Drawing.Size(121, 15);
+            lblMarginStreakAmount.Size = new System.Drawing.Size(124, 15);
             lblMarginStreakAmount.TabIndex = 3;
             lblMarginStreakAmount.Text = "Margin streak amount";
             // 
@@ -368,7 +430,7 @@ namespace EdgeSearch.UI
             lblMaxStreakAmount.Location = new System.Drawing.Point(269, 55);
             lblMaxStreakAmount.Margin = new Padding(4, 0, 4, 0);
             lblMaxStreakAmount.Name = "lblMaxStreakAmount";
-            lblMaxStreakAmount.Size = new System.Drawing.Size(109, 15);
+            lblMaxStreakAmount.Size = new System.Drawing.Size(112, 15);
             lblMaxStreakAmount.TabIndex = 3;
             lblMaxStreakAmount.Text = "Max. streak amount";
             // 
@@ -392,13 +454,14 @@ namespace EdgeSearch.UI
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(975, 449);
+            ClientSize = new System.Drawing.Size(975, 527);
             Controls.Add(grpGeneral);
             Controls.Add(grpDesktop);
             Controls.Add(grpMobile);
             Margin = new Padding(5, 3, 5, 3);
             Name = "PreferencesForm";
             Text = "Preferences";
+            Controls.SetChildIndex(lblMessage, 0);
             Controls.SetChildIndex(grpMobile, 0);
             Controls.SetChildIndex(grpDesktop, 0);
             Controls.SetChildIndex(grpGeneral, 0);
@@ -446,5 +509,9 @@ namespace EdgeSearch.UI
         private Label lblMaxStreakAmount;
         private TextBox txtMarginStreakDelay;
         private TextBox txtMaxStreakDelay;
+        private src.UI.CustomProgressBarSettings cpbsDesktopNormal;
+        private src.UI.CustomProgressBarSettings cpbsDesktopReverse;
+        private src.UI.CustomProgressBarSettings cpbsMobileReverse;
+        private src.UI.CustomProgressBarSettings cpbsMobileNormal;
     }
 }
