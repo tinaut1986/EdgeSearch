@@ -29,7 +29,7 @@ namespace EdgeSearch.src.Models
         public ProgressBarColors mobileNormalProgressBarColors { get; set; }
         public ProgressBarColors mobileReverseProgressBarColors { get; set; }
 
-        public bool HandwritingSimulation { get; set; }
+        public bool SimulateKeyboardTyping { get; set; }
 
         /// <summary>
         /// After "MinStreakAmount/MaxStreakAmount" searches, a pause of "MinStreakDelay/MaxStreakDelay" seconds is done.
@@ -86,7 +86,7 @@ namespace EdgeSearch.src.Models
             MaxStreakDelay = 1200;
             MobileUserAgent = "Mozilla/5.0 (Linux; Android 9; ASUS_X00TD; Flow) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/359.0.0.288 Mobile Safari/537.36"; ;
             DesktopUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36";
-            HandwritingSimulation = true;
+            SimulateKeyboardTyping = true;
 
             desktopNormalProgressBarColors = new ProgressBarColors() { FilledColor = Color.Green, TextColor = Color.Black, FilledTextColor = Color.White };
             desktopReverseProgressBarColors = new ProgressBarColors() { FilledColor = Color.Orange, TextColor = Color.Black, FilledTextColor = Color.White };
@@ -142,7 +142,7 @@ namespace EdgeSearch.src.Models
             MaxStreakDelay = preferences.MaxStreakDelay;
             DesktopUserAgent = preferences.DesktopUserAgent;
             MobileUserAgent = preferences.MobileUserAgent;
-            HandwritingSimulation = preferences.HandwritingSimulation;
+            SimulateKeyboardTyping = preferences.SimulateKeyboardTyping;
             Map(desktopNormalProgressBarColors, preferences.desktopNormalProgressBarColors);
             Map(desktopReverseProgressBarColors, preferences.desktopReverseProgressBarColors);
             Map(mobileNormalProgressBarColors, preferences.mobileNormalProgressBarColors);

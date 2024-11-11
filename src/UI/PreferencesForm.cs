@@ -95,8 +95,8 @@ namespace EdgeSearch.UI
             txtDesktopTotalPoints.DataBindings.Clear();
             txtDesktopTotalPoints.DataBindings.Add(nameof(txtDesktopTotalPoints.Text), model, nameof(model.DesktopTotalPoints), true, DataSourceUpdateMode.OnPropertyChanged);
 
-            cbHandwritingSimulation.DataBindings.Clear();
-            cbHandwritingSimulation.DataBindings.Add(nameof(cbHandwritingSimulation.Checked), model, nameof(model.HandwritingSimulation), true, DataSourceUpdateMode.OnPropertyChanged);
+            cbSimulateKeyboardTyping.DataBindings.Clear();
+            cbSimulateKeyboardTyping.DataBindings.Add(nameof(cbSimulateKeyboardTyping.Checked), model, nameof(model.SimulateKeyboardTyping), true, DataSourceUpdateMode.OnPropertyChanged);
 
             cpbsMobileNormal.BindFields(model.mobileNormalProgressBarColors);
 

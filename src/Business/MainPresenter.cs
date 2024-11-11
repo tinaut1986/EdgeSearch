@@ -76,57 +76,59 @@ namespace EdgeSearch.src.Business
         }
 
         /// <summary>
-        /// This function handle new windows manually, but without opening the web in a new window.
+        /// Handles new window requests manually without opening the web in a new window.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event arguments containing information about the new window request.</param>
         private void _mainForm_RewardsNewWindowRequested(object sender, CoreWebView2NewWindowRequestedEventArgs e)
         {
-            // Obtener el contexto de sincronización de la UI
+            // Get the UI synchronization context
             var uiContext = SynchronizationContext.Current;
 
-            // Cancelar la creación de una nueva ventana
+            // Cancel the creation of a new window
             e.Handled = true;
 
-            // Crear una nueva instancia de WebView2 para la nueva ventana
+            // Create a new instance of WebView2 for the new window
             var newWebView = new WebView2 { Dock = DockStyle.Fill };
 
+            // Post the following code to the UI context
             uiContext.Post(async _ =>
             {
+                // Ensure that the CoreWebView2 environment is initialized
                 await newWebView.EnsureCoreWebView2Async();
 
-                // Navegar a la URI solicitada
+                // Navigate to the requested URI
                 newWebView.Source = new Uri(e.Uri);
-                _profile.Search.CurrentRewards++;
-                _profile.Search.TotalRewards++;
-                _mainForm.UpdateProgressBarRewards(_profile.Search);
+                _profile.Search.CurrentRewards++; // Increment current rewards count
+                _profile.Search.TotalRewards++; // Increment total rewards count
+                _mainForm.UpdateProgressBarRewards(_profile.Search); // Update progress bar
 
-                // Asociar el evento de navegación completada
+                // Event handler for navigation completed
                 EventHandler<CoreWebView2NavigationCompletedEventArgs> handler = null;
 
                 handler = async (s, args) =>
                 {
-                    // Cerrar la nueva ventana después de que se haya cargado completamente
+                    // Close the new window after it has fully loaded
                     if (args.IsSuccess)
                     {
-                        await Task.Delay(15000); // Espera 15 segundos antes de cerrar la ventana
+                        await Task.Delay(15000); // Wait for 15 seconds before closing the window
 
-                        // TODO: Por algún motivo, pasa por este codigo más de una vez. Necesito mirar como hacerlo para que no reduzca el contador más veces de la cuenta.
-                        //newWebView.CoreWebView2.NavigationCompleted -= handler; // Desvincular el evento
+                        // TODO: For some reason, this code runs more than once. 
+                        // Investigate how to prevent the counter from decrementing multiple times.
+                        // newWebView.CoreWebView2.NavigationCompleted -= handler; // Unsubscribe from the event
 
-                        newWebView.Dispose();
-                        _profile.Search.CurrentRewards--;
-                        _mainForm.UpdateProgressBarRewards(_profile.Search);
+                        newWebView.Dispose(); // Dispose of the WebView2 instance
+                        _profile.Search.CurrentRewards--; // Decrement current rewards count
+                        _mainForm.UpdateProgressBarRewards(_profile.Search); // Update progress bar again
                     }
                 };
 
-                newWebView.CoreWebView2.NavigationCompleted += handler; // Vincular el evento
+                newWebView.CoreWebView2.NavigationCompleted += handler; // Subscribe to navigation completed event
 
             }, null);
 
-            _mainForm.BindFields();
+            _mainForm.BindFields(); // Bind fields in the main form
         }
-
 
         private void _mainForm_SearchesNavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
         {
@@ -157,31 +159,44 @@ namespace EdgeSearch.src.Business
             _mainForm.UpdateInterface();
         }
 
-        private async Task ManageSearch()
+        /// <summary>
+        /// Executes the search process, checking if a search can be performed,
+        /// refreshing the next search, and updating the search history.
+        /// </summary>
+        private async Task ExecuteSearchProcess()
         {
+            // Check if a search can be performed; if not, stop the process
             if (!_profile.Search.CanDoSearch())
                 Stop();
 
-            string currentSearch = _profile.Search.NextSearch;
-            RefreshNextSearch();
+            string currentSearch = _profile.Search.NextSearch; // Get the next search term
+            RefreshNextSearch(); // Refresh the next search term
 
-            await DoSearch(currentSearch);
+            await InitiateSearch(currentSearch); // Initiate the search with the current term
 
-            AddHistoryicSearch(currentSearch);
+            AddHistoryicSearch(currentSearch); // Add the current search to history
 
-            _profile.Search.IncreaseSearchCount();
+            _profile.Search.IncreaseSearchCount(); // Increment the search count
 
-            _mainForm.UpdateInterface();
+            _mainForm.UpdateInterface(); // Update the main interface to reflect changes
         }
 
-        private async Task DoSearch(string currentSearch)
+        /// <summary>
+        /// Initiates the search action based on user preferences.
+        /// If keyboard typing simulation is enabled, it simulates typing;
+        /// otherwise, it opens the search URL directly.
+        /// </summary>
+        /// <param name="currentSearch">The search term to be executed.</param>
+        private async Task InitiateSearch(string currentSearch)
         {
-            if (_profile.Preferences.HandwritingSimulation)
-                await _mainForm.SetSearchBoxText(currentSearch);
+            // Check user preferences for simulating keyboard typing
+            if (_profile.Preferences.SimulateKeyboardTyping)
+                await _mainForm.SetSearchBoxText(currentSearch); // Simulate typing in the search box
             else
             {
+                // Construct the search URL and open it in the browser
                 _profile.Search.URL = new Uri($"https://www.bing.com/search?q={currentSearch}&form=QBLH&sp=-1&ghc=1&lq=0&pq={currentSearch}");
-                await _mainForm.OpenSearchesURL(_profile.Search.URL);
+                await _mainForm.OpenSearchesURL(_profile.Search.URL); // Open the constructed URL
             }
         }
 
@@ -293,7 +308,7 @@ namespace EdgeSearch.src.Business
                 if (_profile.Preferences.MinStreakAmount > 0)
                     _profile.Search.StreakCount++;
 
-                await ManageSearch();
+                await ExecuteSearchProcess();
 
                 await ExtractPoints();
             }
@@ -311,7 +326,11 @@ namespace EdgeSearch.src.Business
             (int currentPoints, int maxPoints, int pointsPerSearch) desktop = await _mainForm.ExtractPoints("Búsqueda en PC");
             _profile.Preferences.DesktopPointsPersearch = desktop.pointsPerSearch;
             _profile.Preferences.DesktopTotalPoints = desktop.maxPoints;
-            _profile.Search.DesktopSearchesCount = desktop.currentPoints / _profile.Preferences.DesktopPointsPersearch;
+
+            if (_profile.Preferences.DesktopPointsPersearch != 0)
+                _profile.Search.DesktopSearchesCount = desktop.currentPoints / _profile.Preferences.DesktopPointsPersearch;
+            else
+                _profile.Search.DesktopSearchesCount = 0;
 
             // Intentar encontrar "Búsqueda en móviles" con un tiempo límite de 10 segundos
             bool mobileSearchVisible = await _mainForm.WaitForTextToBeVisible("Búsqueda en móviles", 1000);
@@ -447,7 +466,7 @@ namespace EdgeSearch.src.Business
 
         private async void _mainForm_ForceClicked(object sender, EventArgs e)
         {
-            await ManageSearch();
+            await ExecuteSearchProcess();
             await ExtractPoints();
         }
 

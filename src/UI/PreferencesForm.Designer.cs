@@ -55,7 +55,7 @@ namespace EdgeSearch.UI
             txtMarginStreakDelay = new TextBox();
             txtMaxStreakDelay = new TextBox();
             grpGeneral = new GroupBox();
-            cbHandwritingSimulation = new CheckBox();
+            cbSimulateKeyboardTyping = new CheckBox();
             grpMobile.SuspendLayout();
             grpDesktop.SuspendLayout();
             grpTimes.SuspendLayout();
@@ -451,7 +451,7 @@ namespace EdgeSearch.UI
             // 
             // grpGeneral
             // 
-            grpGeneral.Controls.Add(cbHandwritingSimulation);
+            grpGeneral.Controls.Add(cbSimulateKeyboardTyping);
             grpGeneral.Location = new System.Drawing.Point(778, 12);
             grpGeneral.Name = "grpGeneral";
             grpGeneral.Size = new System.Drawing.Size(263, 119);
@@ -459,15 +459,15 @@ namespace EdgeSearch.UI
             grpGeneral.TabStop = false;
             grpGeneral.Text = "General";
             // 
-            // cbHandwritingSimulation
+            // cbSimulateKeyboardTyping
             // 
-            cbHandwritingSimulation.AutoSize = true;
-            cbHandwritingSimulation.Location = new System.Drawing.Point(24, 22);
-            cbHandwritingSimulation.Name = "cbHandwritingSimulation";
-            cbHandwritingSimulation.Size = new System.Drawing.Size(151, 19);
-            cbHandwritingSimulation.TabIndex = 0;
-            cbHandwritingSimulation.Text = "Handwriting simulation";
-            cbHandwritingSimulation.UseVisualStyleBackColor = true;
+            cbSimulateKeyboardTyping.AutoSize = true;
+            cbSimulateKeyboardTyping.Location = new System.Drawing.Point(24, 22);
+            cbSimulateKeyboardTyping.Name = "cbSimulateKeyboardTyping";
+            cbSimulateKeyboardTyping.Size = new System.Drawing.Size(161, 19);
+            cbSimulateKeyboardTyping.TabIndex = 0;
+            cbSimulateKeyboardTyping.Text = "Simulate keyboard typing";
+            cbSimulateKeyboardTyping.UseVisualStyleBackColor = true;
             // 
             // PreferencesForm
             // 
@@ -537,6 +537,6 @@ namespace EdgeSearch.UI
         private src.UI.CustomProgressBarSettings cpbsMobileReverse;
         private src.UI.CustomProgressBarSettings cpbsMobileNormal;
         private GroupBox grpGeneral;
-        private CheckBox cbHandwritingSimulation;
+        private CheckBox cbSimulateKeyboardTyping;
     }
 }

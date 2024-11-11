@@ -117,22 +117,40 @@ namespace EdgeSearch.UI
                     return;
                 }
 
-                // Simula un retraso aleatorio entre 7 y 80 milisegundos
+                // Simulates a random delay between 7 and 80 milliseconds
                 await Task.Delay(random.Next(7, 80));
             }
 
             Console.WriteLine("Search box text set successfully.");
             await Task.Delay(random.Next(100, 150));
-            await ClickSearchButton();
+            await SimulateEnterInSearchBox();
         }
 
-        private async Task ClickSearchButton()
+        private async Task SimulateEnterInSearchBox()
         {
             string script = @"
                 (function() {
-                    var submitButton = document.querySelector('#sb_form_go');
-                    if (submitButton) {
-                        submitButton.click();
+                    var searchBox = document.getElementById('sb_form_q');
+                    if (searchBox) {
+                        var event = new KeyboardEvent('keydown', {
+                            'key': 'Enter',
+                            'code': 'Enter',
+                            'which': 13,
+                            'keyCode': 13,
+                            'bubbles': true,
+                            'cancelable': true
+                        });
+                        searchBox.dispatchEvent(event);
+
+                        // Simular el evento 'submit' del formulario
+                        var form = searchBox.form;
+                        if (form) {
+                            var submitEvent = new Event('submit', {
+                                'bubbles': true,
+                                'cancelable': true
+                            });
+                            form.dispatchEvent(submitEvent);
+                        }
                         return true;
                     }
                     return false;
@@ -141,9 +159,9 @@ namespace EdgeSearch.UI
 
             var result = await wvSearches.ExecuteScriptAsync(script);
             if (result == "true")
-                Console.WriteLine("Botón de búsqueda pulsado con éxito.");
+                Console.WriteLine("Search initiated successfully.");
             else
-                Console.WriteLine("No se pudo encontrar o pulsar el botón de búsqueda.");
+                Console.WriteLine("Failed to initiate the search.");
         }
 
         public TabPage GetTabPage(TabType tabType)
@@ -187,13 +205,16 @@ namespace EdgeSearch.UI
             cbNextSearch.Items.Insert(0, search);
         }
 
+        /// <summary>
+        /// Initializes all event subscriptions for the form.
+        /// </summary>
         private void InitializeEvents()
         {
-            // Evento de inicialización del WebView2
+            // WebView2 initialization events
             wvSearches.CoreWebView2InitializationCompleted += WvSearches_CoreWebView2InitializationCompleted;
             wvRewards.CoreWebView2InitializationCompleted += WvRewards_CoreWebView2InitializationCompleted;
 
-            // Eventos de menú
+            // Menu item events
             var menuItems = new (ToolStripMenuItem item, EventHandler handler)[]
             {
                 (tsmiPlayRewards, TsmiPlayRewards_Click),
@@ -206,7 +227,7 @@ namespace EdgeSearch.UI
             foreach (var (item, handler) in menuItems)
                 item.Click += handler;
 
-            // Eventos de botones
+            // Button events
             var buttons = new (Button button, EventHandler handler)[]
             {
                 (btnPlay, btnPlay_Click),
@@ -217,17 +238,21 @@ namespace EdgeSearch.UI
             foreach (var (button, handler) in buttons)
                 button.Click += handler;
 
-            // Evento para el checkbox
+            // Checkbox event
             chkMobile.Click += ChkMobile_Click;
         }
 
+        /// <summary>
+        /// Removes all event subscriptions for the form.
+        /// This is important for proper cleanup and to prevent memory leaks.
+        /// </summary>
         private void FinalizeEvents()
         {
-            // Evento de inicialización del WebView2
+            // WebView2 initialization events
             wvSearches.CoreWebView2InitializationCompleted -= WvSearches_CoreWebView2InitializationCompleted;
             wvRewards.CoreWebView2InitializationCompleted -= WvRewards_CoreWebView2InitializationCompleted;
 
-            // Eventos de menú
+            // Menu item events
             var menuItems = new (ToolStripMenuItem item, EventHandler handler)[]
             {
                 (tsmiPlayRewards, TsmiPlayRewards_Click),
@@ -240,7 +265,7 @@ namespace EdgeSearch.UI
             foreach (var (item, handler) in menuItems)
                 item.Click -= handler;
 
-            // Eventos de botones
+            // Button events
             var buttons = new (Button button, EventHandler handler)[]
             {
                 (btnPlay, btnPlay_Click),
@@ -251,7 +276,7 @@ namespace EdgeSearch.UI
             foreach (var (button, handler) in buttons)
                 button.Click -= handler;
 
-            // Evento para el checkbox
+            // Checkbox event
             chkMobile.Click -= ChkMobile_Click;
         }
 
@@ -465,10 +490,12 @@ namespace EdgeSearch.UI
             string seconds = searchsSeconds;
             if (profile.Search.StreakTime != null)
                 seconds = streakSeconds;
+
             pbSearches.Text = $"Searches: {streakCount} ({seconds}) | Expected time: {ExecutionTimeCalculator.GetTotalExpectedTime(profile)}";
 
             pbSearches.Maximum = profile.SearchesProgressBarMax;
             pbSearches.Value = profile.SearchesProgressBarValue;
+            
             if (profile.Search.IsMobile)
             {
                 if (profile.Search.StreakTime == null)
@@ -476,7 +503,7 @@ namespace EdgeSearch.UI
                 else
                     UpdateProgressBarColors(profile.Preferences.mobileReverseProgressBarColors);
             }
-            else // IsDesktop
+            else // profile.Search.IsDesktop
             {
                 if (profile.Search.StreakTime == null)
                     UpdateProgressBarColors(profile.Preferences.desktopNormalProgressBarColors);
@@ -544,92 +571,106 @@ namespace EdgeSearch.UI
                 pbRewards.Style = ProgressBarStyle.Continuous;
         }
 
+        /// <summary>
+        /// Extracts the current points, maximum points, and points per search 
+        /// from the WebView2 document based on the specified search type.
+        /// </summary>
+        /// <param name="searchType">The type of search to filter the points.</param>
+        /// <returns>A tuple containing current points, maximum points, and points per search.</returns>
         public async Task<(int currentPoints, int maxPoints, int pointsPerSearch)> ExtractPoints(string searchType)
         {
+            // JavaScript code to execute in the context of the WebView2
             string jsCode = $@"
                 (function() {{
-                    var result = {{}};
-                    // Buscar el contenedor que contiene el texto específico
+                    var result = {{}}; // Initialize an empty object to hold results
+                    // Find all elements that contain point breakdown information
                     var pointElements = document.querySelectorAll('.pointsBreakdownCard');
-    
-                    pointElements.forEach(function(element) {{
-                        var label = element.querySelector('a').innerText;
-                        if (label.includes('{searchType}')) {{
-                            // Extraer los puntos
-                            var pointsText = element.querySelector('.pointsDetail p.pointsDetail').innerText;
-                            result.points = pointsText.trim();
 
-                            // Extraer los puntos por búsqueda
+                    // Iterate over each point element
+                    pointElements.forEach(function(element) {{
+                        var label = element.querySelector('a').innerText; // Get the label text
+                        if (label.includes('{searchType}')) {{ // Check if it includes the specified search type
+                            // Extract the points from the detail section
+                            var pointsText = element.querySelector('.pointsDetail p.pointsDetail').innerText;
+                            result.points = pointsText.trim(); // Store the trimmed points text
+
+                            // Extract points per search from the description text
                             var descriptionText = element.querySelector('.description').innerText;
-                            var match = descriptionText.match(/(\d+)\s+puntos?\s+por\s+búsqueda/);
+                            var match = descriptionText.match(/(\\d+)\\s+puntos?\\s+por\\s+búsqueda/); // Regex to find points per search
                             if (match) {{
-                                result.pointsPerSearch = match[1];
+                                result.pointsPerSearch = match[1]; // Store the matched points per search
                             }}
                         }}
                     }});
 
-                    return JSON.stringify(result);
+                    return JSON.stringify(result); // Return the result as a JSON string
                 }})();";
 
+            // Execute the JavaScript code and get the result as a JSON string
             string resultJson = await wvRewards.CoreWebView2.ExecuteScriptAsync(jsCode);
 
-            resultJson = resultJson.Trim('"').Replace("\\\"", "\"");
+            resultJson = resultJson.Trim('"').Replace("\\\"", "\""); // Clean up the JSON string
 
-            // Deserializar el resultado JSON
+            // Deserialize the JSON result into a dictionary for easy access
             var resultObj = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(resultJson);
 
+            // Check if we have valid data in the result object
             if (resultObj != null && resultObj.ContainsKey("points") && resultObj.ContainsKey("pointsPerSearch"))
             {
-                string[] pointsArray = resultObj["points"].Split('/');
+                string[] pointsArray = resultObj["points"].Split('/'); // Split current and max points
                 if (pointsArray.Length == 2)
                 {
-                    int currentPoints = int.Parse(pointsArray[0].Trim());
-                    int maxPoints = int.Parse(pointsArray[1].Trim());
-                    int pointsPerSearch = int.Parse(resultObj["pointsPerSearch"]);
+                    int currentPoints = int.Parse(pointsArray[0].Trim()); // Parse current points
+                    int maxPoints = int.Parse(pointsArray[1].Trim()); // Parse maximum points
+                    int pointsPerSearch = int.Parse(resultObj["pointsPerSearch"]); // Parse points per search
 
-                    return (currentPoints, maxPoints, pointsPerSearch);
+                    return (currentPoints, maxPoints, pointsPerSearch); // Return the extracted values as a tuple
                 }
             }
 
-            // Si no se encuentran valores o hay un error, devolver 0, 0, 0
+            // If no values are found or there is an error, return 0, 0, 0
             return (0, 0, 0);
         }
 
+        /// <summary>
+        /// Waits for the specified text to be visible in the WebView2 document.
+        /// </summary>
+        /// <param name="textToFind">The text to search for in the document.</param>
+        /// <param name="timeoutMilliseconds">Optional timeout in milliseconds. If specified, the method will stop waiting after this duration.</param>
+        /// <returns>True if the text is found, otherwise false.</returns>
         public async Task<bool> WaitForTextToBeVisible(string textToFind, int? timeoutMilliseconds = null)
         {
-            // Esperar hasta que la página en el WebView2 esté cargada y no sea "about:blank"
+            // Wait until the WebView2 page is loaded and is not "about:blank"
             while ((wvRewards?.CoreWebView2?.Source ?? "about:blank") == "about:blank")
-                await Task.Delay(1000);
+                await Task.Delay(1000); // Delay for 1 second before checking again
 
-            // Tiempo máximo de espera
+            // Maximum wait time
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-            // Si el tiempo de espera es especificado, configurar el CancellationToken
+            // If a timeout is specified, configure the CancellationToken to cancel after that duration
             if (timeoutMilliseconds.HasValue)
-            {
                 cancellationTokenSource.CancelAfter(timeoutMilliseconds.Value);
-            }
 
-            // Bucle para comprobar si el texto está presente
+            // Loop to check if the specified text is present in the document
             while (!cancellationTokenSource.IsCancellationRequested)
             {
-                // Código JavaScript que comprueba si el texto está presente
+                // JavaScript code that checks if the text is present in the body of the document
                 string jsCode = $@"
                     (function() {{
                         return document.body.innerText.includes('{textToFind}');
                     }})();";
 
-                // Ejecutar el script y obtener el resultado como string ("true" o "false")
+                // Execute the script and get the result as a string ("true" or "false")
                 string result = await wvRewards.CoreWebView2?.ExecuteScriptAsync(jsCode);
 
                 if (result == "true")
-                    return true;
+                    return true; // Return true if the text is found
 
-                // Espera antes de volver a comprobar
-                await Task.Delay(1000);
+                // Wait before checking again
+                await Task.Delay(1000); // Delay for 1 second before rechecking
             }
 
-            // Si no se encontró el texto dentro del tiempo límite (si se especificó)
+            // If the text was not found within the timeout period (if specified), return false
             return false;
         }
 
@@ -700,11 +741,11 @@ namespace EdgeSearch.UI
         {
             ForceClicked?.Invoke(this, EventArgs.Empty);
         }
-        #endregion
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             SetSearchBoxText("C# programming");
         }
+        #endregion
     }
 }
