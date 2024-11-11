@@ -169,42 +169,9 @@ namespace EdgeSearch.src.Models
             }
         }
 
-        public int PointsPersearch
-        {
-            get => _search.CurrentMode == SearchMode.Mobile ? _preferences.MobilePointsPersearch : _preferences.DesktopPointsPersearch;
-            set
-            {
-                if (_search.IsMobile)
-                    _search.MobileSearchesCount = value;
-                else if (_search.IsDesktop)
-                    _search.DesktopSearchesCount = value;
-                NotifyPropertyChanged();
-            }
-        }
+        public int DesktopCurrentPoints => Search.DesktopSearchesCount * Preferences.DesktopPointsPersearch;
 
-        public int CurrentPoints
-        {
-            get => _search.SearchesCount * PointsPersearch;
-            set
-            {
-                _search.SearchesCount = value / PointsPersearch;
-                NotifyPropertyChanged();
-            }
-        }
-
-        public int PointsLimit
-        {
-            get => _search.CurrentMode == SearchMode.Mobile ? _preferences.MobileTotalPoints : _preferences.DesktopTotalPoints;
-            set
-            {
-                if (_search.IsMobile)
-                    _preferences.MobileTotalPoints = value;
-                else if (_search.IsDesktop)
-                    _preferences.DesktopTotalPoints = value;
-
-                NotifyPropertyChanged();
-            }
-        }
+        public int MobileCurrentPoints => Search.MobileSearchesCount * Preferences.MobilePointsPersearch;
 
         #endregion
 

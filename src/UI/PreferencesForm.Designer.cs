@@ -43,7 +43,7 @@ namespace EdgeSearch.UI
             lblDesktopTotalPoints = new Label();
             txtDesktopPointsPerSearch = new TextBox();
             lblDesktopPointsPerSearch = new Label();
-            grpGeneral = new GroupBox();
+            grpTimes = new GroupBox();
             lblMarginWait = new Label();
             txtMarginWait = new TextBox();
             lblMarginStreakDelay = new Label();
@@ -54,22 +54,24 @@ namespace EdgeSearch.UI
             lblMaxStreakAmount = new Label();
             txtMarginStreakDelay = new TextBox();
             txtMaxStreakDelay = new TextBox();
+            grpGeneral = new GroupBox();
+            cbHandwritingSimulation = new CheckBox();
             grpMobile.SuspendLayout();
             grpDesktop.SuspendLayout();
+            grpTimes.SuspendLayout();
             grpGeneral.SuspendLayout();
             SuspendLayout();
             // 
             // lblMessage
             // 
-            lblMessage.Size = new System.Drawing.Size(975, 494);
+            lblMessage.Size = new System.Drawing.Size(1053, 494);
             // 
             // txtMobileUserAgent
             // 
-            txtMobileUserAgent.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtMobileUserAgent.Location = new System.Drawing.Point(112, 22);
             txtMobileUserAgent.Margin = new Padding(4, 3, 4, 3);
             txtMobileUserAgent.Name = "txtMobileUserAgent";
-            txtMobileUserAgent.Size = new System.Drawing.Size(832, 23);
+            txtMobileUserAgent.Size = new System.Drawing.Size(618, 23);
             txtMobileUserAgent.TabIndex = 0;
             // 
             // lblMobileUserAgent
@@ -139,7 +141,6 @@ namespace EdgeSearch.UI
             // 
             // grpMobile
             // 
-            grpMobile.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             grpMobile.Controls.Add(cpbsMobileReverse);
             grpMobile.Controls.Add(txtMobileUserAgent);
             grpMobile.Controls.Add(cpbsMobileNormal);
@@ -150,7 +151,7 @@ namespace EdgeSearch.UI
             grpMobile.Controls.Add(lblMobilePointsPerSearch);
             grpMobile.Location = new System.Drawing.Point(12, 323);
             grpMobile.Name = "grpMobile";
-            grpMobile.Size = new System.Drawing.Size(951, 164);
+            grpMobile.Size = new System.Drawing.Size(760, 164);
             grpMobile.TabIndex = 2;
             grpMobile.TabStop = false;
             grpMobile.Text = "Mobile";
@@ -236,7 +237,6 @@ namespace EdgeSearch.UI
             // 
             // grpDesktop
             // 
-            grpDesktop.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             grpDesktop.Controls.Add(cpbsDesktopReverse);
             grpDesktop.Controls.Add(cpbsDesktopNormal);
             grpDesktop.Controls.Add(txtDesktopUserAgent);
@@ -247,7 +247,7 @@ namespace EdgeSearch.UI
             grpDesktop.Controls.Add(lblDesktopPointsPerSearch);
             grpDesktop.Location = new System.Drawing.Point(12, 137);
             grpDesktop.Name = "grpDesktop";
-            grpDesktop.Size = new System.Drawing.Size(951, 180);
+            grpDesktop.Size = new System.Drawing.Size(760, 180);
             grpDesktop.TabIndex = 1;
             grpDesktop.TabStop = false;
             grpDesktop.Text = "Desktop";
@@ -278,11 +278,10 @@ namespace EdgeSearch.UI
             // 
             // txtDesktopUserAgent
             // 
-            txtDesktopUserAgent.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtDesktopUserAgent.Location = new System.Drawing.Point(112, 22);
             txtDesktopUserAgent.Margin = new Padding(4, 3, 4, 3);
             txtDesktopUserAgent.Name = "txtDesktopUserAgent";
-            txtDesktopUserAgent.Size = new System.Drawing.Size(832, 23);
+            txtDesktopUserAgent.Size = new System.Drawing.Size(618, 23);
             txtDesktopUserAgent.TabIndex = 0;
             // 
             // lblDesktopUserAgent
@@ -333,32 +332,32 @@ namespace EdgeSearch.UI
             lblDesktopPointsPerSearch.TabIndex = 3;
             lblDesktopPointsPerSearch.Text = "Points per search";
             // 
-            // grpGeneral
+            // grpTimes
             // 
-            grpGeneral.Controls.Add(lblMarginWait);
-            grpGeneral.Controls.Add(lblMaxWait);
-            grpGeneral.Controls.Add(txtMinWait);
-            grpGeneral.Controls.Add(txtMarginWait);
-            grpGeneral.Controls.Add(txtMaxWait);
-            grpGeneral.Controls.Add(lblMarginStreakDelay);
-            grpGeneral.Controls.Add(lblMaxStreakDelay);
-            grpGeneral.Controls.Add(lblMinStreakDelay);
-            grpGeneral.Controls.Add(txtMarginStreakAmount);
-            grpGeneral.Controls.Add(lblMarginStreakAmount);
-            grpGeneral.Controls.Add(txtMaxStreakAmount);
-            grpGeneral.Controls.Add(lblMaxStreakAmount);
-            grpGeneral.Controls.Add(txtMinStreakAmount);
-            grpGeneral.Controls.Add(lblMinStreakAmount);
-            grpGeneral.Controls.Add(txtMarginStreakDelay);
-            grpGeneral.Controls.Add(txtMaxStreakDelay);
-            grpGeneral.Controls.Add(txtMinStreakDelay);
-            grpGeneral.Controls.Add(lblMinWait);
-            grpGeneral.Location = new System.Drawing.Point(12, 12);
-            grpGeneral.Name = "grpGeneral";
-            grpGeneral.Size = new System.Drawing.Size(951, 119);
-            grpGeneral.TabIndex = 0;
-            grpGeneral.TabStop = false;
-            grpGeneral.Text = "General";
+            grpTimes.Controls.Add(lblMarginWait);
+            grpTimes.Controls.Add(lblMaxWait);
+            grpTimes.Controls.Add(txtMinWait);
+            grpTimes.Controls.Add(txtMarginWait);
+            grpTimes.Controls.Add(txtMaxWait);
+            grpTimes.Controls.Add(lblMarginStreakDelay);
+            grpTimes.Controls.Add(lblMaxStreakDelay);
+            grpTimes.Controls.Add(lblMinStreakDelay);
+            grpTimes.Controls.Add(txtMarginStreakAmount);
+            grpTimes.Controls.Add(lblMarginStreakAmount);
+            grpTimes.Controls.Add(txtMaxStreakAmount);
+            grpTimes.Controls.Add(lblMaxStreakAmount);
+            grpTimes.Controls.Add(txtMinStreakAmount);
+            grpTimes.Controls.Add(lblMinStreakAmount);
+            grpTimes.Controls.Add(txtMarginStreakDelay);
+            grpTimes.Controls.Add(txtMaxStreakDelay);
+            grpTimes.Controls.Add(txtMinStreakDelay);
+            grpTimes.Controls.Add(lblMinWait);
+            grpTimes.Location = new System.Drawing.Point(12, 12);
+            grpTimes.Name = "grpTimes";
+            grpTimes.Size = new System.Drawing.Size(760, 119);
+            grpTimes.TabIndex = 0;
+            grpTimes.TabStop = false;
+            grpTimes.Text = "Times";
             // 
             // lblMarginWait
             // 
@@ -450,12 +449,33 @@ namespace EdgeSearch.UI
             txtMaxStreakDelay.Size = new System.Drawing.Size(67, 23);
             txtMaxStreakDelay.TabIndex = 7;
             // 
+            // grpGeneral
+            // 
+            grpGeneral.Controls.Add(cbHandwritingSimulation);
+            grpGeneral.Location = new System.Drawing.Point(778, 12);
+            grpGeneral.Name = "grpGeneral";
+            grpGeneral.Size = new System.Drawing.Size(263, 119);
+            grpGeneral.TabIndex = 3;
+            grpGeneral.TabStop = false;
+            grpGeneral.Text = "General";
+            // 
+            // cbHandwritingSimulation
+            // 
+            cbHandwritingSimulation.AutoSize = true;
+            cbHandwritingSimulation.Location = new System.Drawing.Point(24, 22);
+            cbHandwritingSimulation.Name = "cbHandwritingSimulation";
+            cbHandwritingSimulation.Size = new System.Drawing.Size(151, 19);
+            cbHandwritingSimulation.TabIndex = 0;
+            cbHandwritingSimulation.Text = "Handwriting simulation";
+            cbHandwritingSimulation.UseVisualStyleBackColor = true;
+            // 
             // PreferencesForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(975, 527);
+            ClientSize = new System.Drawing.Size(1053, 527);
             Controls.Add(grpGeneral);
+            Controls.Add(grpTimes);
             Controls.Add(grpDesktop);
             Controls.Add(grpMobile);
             Margin = new Padding(5, 3, 5, 3);
@@ -464,11 +484,14 @@ namespace EdgeSearch.UI
             Controls.SetChildIndex(lblMessage, 0);
             Controls.SetChildIndex(grpMobile, 0);
             Controls.SetChildIndex(grpDesktop, 0);
+            Controls.SetChildIndex(grpTimes, 0);
             Controls.SetChildIndex(grpGeneral, 0);
             grpMobile.ResumeLayout(false);
             grpMobile.PerformLayout();
             grpDesktop.ResumeLayout(false);
             grpDesktop.PerformLayout();
+            grpTimes.ResumeLayout(false);
+            grpTimes.PerformLayout();
             grpGeneral.ResumeLayout(false);
             grpGeneral.PerformLayout();
             ResumeLayout(false);
@@ -498,7 +521,7 @@ namespace EdgeSearch.UI
         private Label lblDesktopTotalPoints;
         private TextBox txtDesktopPointsPerSearch;
         private Label lblDesktopPointsPerSearch;
-        private GroupBox grpGeneral;
+        private GroupBox grpTimes;
         private Label lblMarginWait;
         private TextBox txtMarginWait;
         private Label lblMarginStreakDelay;
@@ -513,5 +536,7 @@ namespace EdgeSearch.UI
         private src.UI.CustomProgressBarSettings cpbsDesktopReverse;
         private src.UI.CustomProgressBarSettings cpbsMobileReverse;
         private src.UI.CustomProgressBarSettings cpbsMobileNormal;
+        private GroupBox grpGeneral;
+        private CheckBox cbHandwritingSimulation;
     }
 }

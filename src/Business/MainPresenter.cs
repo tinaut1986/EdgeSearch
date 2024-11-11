@@ -157,7 +157,7 @@ namespace EdgeSearch.src.Business
             _mainForm.UpdateInterface();
         }
 
-        private async Task DoSearch()
+        private async Task ManageSearch()
         {
             if (!_profile.Search.CanDoSearch())
                 Stop();
@@ -165,15 +165,30 @@ namespace EdgeSearch.src.Business
             string currentSearch = _profile.Search.NextSearch;
             RefreshNextSearch();
 
-            _profile.Search.URL = new Uri($"https://www.bing.com/search?q={currentSearch}&form=QBLH&sp=-1&ghc=1&lq=0&pq={currentSearch}");
+            await DoSearch(currentSearch);
 
-            _profile.Search.AddHistoricSearch(currentSearch);
+            AddHistoryicSearch(currentSearch);
 
             _profile.Search.IncreaseSearchCount();
 
             _mainForm.UpdateInterface();
+        }
 
-            await _mainForm.OpenSearchesURL(_profile.Search.URL);
+        private async Task DoSearch(string currentSearch)
+        {
+            if (_profile.Preferences.HandwritingSimulation)
+                await _mainForm.SetSearchBoxText(currentSearch);
+            else
+            {
+                _profile.Search.URL = new Uri($"https://www.bing.com/search?q={currentSearch}&form=QBLH&sp=-1&ghc=1&lq=0&pq={currentSearch}");
+                await _mainForm.OpenSearchesURL(_profile.Search.URL);
+            }
+        }
+
+        private void AddHistoryicSearch(string search)
+        {
+            _profile.Search.AddHistoricSearch(search);
+            _mainForm.AddHistoricSearch(search);
         }
 
         private void LoadSearchesFromFile(string filePath)
@@ -278,7 +293,7 @@ namespace EdgeSearch.src.Business
                 if (_profile.Preferences.MinStreakAmount > 0)
                     _profile.Search.StreakCount++;
 
-                await DoSearch();
+                await ManageSearch();
 
                 await ExtractPoints();
             }
@@ -432,7 +447,7 @@ namespace EdgeSearch.src.Business
 
         private async void _mainForm_ForceClicked(object sender, EventArgs e)
         {
-            await DoSearch();
+            await ManageSearch();
             await ExtractPoints();
         }
 

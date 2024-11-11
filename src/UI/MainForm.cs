@@ -5,6 +5,7 @@ using EdgeSearch.src.Utils;
 using Microsoft.Web.WebView2.Core;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -89,6 +90,62 @@ namespace EdgeSearch.UI
             tabControl1.SelectedTab = selectedTab;
         }
 
+        public async Task SetSearchBoxText(string text)
+        {
+            if (text == null)
+                return;
+
+            Random random = new Random();
+            for (int i = 0; i <= text.Length; i++)
+            {
+                string partialText = text.Substring(0, i);
+                string script = @"
+                    (function() {
+                        var searchBox = document.getElementById('sb_form_q');
+                        if (searchBox) {
+                            searchBox.value = '" + partialText + @"';
+                            return true;
+                        }
+                        return false;
+                    })();
+                ";
+
+                var result = await wvSearches.ExecuteScriptAsync(script);
+                if (result != "true")
+                {
+                    Console.WriteLine("Search box not found.");
+                    return;
+                }
+
+                // Simula un retraso aleatorio entre 7 y 80 milisegundos
+                await Task.Delay(random.Next(7, 80));
+            }
+
+            Console.WriteLine("Search box text set successfully.");
+            await Task.Delay(random.Next(100, 150));
+            await ClickSearchButton();
+        }
+
+        private async Task ClickSearchButton()
+        {
+            string script = @"
+                (function() {
+                    var submitButton = document.querySelector('#sb_form_go');
+                    if (submitButton) {
+                        submitButton.click();
+                        return true;
+                    }
+                    return false;
+                })();
+            ";
+
+            var result = await wvSearches.ExecuteScriptAsync(script);
+            if (result == "true")
+                Console.WriteLine("Botón de búsqueda pulsado con éxito.");
+            else
+                Console.WriteLine("No se pudo encontrar o pulsar el botón de búsqueda.");
+        }
+
         public TabPage GetTabPage(TabType tabType)
         {
             switch (tabType)
@@ -115,11 +172,19 @@ namespace EdgeSearch.UI
             txtURL.DataBindings.Clear();
             txtURL.DataBindings.Add(nameof(txtURL.Text), _profile.Search, nameof(_profile.Search.URL));
 
-            txtNextSearch.DataBindings.Clear();
-            txtNextSearch.DataBindings.Add(nameof(txtNextSearch.Text), _profile.Search, nameof(_profile.Search.NextSearch));
+            cbNextSearch.DataBindings.Clear();
+            cbNextSearch.DataBindings.Add(nameof(cbNextSearch.Text), _profile.Search, nameof(_profile.Search.NextSearch));
 
             chkMobile.DataBindings.Clear();
             chkMobile.DataBindings.Add(nameof(chkMobile.Checked), _profile.Search, nameof(_profile.Search.IsMobile));
+        }
+
+        public void AddHistoricSearch(string search)
+        {
+            if (search == null)
+                return;
+
+            cbNextSearch.Items.Insert(0, search);
         }
 
         private void InitializeEvents()
@@ -155,7 +220,6 @@ namespace EdgeSearch.UI
             // Evento para el checkbox
             chkMobile.Click += ChkMobile_Click;
         }
-
 
         private void FinalizeEvents()
         {
@@ -335,7 +399,48 @@ namespace EdgeSearch.UI
 
             UpdateProgressBarRewards(_profile.Search);
 
-            lblSearches.Text = $"Searches: {_profile.Search.SearchesCount} (x{_profile.PointsPersearch}) | Points: {_profile.CurrentPoints} / {_profile.PointsLimit} | Refresh range (s): {_profile.Preferences.MinWait} / {_profile.Preferences.MaxWait}";
+            UpdateResumeLabels();
+        }
+
+        private void UpdateResumeLabels()
+        {
+            string pcSearches = $"PC: {_profile.Search.DesktopSearchesCount} (x{_profile.Preferences.DesktopPointsPersearch})";
+            string pcPoints = $"Points: {_profile.DesktopCurrentPoints}/{_profile.Preferences.DesktopTotalPoints}";
+            lblPCSearches.Text = $"{pcSearches} | {pcPoints}";
+
+            string mobileSearches = $"Mobile: {_profile.Search.MobileSearchesCount} (x{_profile.Preferences.MobilePointsPersearch})";
+            string mobilePoints = $"Points: {_profile.MobileCurrentPoints}/{_profile.Preferences.MobileTotalPoints}";
+            lblMobileSearches.Text = $"{mobileSearches} | {mobilePoints}";
+
+            string refreshRange = $"Refresh range (s): {_profile.Preferences.MinWait}/{_profile.Preferences.MaxWait}";
+            string streaks = $"Streaks: {_profile.Preferences.MinStreakAmount}/{_profile.Preferences.MaxStreakAmount}";
+            string streaksDelay = $"Streak delay (s): {_profile.Preferences.MinStreakDelay}/{_profile.Preferences.MaxStreakDelay}";
+            lblRefreshRange.Text = $"{refreshRange} | {streaks} | {streaksDelay}";
+
+            SetLabelFont();
+            
+            FixLabelsWidth();
+        }
+
+        private void FixLabelsWidth()
+        {
+            FixLabelWitdh(lblPCSearches);
+            FixLabelWitdh(lblMobileSearches);
+            FixLabelWitdh(lblRefreshRange);
+        }
+
+        private void SetLabelFont()
+        {
+            if (_profile.Search.IsMobile)
+            {
+                lblMobileSearches.Font = new Font(lblMobileSearches.Font, FontStyle.Bold);
+                lblPCSearches.Font = new Font(lblMobileSearches.Font, FontStyle.Regular);
+            }
+            else
+            {
+                lblMobileSearches.Font = new Font(lblMobileSearches.Font, FontStyle.Regular);
+                lblPCSearches.Font = new Font(lblMobileSearches.Font, FontStyle.Bold);
+            }
         }
 
         public void UpdateProgressBarRewards(Search search)
@@ -357,7 +462,10 @@ namespace EdgeSearch.UI
 
         private void UpdateProgressBar(Profile profile, string streakCount, string streakSeconds, string searchsSeconds)
         {
-            pbSearches.Text = $"Searches: {streakCount} ({streakSeconds}) - {searchsSeconds} | Expected time: {ExecutionTimeCalculator.GetTotalExpectedTime(profile)}";
+            string seconds = searchsSeconds;
+            if (profile.Search.StreakTime != null)
+                seconds = streakSeconds;
+            pbSearches.Text = $"Searches: {streakCount} ({seconds}) | Expected time: {ExecutionTimeCalculator.GetTotalExpectedTime(profile)}";
 
             pbSearches.Maximum = profile.SearchesProgressBarMax;
             pbSearches.Value = profile.SearchesProgressBarValue;
@@ -374,6 +482,16 @@ namespace EdgeSearch.UI
                     UpdateProgressBarColors(profile.Preferences.desktopNormalProgressBarColors);
                 else
                     UpdateProgressBarColors(profile.Preferences.desktopReverseProgressBarColors);
+            }
+        }
+
+        public void FixLabelWitdh(Label label)
+        {
+            // Calculate the needed width
+            using (Graphics g = label.CreateGraphics())
+            {
+                SizeF size = g.MeasureString(label.Text, label.Font);
+                label.Width = (int)Math.Ceiling(size.Width);
             }
         }
 
@@ -583,5 +701,10 @@ namespace EdgeSearch.UI
             ForceClicked?.Invoke(this, EventArgs.Empty);
         }
         #endregion
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            SetSearchBoxText("C# programming");
+        }
     }
 }

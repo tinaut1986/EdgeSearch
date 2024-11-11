@@ -284,9 +284,12 @@ namespace EdgeSearch.src.Models
             return search;
         }
 
-        public void AddHistoricSearch(string currentSearch)
+        public void AddHistoricSearch(string search)
         {
-            UsedSearchs.Add(new Tuple<DateTime, SearchMode, string>(DateTime.Now, CurrentMode, currentSearch));
+            if (search == null)
+                return;
+
+            UsedSearchs.Add(new Tuple<DateTime, SearchMode, string>(DateTime.Now, CurrentMode, search));
         }
 
         public bool CanDoSearch()

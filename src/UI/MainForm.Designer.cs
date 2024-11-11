@@ -23,8 +23,7 @@ namespace EdgeSearch.UI
             lblNextSearch = new System.Windows.Forms.Label();
             btnNext = new System.Windows.Forms.Button();
             btnSearch = new System.Windows.Forms.Button();
-            lblSearches = new System.Windows.Forms.Label();
-            txtNextSearch = new System.Windows.Forms.TextBox();
+            lblPCSearches = new System.Windows.Forms.Label();
             pbSearches = new CustomProgressBar();
             menuStrip1 = new System.Windows.Forms.MenuStrip();
             fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,10 +43,17 @@ namespace EdgeSearch.UI
             chkMobile = new System.Windows.Forms.CheckBox();
             tpRewards = new System.Windows.Forms.TabPage();
             wvRewards = new Microsoft.Web.WebView2.WinForms.WebView2();
-            panel1 = new System.Windows.Forms.Panel();
             panel2 = new System.Windows.Forms.Panel();
             flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             pbRewards = new CustomProgressBar();
+            tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
+            lblSeparator1 = new System.Windows.Forms.Label();
+            lblMobileSearches = new System.Windows.Forms.Label();
+            lblSeparator2 = new System.Windows.Forms.Label();
+            lblRefreshRange = new System.Windows.Forms.Label();
+            panel1 = new System.Windows.Forms.Panel();
+            cbNextSearch = new System.Windows.Forms.ComboBox();
             menuStrip1.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             tabControl1.SuspendLayout();
@@ -55,9 +61,11 @@ namespace EdgeSearch.UI
             ((System.ComponentModel.ISupportInitialize)wvSearches).BeginInit();
             tpRewards.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)wvRewards).BeginInit();
-            panel1.SuspendLayout();
             panel2.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
+            tableLayoutPanel2.SuspendLayout();
+            flowLayoutPanel2.SuspendLayout();
+            panel1.SuspendLayout();
             SuspendLayout();
             // 
             // btnPlay
@@ -65,7 +73,7 @@ namespace EdgeSearch.UI
             btnPlay.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             btnPlay.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             btnPlay.Image = src.Properties.Resources.play;
-            btnPlay.Location = new System.Drawing.Point(1185, 1);
+            btnPlay.Location = new System.Drawing.Point(1343, 3);
             btnPlay.Name = "btnPlay";
             btnPlay.Size = new System.Drawing.Size(25, 25);
             btnPlay.TabIndex = 13;
@@ -73,19 +81,19 @@ namespace EdgeSearch.UI
             // 
             // lblNextSearch
             // 
-            lblNextSearch.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            lblNextSearch.Location = new System.Drawing.Point(448, 5);
+            lblNextSearch.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            lblNextSearch.Location = new System.Drawing.Point(11, 3);
             lblNextSearch.Name = "lblNextSearch";
-            lblNextSearch.Size = new System.Drawing.Size(78, 19);
+            lblNextSearch.Size = new System.Drawing.Size(78, 23);
             lblNextSearch.TabIndex = 4;
             lblNextSearch.Text = "Next search:";
             lblNextSearch.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // btnNext
             // 
-            btnNext.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            btnNext.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             btnNext.Image = src.Properties.Resources.update;
-            btnNext.Location = new System.Drawing.Point(1151, 2);
+            btnNext.Location = new System.Drawing.Point(507, 3);
             btnNext.Name = "btnNext";
             btnNext.Size = new System.Drawing.Size(25, 25);
             btnNext.TabIndex = 7;
@@ -93,31 +101,24 @@ namespace EdgeSearch.UI
             // 
             // btnSearch
             // 
-            btnSearch.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            btnSearch.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             btnSearch.Image = src.Properties.Resources.search;
-            btnSearch.Location = new System.Drawing.Point(1180, 2);
+            btnSearch.Location = new System.Drawing.Point(538, 3);
             btnSearch.Name = "btnSearch";
             btnSearch.Size = new System.Drawing.Size(25, 25);
             btnSearch.TabIndex = 6;
             btnSearch.UseVisualStyleBackColor = true;
             // 
-            // lblSearches
+            // lblPCSearches
             // 
-            lblSearches.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            lblSearches.Location = new System.Drawing.Point(9, 7);
-            lblSearches.Name = "lblSearches";
-            lblSearches.Size = new System.Drawing.Size(433, 17);
-            lblSearches.TabIndex = 14;
-            lblSearches.Text = "Searches:";
-            lblSearches.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // txtNextSearch
-            // 
-            txtNextSearch.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            txtNextSearch.Location = new System.Drawing.Point(532, 3);
-            txtNextSearch.Name = "txtNextSearch";
-            txtNextSearch.Size = new System.Drawing.Size(613, 23);
-            txtNextSearch.TabIndex = 9;
+            lblPCSearches.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            lblPCSearches.Location = new System.Drawing.Point(0, 0);
+            lblPCSearches.Margin = new System.Windows.Forms.Padding(0);
+            lblPCSearches.Name = "lblPCSearches";
+            lblPCSearches.Size = new System.Drawing.Size(110, 23);
+            lblPCSearches.TabIndex = 14;
+            lblPCSearches.Text = "PC: 0/0 | Points: 0/0";
+            lblPCSearches.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // pbSearches
             // 
@@ -135,7 +136,7 @@ namespace EdgeSearch.UI
             menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, searchesToolStripMenuItem, rewardsToolStripMenuItem, optionsToolStripMenuItem });
             menuStrip1.Location = new System.Drawing.Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new System.Drawing.Size(1219, 24);
+            menuStrip1.Size = new System.Drawing.Size(1382, 24);
             menuStrip1.TabIndex = 20;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -207,8 +208,8 @@ namespace EdgeSearch.UI
             tableLayoutPanel1.ColumnCount = 1;
             tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             tableLayoutPanel1.Controls.Add(tabControl1, 0, 0);
-            tableLayoutPanel1.Controls.Add(panel1, 0, 1);
             tableLayoutPanel1.Controls.Add(panel2, 0, 2);
+            tableLayoutPanel1.Controls.Add(tableLayoutPanel2, 0, 1);
             tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             tableLayoutPanel1.Location = new System.Drawing.Point(0, 24);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -216,7 +217,7 @@ namespace EdgeSearch.UI
             tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
-            tableLayoutPanel1.Size = new System.Drawing.Size(1219, 527);
+            tableLayoutPanel1.Size = new System.Drawing.Size(1382, 527);
             tableLayoutPanel1.TabIndex = 21;
             // 
             // tabControl1
@@ -227,7 +228,7 @@ namespace EdgeSearch.UI
             tabControl1.Location = new System.Drawing.Point(3, 3);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new System.Drawing.Size(1213, 451);
+            tabControl1.Size = new System.Drawing.Size(1376, 451);
             tabControl1.TabIndex = 19;
             // 
             // tpSearches
@@ -238,7 +239,7 @@ namespace EdgeSearch.UI
             tpSearches.Location = new System.Drawing.Point(4, 24);
             tpSearches.Name = "tpSearches";
             tpSearches.Padding = new System.Windows.Forms.Padding(3);
-            tpSearches.Size = new System.Drawing.Size(1205, 423);
+            tpSearches.Size = new System.Drawing.Size(1368, 423);
             tpSearches.TabIndex = 0;
             tpSearches.Text = "Searches";
             tpSearches.UseVisualStyleBackColor = true;
@@ -249,9 +250,9 @@ namespace EdgeSearch.UI
             wvSearches.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             wvSearches.CreationProperties = null;
             wvSearches.DefaultBackgroundColor = System.Drawing.Color.White;
-            wvSearches.Location = new System.Drawing.Point(6, 35);
+            wvSearches.Location = new System.Drawing.Point(3, 36);
             wvSearches.Name = "wvSearches";
-            wvSearches.Size = new System.Drawing.Size(1193, 382);
+            wvSearches.Size = new System.Drawing.Size(1359, 384);
             wvSearches.TabIndex = 3;
             wvSearches.ZoomFactor = 1D;
             // 
@@ -261,7 +262,7 @@ namespace EdgeSearch.UI
             txtURL.Location = new System.Drawing.Point(6, 6);
             txtURL.Name = "txtURL";
             txtURL.ReadOnly = true;
-            txtURL.Size = new System.Drawing.Size(1164, 23);
+            txtURL.Size = new System.Drawing.Size(1327, 23);
             txtURL.TabIndex = 0;
             // 
             // chkMobile
@@ -269,7 +270,7 @@ namespace EdgeSearch.UI
             chkMobile.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             chkMobile.Appearance = System.Windows.Forms.Appearance.Button;
             chkMobile.Image = src.Properties.Resources.mobile;
-            chkMobile.Location = new System.Drawing.Point(1176, 5);
+            chkMobile.Location = new System.Drawing.Point(1339, 5);
             chkMobile.Name = "chkMobile";
             chkMobile.Size = new System.Drawing.Size(25, 25);
             chkMobile.TabIndex = 2;
@@ -282,7 +283,7 @@ namespace EdgeSearch.UI
             tpRewards.Location = new System.Drawing.Point(4, 24);
             tpRewards.Name = "tpRewards";
             tpRewards.Padding = new System.Windows.Forms.Padding(3);
-            tpRewards.Size = new System.Drawing.Size(1205, 423);
+            tpRewards.Size = new System.Drawing.Size(1368, 423);
             tpRewards.TabIndex = 1;
             tpRewards.Text = "Rewards";
             tpRewards.UseVisualStyleBackColor = true;
@@ -295,22 +296,9 @@ namespace EdgeSearch.UI
             wvRewards.Dock = System.Windows.Forms.DockStyle.Fill;
             wvRewards.Location = new System.Drawing.Point(3, 3);
             wvRewards.Name = "wvRewards";
-            wvRewards.Size = new System.Drawing.Size(1199, 417);
+            wvRewards.Size = new System.Drawing.Size(1362, 417);
             wvRewards.TabIndex = 0;
             wvRewards.ZoomFactor = 1D;
-            // 
-            // panel1
-            // 
-            panel1.Controls.Add(txtNextSearch);
-            panel1.Controls.Add(btnSearch);
-            panel1.Controls.Add(btnNext);
-            panel1.Controls.Add(lblNextSearch);
-            panel1.Controls.Add(lblSearches);
-            panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            panel1.Location = new System.Drawing.Point(3, 460);
-            panel1.Name = "panel1";
-            panel1.Size = new System.Drawing.Size(1213, 29);
-            panel1.TabIndex = 20;
             // 
             // panel2
             // 
@@ -319,7 +307,7 @@ namespace EdgeSearch.UI
             panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             panel2.Location = new System.Drawing.Point(3, 495);
             panel2.Name = "panel2";
-            panel2.Size = new System.Drawing.Size(1213, 29);
+            panel2.Size = new System.Drawing.Size(1376, 29);
             panel2.TabIndex = 20;
             // 
             // flowLayoutPanel1
@@ -329,7 +317,7 @@ namespace EdgeSearch.UI
             flowLayoutPanel1.Controls.Add(pbRewards);
             flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new System.Drawing.Size(1179, 29);
+            flowLayoutPanel1.Size = new System.Drawing.Size(1337, 29);
             flowLayoutPanel1.TabIndex = 20;
             // 
             // pbRewards
@@ -343,11 +331,104 @@ namespace EdgeSearch.UI
             pbRewards.Size = new System.Drawing.Size(324, 23);
             pbRewards.TabIndex = 19;
             // 
+            // tableLayoutPanel2
+            // 
+            tableLayoutPanel2.ColumnCount = 2;
+            tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 566F));
+            tableLayoutPanel2.Controls.Add(flowLayoutPanel2, 0, 0);
+            tableLayoutPanel2.Controls.Add(panel1, 1, 0);
+            tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            tableLayoutPanel2.Location = new System.Drawing.Point(3, 460);
+            tableLayoutPanel2.Name = "tableLayoutPanel2";
+            tableLayoutPanel2.RowCount = 1;
+            tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            tableLayoutPanel2.Size = new System.Drawing.Size(1376, 29);
+            tableLayoutPanel2.TabIndex = 15;
+            // 
+            // flowLayoutPanel2
+            // 
+            flowLayoutPanel2.Controls.Add(lblPCSearches);
+            flowLayoutPanel2.Controls.Add(lblSeparator1);
+            flowLayoutPanel2.Controls.Add(lblMobileSearches);
+            flowLayoutPanel2.Controls.Add(lblSeparator2);
+            flowLayoutPanel2.Controls.Add(lblRefreshRange);
+            flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            flowLayoutPanel2.Location = new System.Drawing.Point(3, 3);
+            flowLayoutPanel2.Name = "flowLayoutPanel2";
+            flowLayoutPanel2.Size = new System.Drawing.Size(804, 23);
+            flowLayoutPanel2.TabIndex = 15;
+            // 
+            // lblSeparator1
+            // 
+            lblSeparator1.Location = new System.Drawing.Point(110, 0);
+            lblSeparator1.Margin = new System.Windows.Forms.Padding(0);
+            lblSeparator1.Name = "lblSeparator1";
+            lblSeparator1.Size = new System.Drawing.Size(10, 23);
+            lblSeparator1.TabIndex = 15;
+            lblSeparator1.Text = "|";
+            lblSeparator1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // lblMobileSearches
+            // 
+            lblMobileSearches.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            lblMobileSearches.Location = new System.Drawing.Point(120, 0);
+            lblMobileSearches.Margin = new System.Windows.Forms.Padding(0);
+            lblMobileSearches.Name = "lblMobileSearches";
+            lblMobileSearches.Size = new System.Drawing.Size(133, 23);
+            lblMobileSearches.TabIndex = 14;
+            lblMobileSearches.Text = "Mobile: 0/0 | Points: 0/0";
+            lblMobileSearches.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // lblSeparator2
+            // 
+            lblSeparator2.Location = new System.Drawing.Point(253, 0);
+            lblSeparator2.Margin = new System.Windows.Forms.Padding(0);
+            lblSeparator2.Name = "lblSeparator2";
+            lblSeparator2.Size = new System.Drawing.Size(10, 23);
+            lblSeparator2.TabIndex = 15;
+            lblSeparator2.Text = "|";
+            lblSeparator2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // lblRefreshRange
+            // 
+            lblRefreshRange.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            lblRefreshRange.Location = new System.Drawing.Point(263, 0);
+            lblRefreshRange.Margin = new System.Windows.Forms.Padding(0);
+            lblRefreshRange.Name = "lblRefreshRange";
+            lblRefreshRange.Size = new System.Drawing.Size(301, 23);
+            lblRefreshRange.TabIndex = 14;
+            lblRefreshRange.Text = "Refresh range (s): 0/0 | Streaks: 0/0 | Streak delay (s): 0/0";
+            lblRefreshRange.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // panel1
+            // 
+            panel1.Controls.Add(lblNextSearch);
+            panel1.Controls.Add(btnNext);
+            panel1.Controls.Add(cbNextSearch);
+            panel1.Controls.Add(btnSearch);
+            panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            panel1.Location = new System.Drawing.Point(810, 0);
+            panel1.Margin = new System.Windows.Forms.Padding(0);
+            panel1.Name = "panel1";
+            panel1.Size = new System.Drawing.Size(566, 29);
+            panel1.TabIndex = 16;
+            // 
+            // cbNextSearch
+            // 
+            cbNextSearch.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            cbNextSearch.FormattingEnabled = true;
+            cbNextSearch.Location = new System.Drawing.Point(95, 3);
+            cbNextSearch.Name = "cbNextSearch";
+            cbNextSearch.Size = new System.Drawing.Size(406, 23);
+            cbNextSearch.TabIndex = 4;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1219, 551);
+            ClientSize = new System.Drawing.Size(1382, 551);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(menuStrip1);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
@@ -363,10 +444,11 @@ namespace EdgeSearch.UI
             ((System.ComponentModel.ISupportInitialize)wvSearches).EndInit();
             tpRewards.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)wvRewards).EndInit();
-            panel1.ResumeLayout(false);
-            panel1.PerformLayout();
             panel2.ResumeLayout(false);
             flowLayoutPanel1.ResumeLayout(false);
+            tableLayoutPanel2.ResumeLayout(false);
+            flowLayoutPanel2.ResumeLayout(false);
+            panel1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -376,8 +458,7 @@ namespace EdgeSearch.UI
         private System.Windows.Forms.Label lblNextSearch;
         private System.Windows.Forms.Button btnNext;
         private System.Windows.Forms.Button btnSearch;
-        private System.Windows.Forms.Label lblSearches;
-        private System.Windows.Forms.TextBox txtNextSearch;
+        private System.Windows.Forms.Label lblPCSearches;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tsmiReset;
@@ -387,7 +468,6 @@ namespace EdgeSearch.UI
         private System.Windows.Forms.ToolStripMenuItem tsmiPlayRewards;
         private CustomProgressBar pbSearches;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tsmiPreferences;
@@ -401,6 +481,14 @@ namespace EdgeSearch.UI
         private Microsoft.Web.WebView2.WinForms.WebView2 wvRewards;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private CustomProgressBar pbRewards;
+        private System.Windows.Forms.ComboBox cbNextSearch;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.Label lblMobileSearches;
+        private System.Windows.Forms.Label lblRefreshRange;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label lblSeparator1;
+        private System.Windows.Forms.Label lblSeparator2;
     }
 }
 
