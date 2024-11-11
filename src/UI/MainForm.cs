@@ -596,7 +596,7 @@ namespace EdgeSearch.UI
 
                             // Extract points per search from the description text
                             var descriptionText = element.querySelector('.description').innerText;
-                            var match = descriptionText.match(/(\\d+)\\s+puntos?\\s+por\\s+búsqueda/); // Regex to find points per search
+                            var match = descriptionText.match(/(\d+)\s+puntos?\s+por\s+búsqueda/); // Regex to find points per search
                             if (match) {{
                                 result.pointsPerSearch = match[1]; // Store the matched points per search
                             }}

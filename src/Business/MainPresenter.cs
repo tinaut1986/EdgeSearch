@@ -340,7 +340,11 @@ namespace EdgeSearch.src.Business
                 (int currentPoints, int maxPoints, int pointsPerSearch) mobile = await _mainForm.ExtractPoints("Búsqueda en móviles");
                 _profile.Preferences.MobilePointsPersearch = mobile.pointsPerSearch;
                 _profile.Preferences.MobileTotalPoints = mobile.maxPoints;
-                _profile.Search.MobileSearchesCount = mobile.currentPoints / _profile.Preferences.MobilePointsPersearch;
+                
+                if (_profile.Preferences.MobilePointsPersearch != 0)
+                    _profile.Search.MobileSearchesCount = mobile.currentPoints / _profile.Preferences.MobilePointsPersearch;
+                else
+                    _profile.Search.MobileSearchesCount = 0;
             }
             else
             {
