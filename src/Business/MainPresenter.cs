@@ -22,6 +22,7 @@ namespace EdgeSearch.src.Business
         private Random _random;
         private System.Windows.Forms.Timer _refreshTimer;
         private Awaker _awaker;
+        private WebViewSearchesController _wvSearchesController;
         #endregion
 
         #region Properties
@@ -35,6 +36,9 @@ namespace EdgeSearch.src.Business
             _profile = profile;
             _awaker = new Awaker();
             _random = new Random();
+
+            _wvSearchesController = new WebViewSearchesController(_profile);
+            _mainForm.InitializeWebViewSearchesController(_wvSearchesController);
 
             LoadSearchesFromFile("src\\Config\\searches.xml"); // Carga las búsquedas desde el archivo
 
@@ -58,10 +62,10 @@ namespace EdgeSearch.src.Business
             _mainForm.FullPlayClicked += _mainForm_FullPlayClicked;
             _mainForm.ResetClicked += _mainForm_ResetClicked;
             _mainForm.RewardsNewWindowRequested += _mainForm_RewardsNewWindowRequested;
-            _mainForm.SearchesNavigationCompleted += _mainForm_SearchesNavigationCompleted;
+            _wvSearchesController.SearchesNavigationCompleted += _mainForm_SearchesNavigationCompleted;
             _mainForm.PreferencesClciked += _mainForm_PreferencesClciked;
 
-            _mainForm.SearchesCoreWebView2InitializationCompleted += _mainForm_SearchesCoreWebView2InitializationCompleted;
+            _wvSearchesController.SearchesCoreWebView2InitializationCompleted += _mainForm_SearchesCoreWebView2InitializationCompleted;
             _mainForm.RewardsCoreWebView2InitializationCompleted += _mainForm_RewardsCoreWebView2InitializationCompleted;
         }
 
@@ -183,22 +187,36 @@ namespace EdgeSearch.src.Business
 
         /// <summary>
         /// Initiates the search action based on user preferences.
-        /// If keyboard typing simulation is enabled, it simulates typing;
-        /// otherwise, it opens the search URL directly.
+        /// If keyboard typing simulation is enabled, it attempts to simulate typing;
+        /// if unsuccessful or disabled, it opens the search URL directly.
         /// </summary>
         /// <param name="currentSearch">The search term to be executed.</param>
         private async Task InitiateSearch(string currentSearch)
         {
-            // Check user preferences for simulating keyboard typing
+            bool useDirectSearch = true;
+
             if (_profile.Preferences.SimulateKeyboardTyping)
-                await _mainForm.SetSearchBoxText(currentSearch); // Simulate typing in the search box
-            else
             {
-                // Construct the search URL and open it in the browser
-                _profile.Search.URL = new Uri($"https://www.bing.com/search?q={currentSearch}&form=QBLH&sp=-1&ghc=1&lq=0&pq={currentSearch}");
-                await _mainForm.OpenSearchesURL(_profile.Search.URL); // Open the constructed URL
+                bool success = await _wvSearchesController.SetSearchBoxText(currentSearch);
+                if (success)
+                {
+                    useDirectSearch = false;
+                    Console.WriteLine("Search initiated successfully through simulation.");
+                }
+                else
+                    Console.WriteLine("Simulation failed, falling back to direct URL navigation.");
+            }
+
+            if (useDirectSearch)
+            {
+                // Construct and open the search URL directly
+                string encodedSearch = Uri.EscapeDataString(currentSearch);
+                _profile.Search.URL = new Uri($"https://www.bing.com/search?q={encodedSearch}&form=QBLH&sp=-1&ghc=1&lq=0&pq={encodedSearch}");
+                await _wvSearchesController.OpenSearchesURL(_profile.Search.URL);
+                Console.WriteLine("Search initiated through direct URL navigation.");
             }
         }
+
 
         private void AddHistoryicSearch(string search)
         {
@@ -340,7 +358,7 @@ namespace EdgeSearch.src.Business
                 (int currentPoints, int maxPoints, int pointsPerSearch) mobile = await _mainForm.ExtractPoints("Búsqueda en móviles");
                 _profile.Preferences.MobilePointsPersearch = mobile.pointsPerSearch;
                 _profile.Preferences.MobileTotalPoints = mobile.maxPoints;
-                
+
                 if (_profile.Preferences.MobilePointsPersearch != 0)
                     _profile.Search.MobileSearchesCount = mobile.currentPoints / _profile.Preferences.MobilePointsPersearch;
                 else
@@ -411,11 +429,11 @@ namespace EdgeSearch.src.Business
             _profile.Preferences.Save();
 
             if (_profile.Search.IsMobile)
-                _mainForm.SetUserAgent(_profile.Preferences.MobileUserAgent);
+                _wvSearchesController.SetUserAgent(_profile.Preferences.MobileUserAgent);
             else
-                _mainForm.SetUserAgent(_profile.Preferences.DesktopUserAgent);
+                _wvSearchesController.SetUserAgent(_profile.Preferences.DesktopUserAgent);
 
-            await _mainForm.DeleteSessionCookies();
+            await _wvSearchesController.DeleteSessionCookies();
 
             if (!_profile.Search.CanDoSearch())
             {
@@ -426,7 +444,7 @@ namespace EdgeSearch.src.Business
             if (reloadWeb)
             {
                 _profile.Search.AddHistoricSearch(_profile.Search.URL.ToString());
-                await _mainForm.ReloadSearchsWeb();
+                await _wvSearchesController.ReloadSearchsWeb();
             }
 
             _mainForm.UpdateInterface();
@@ -453,9 +471,9 @@ namespace EdgeSearch.src.Business
 
         private async void _mainForm_Load(object sender, EventArgs e)
         {
-            await _mainForm.EnsureCoreWebView2Async();
+            await _wvSearchesController.EnsureCoreWebView2Async();
             _profile.Search.URL = new Uri("https://www.bing.es/");
-            await _mainForm.OpenSearchesURL(_profile.Search.URL);
+            await _wvSearchesController.OpenSearchesURL(_profile.Search.URL);
             await _mainForm.SetRewardsURL(new Uri("https://rewards.bing.com/pointsbreakdown"));
             _mainForm.SelectTabAndReturn(TabType.Rewards);
 

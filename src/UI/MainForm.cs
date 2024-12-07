@@ -1,4 +1,5 @@
-﻿using EdgeSearch.src.Common;
+﻿using EdgeSearch.src.Business;
+using EdgeSearch.src.Common;
 using EdgeSearch.src.Models;
 using EdgeSearch.src.Properties;
 using EdgeSearch.src.Utils;
@@ -6,7 +7,6 @@ using Microsoft.Web.WebView2.Core;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -28,10 +28,9 @@ namespace EdgeSearch.UI
         public event EventHandler NextSearchClicked;
         public event EventHandler PreferencesClciked;
         public event EventHandler MobileChanged;
-        public event EventHandler<CoreWebView2InitializationCompletedEventArgs> SearchesCoreWebView2InitializationCompleted;
+
         public event EventHandler<CoreWebView2InitializationCompletedEventArgs> RewardsCoreWebView2InitializationCompleted;
         public event EventHandler<CoreWebView2NewWindowRequestedEventArgs> RewardsNewWindowRequested;
-        public event EventHandler<CoreWebView2NavigationCompletedEventArgs> SearchesNavigationCompleted;
 
         #endregion
 
@@ -73,6 +72,11 @@ namespace EdgeSearch.UI
 
         #region Methods
 
+        public void InitializeWebViewSearchesController(WebViewSearchesController controller)
+        {
+            controller.InitializeWebView(wvSearches);
+        }
+
         public void SelectTab(TabType tabType)
         {
             tabControl1.SelectedTab = GetTabPage(tabType);
@@ -88,80 +92,6 @@ namespace EdgeSearch.UI
 
             SelectTab(tabType);
             tabControl1.SelectedTab = selectedTab;
-        }
-
-        public async Task SetSearchBoxText(string text)
-        {
-            if (text == null)
-                return;
-
-            Random random = new Random();
-            for (int i = 0; i <= text.Length; i++)
-            {
-                string partialText = text.Substring(0, i);
-                string script = @"
-                    (function() {
-                        var searchBox = document.getElementById('sb_form_q');
-                        if (searchBox) {
-                            searchBox.value = '" + partialText + @"';
-                            return true;
-                        }
-                        return false;
-                    })();
-                ";
-
-                var result = await wvSearches.ExecuteScriptAsync(script);
-                if (result != "true")
-                {
-                    Console.WriteLine("Search box not found.");
-                    return;
-                }
-
-                // Simulates a random delay between 7 and 80 milliseconds
-                await Task.Delay(random.Next(7, 80));
-            }
-
-            Console.WriteLine("Search box text set successfully.");
-            await Task.Delay(random.Next(100, 150));
-            await SimulateEnterInSearchBox();
-        }
-
-        private async Task SimulateEnterInSearchBox()
-        {
-            string script = @"
-                (function() {
-                    var searchBox = document.getElementById('sb_form_q');
-                    if (searchBox) {
-                        var event = new KeyboardEvent('keydown', {
-                            'key': 'Enter',
-                            'code': 'Enter',
-                            'which': 13,
-                            'keyCode': 13,
-                            'bubbles': true,
-                            'cancelable': true
-                        });
-                        searchBox.dispatchEvent(event);
-
-                        // Simular el evento 'submit' del formulario
-                        var form = searchBox.form;
-                        if (form) {
-                            var submitEvent = new Event('submit', {
-                                'bubbles': true,
-                                'cancelable': true
-                            });
-                            form.dispatchEvent(submitEvent);
-                        }
-                        return true;
-                    }
-                    return false;
-                })();
-            ";
-
-            var result = await wvSearches.ExecuteScriptAsync(script);
-            if (result == "true")
-                Console.WriteLine("Search initiated successfully.");
-            else
-                Console.WriteLine("Failed to initiate the search.");
         }
 
         public TabPage GetTabPage(TabType tabType)
@@ -211,7 +141,6 @@ namespace EdgeSearch.UI
         private void InitializeEvents()
         {
             // WebView2 initialization events
-            wvSearches.CoreWebView2InitializationCompleted += WvSearches_CoreWebView2InitializationCompleted;
             wvRewards.CoreWebView2InitializationCompleted += WvRewards_CoreWebView2InitializationCompleted;
 
             // Menu item events
@@ -249,7 +178,6 @@ namespace EdgeSearch.UI
         private void FinalizeEvents()
         {
             // WebView2 initialization events
-            wvSearches.CoreWebView2InitializationCompleted -= WvSearches_CoreWebView2InitializationCompleted;
             wvRewards.CoreWebView2InitializationCompleted -= WvRewards_CoreWebView2InitializationCompleted;
 
             // Menu item events
@@ -278,32 +206,6 @@ namespace EdgeSearch.UI
 
             // Checkbox event
             chkMobile.Click -= ChkMobile_Click;
-        }
-
-        public void SetUserAgent(string userAgent)
-        {
-            if (wvSearches.CoreWebView2?.Settings != null)
-                wvSearches.CoreWebView2.Settings.UserAgent = userAgent;
-        }
-
-        public async Task EnsureCoreWebView2Async()
-        {
-            // Crea el entorno de WebView2 con la carpeta de datos especificada
-            var env = await CoreWebView2Environment.CreateAsync(null, _profile.Path);
-
-            await wvSearches.EnsureCoreWebView2Async(env);
-            await wvRewards.EnsureCoreWebView2Async(env);
-
-            wvRewards.CoreWebView2.NewWindowRequested += Rewards_CoreWebView2_NewWindowRequested;
-            wvSearches.NavigationCompleted += wvSearches_NavigationCompleted;
-        }
-
-        public async Task OpenSearchesURL(Uri url)
-        {
-            if (wvSearches.Source != url)
-                wvSearches.Source = url;
-
-            await ReloadSearchsWeb();
         }
 
         public void RefreshSearchesURL()
@@ -443,7 +345,7 @@ namespace EdgeSearch.UI
             lblRefreshRange.Text = $"{refreshRange} | {streaks} | {streaksDelay}";
 
             SetLabelFont();
-            
+
             FixLabelsWidth();
         }
 
@@ -495,7 +397,7 @@ namespace EdgeSearch.UI
 
             pbSearches.Maximum = profile.SearchesProgressBarMax;
             pbSearches.Value = profile.SearchesProgressBarValue;
-            
+
             if (profile.Search.IsMobile)
             {
                 if (profile.Search.StreakTime == null)
@@ -529,17 +431,6 @@ namespace EdgeSearch.UI
             pbSearches.PaintedForeColor = colors.FilledTextColor;
         }
 
-        public async Task ReloadSearchsWeb()
-        {
-            if ((wvSearches.Source?.ToString() ?? "about:blank") != "about:blank")
-            {
-                while ((wvSearches?.CoreWebView2?.Source ?? "about:blank") == "about:blank" || wvSearches.Source.ToString() != Uri.UnescapeDataString(wvSearches.CoreWebView2.Source))
-                    await Task.Delay(500);
-
-                wvSearches.Reload();
-            }
-        }
-
         public async Task ReloadRewardsWeb()
         {
             if ((wvRewards.Source?.ToString() ?? "about:blank") != "about:blank")
@@ -548,18 +439,6 @@ namespace EdgeSearch.UI
                     await Task.Delay(500);
 
                 wvRewards.Reload();
-            }
-        }
-
-        public async Task DeleteSessionCookies()
-        {
-            if (wvSearches.CoreWebView2?.Settings != null)
-            {
-                foreach (CoreWebView2Cookie cookie in (await wvSearches.CoreWebView2.CookieManager.GetCookiesAsync(null)).ToList())
-                {
-                    if (cookie.IsSession)
-                        wvSearches.CoreWebView2.CookieManager.DeleteCookie(cookie);
-                }
             }
         }
 
@@ -677,10 +556,7 @@ namespace EdgeSearch.UI
         #endregion
 
         #region Events
-        private void WvSearches_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
-        {
-            SearchesCoreWebView2InitializationCompleted?.Invoke(sender, e);
-        }
+
 
         private void WvRewards_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
         {
@@ -690,11 +566,6 @@ namespace EdgeSearch.UI
         private void Rewards_CoreWebView2_NewWindowRequested(object sender, CoreWebView2NewWindowRequestedEventArgs e)
         {
             RewardsNewWindowRequested?.Invoke(sender, e);
-        }
-
-        private void wvSearches_NavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
-        {
-            SearchesNavigationCompleted?.Invoke(sender, e);
         }
 
         private void TsmiPlayRewards_Click(object sender, EventArgs e)
@@ -742,10 +613,6 @@ namespace EdgeSearch.UI
             ForceClicked?.Invoke(this, EventArgs.Empty);
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            SetSearchBoxText("C# programming");
-        }
         #endregion
     }
 }
