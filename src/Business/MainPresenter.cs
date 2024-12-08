@@ -23,6 +23,7 @@ namespace EdgeSearch.src.Business
         private System.Windows.Forms.Timer _refreshTimer;
         private Awaker _awaker;
         private WebViewSearchesController _wvSearchesController;
+        private WebViewRewardsController _wvRewardsController;
         #endregion
 
         #region Properties
@@ -38,7 +39,9 @@ namespace EdgeSearch.src.Business
             _random = new Random();
 
             _wvSearchesController = new WebViewSearchesController(_profile);
-            _mainForm.InitializeWebViewSearchesController(_wvSearchesController);
+            _wvRewardsController = new WebViewRewardsController(_profile);
+
+            _mainForm.InitializeWebViewSearchesController(_wvSearchesController, _wvRewardsController);
 
             LoadSearchesFromFile("src\\Config\\searches.xml"); // Carga las búsquedas desde el archivo
 
@@ -61,12 +64,7 @@ namespace EdgeSearch.src.Business
             _mainForm.PlayClicked += _mainForm_PlayClicked;
             _mainForm.FullPlayClicked += _mainForm_FullPlayClicked;
             _mainForm.ResetClicked += _mainForm_ResetClicked;
-            _mainForm.RewardsNewWindowRequested += _mainForm_RewardsNewWindowRequested;
-            _wvSearchesController.SearchesNavigationCompleted += _mainForm_SearchesNavigationCompleted;
             _mainForm.PreferencesClciked += _mainForm_PreferencesClciked;
-
-            _wvSearchesController.SearchesCoreWebView2InitializationCompleted += _mainForm_SearchesCoreWebView2InitializationCompleted;
-            _mainForm.RewardsCoreWebView2InitializationCompleted += _mainForm_RewardsCoreWebView2InitializationCompleted;
         }
 
         private void _mainForm_SearchesCoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
@@ -103,6 +101,8 @@ namespace EdgeSearch.src.Business
 
                 // Navigate to the requested URI
                 newWebView.Source = new Uri(e.Uri);
+                _mainForm.SetRewardsProgressBarState(_profile.Search.RewardsPlayed);
+
                 _profile.Search.CurrentRewards++; // Increment current rewards count
                 _profile.Search.TotalRewards++; // Increment total rewards count
                 _mainForm.UpdateProgressBarRewards(_profile.Search); // Update progress bar
@@ -123,6 +123,7 @@ namespace EdgeSearch.src.Business
 
                         newWebView.Dispose(); // Dispose of the WebView2 instance
                         _profile.Search.CurrentRewards--; // Decrement current rewards count
+                        _mainForm.SetRewardsProgressBarState(_profile.Search.RewardsPlayed);
                         _mainForm.UpdateProgressBarRewards(_profile.Search); // Update progress bar again
                     }
                 };
@@ -131,6 +132,7 @@ namespace EdgeSearch.src.Business
 
             }, null);
 
+            _mainForm.SetRewardsProgressBarState(_profile.Search.RewardsPlayed);
             _mainForm.BindFields(); // Bind fields in the main form
         }
 
@@ -142,7 +144,7 @@ namespace EdgeSearch.src.Business
         private void _mainForm_PlayRewardsClicked(object sender, EventArgs e)
         {
             if (!_profile.Search.RewardsPlayed)
-                _mainForm.OpenRewards();
+                _wvRewardsController.OpenRewards();
         }
 
         private void _mainForm_PlaySearchesClicked(object sender, EventArgs e)
@@ -336,12 +338,12 @@ namespace EdgeSearch.src.Business
 
         private async Task ExtractPoints()
         {
-            await _mainForm.ReloadRewardsWeb();
+            await _wvRewardsController.SetRewardsURL(new Uri("https://rewards.bing.com/pointsbreakdown"));
             await Task.Delay(2000);
 
             // Buscar primero "Búsqueda en PC"
-            await _mainForm.WaitForTextToBeVisible("Búsqueda en PC");
-            (int currentPoints, int maxPoints, int pointsPerSearch) desktop = await _mainForm.ExtractPoints("Búsqueda en PC");
+            await _wvRewardsController.WaitForTextToBeVisible("Búsqueda en PC");
+            (int currentPoints, int maxPoints, int pointsPerSearch) desktop = await _wvRewardsController.ExtractPoints("Búsqueda en PC");
             _profile.Preferences.DesktopPointsPersearch = desktop.pointsPerSearch;
             _profile.Preferences.DesktopTotalPoints = desktop.maxPoints;
 
@@ -351,11 +353,11 @@ namespace EdgeSearch.src.Business
                 _profile.Search.DesktopSearchesCount = 0;
 
             // Intentar encontrar "Búsqueda en móviles" con un tiempo límite de 10 segundos
-            bool mobileSearchVisible = await _mainForm.WaitForTextToBeVisible("Búsqueda en móviles", 1000);
+            bool mobileSearchVisible = await _wvRewardsController.WaitForTextToBeVisible("Búsqueda en móviles", 1000);
 
             if (mobileSearchVisible)
             {
-                (int currentPoints, int maxPoints, int pointsPerSearch) mobile = await _mainForm.ExtractPoints("Búsqueda en móviles");
+                (int currentPoints, int maxPoints, int pointsPerSearch) mobile = await _wvRewardsController.ExtractPoints("Búsqueda en móviles");
                 _profile.Preferences.MobilePointsPersearch = mobile.pointsPerSearch;
                 _profile.Preferences.MobileTotalPoints = mobile.maxPoints;
 
@@ -389,7 +391,7 @@ namespace EdgeSearch.src.Business
                 Play();
 
                 if (openRewards)
-                    _mainForm.OpenRewards();
+                    _wvRewardsController.OpenRewards();
             }
             else
                 Stop();
@@ -471,10 +473,20 @@ namespace EdgeSearch.src.Business
 
         private async void _mainForm_Load(object sender, EventArgs e)
         {
+            _wvSearchesController.NavigationCompleted += _mainForm_SearchesNavigationCompleted;
+            _wvRewardsController.NewWindowRequested += _mainForm_RewardsNewWindowRequested;
+
+            _wvSearchesController.CoreWebView2InitializationCompleted += _mainForm_SearchesCoreWebView2InitializationCompleted;
+            _wvRewardsController.CoreWebView2InitializationCompleted += _mainForm_RewardsCoreWebView2InitializationCompleted;
+
+            _wvSearchesController.InitializeEvents();
+            _wvRewardsController.InitializeEvents();
+
             await _wvSearchesController.EnsureCoreWebView2Async();
+            await _wvRewardsController.EnsureCoreWebView2Async();
             _profile.Search.URL = new Uri("https://www.bing.es/");
             await _wvSearchesController.OpenSearchesURL(_profile.Search.URL);
-            await _mainForm.SetRewardsURL(new Uri("https://rewards.bing.com/pointsbreakdown"));
+            await _wvRewardsController.SetRewardsURL(new Uri("https://rewards.bing.com/pointsbreakdown"));
             _mainForm.SelectTabAndReturn(TabType.Rewards);
 
             await ExtractPoints();

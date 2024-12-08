@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace EdgeSearch.src.Business
 {
-    public class WebViewSearchesController
+    public class WebViewSearchesController : IDisposable
     {
         #region Members
         private WebView2 _wvSearches;
         private Profile _profile;
 
-        public event EventHandler<CoreWebView2InitializationCompletedEventArgs> SearchesCoreWebView2InitializationCompleted;
-        public event EventHandler<CoreWebView2NavigationCompletedEventArgs> SearchesNavigationCompleted;
+        public event EventHandler<CoreWebView2InitializationCompletedEventArgs> CoreWebView2InitializationCompleted;
+        public event EventHandler<CoreWebView2NavigationCompletedEventArgs> NavigationCompleted;
         #endregion
 
         #region Constructors
@@ -24,12 +24,17 @@ namespace EdgeSearch.src.Business
         {
             _profile = profile;
         }
+
+        public void Dispose()
+        {
+            FinalizeEvents();
+        }
         #endregion
 
         #region Methods
-        public void InitializeWebView(WebView2 wvSearches)
+        public void InitializeWebView(WebView2 webView2)
         {
-            _wvSearches = wvSearches;
+            _wvSearches = webView2;
         }
 
         public void InitializeEvents()
@@ -205,12 +210,12 @@ namespace EdgeSearch.src.Business
         #region Events
         private void WvSearches_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
         {
-            SearchesCoreWebView2InitializationCompleted?.Invoke(sender, e);
+            CoreWebView2InitializationCompleted?.Invoke(sender, e);
         }
 
         private void wvSearches_NavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
         {
-            SearchesNavigationCompleted?.Invoke(sender, e);
+            NavigationCompleted?.Invoke(sender, e);
         }
 
         #endregion
