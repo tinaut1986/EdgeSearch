@@ -261,7 +261,7 @@ namespace EdgeSearch.src.Business
                 // Si todavia no hemos superado el tiempo que hay que esperar entre rachas
                 if (Convert.ToInt32((now - _profile.Search.StreakTime.Value).TotalSeconds) <= _profile.Search.StreakDelay)
                 {
-                    _mainForm.UpdateProgressBarSearches(_profile);
+                    _mainForm.UpdateInterface(_awaker);
                     return;
                 }
                 // Una vez superado el tiempo de espera entre rachas, se reincia la racha para empezar una nueva
@@ -302,6 +302,7 @@ namespace EdgeSearch.src.Business
                 if (_profile.Search.ToSearch.Count() == 0)
                 {
                     Stop();
+                    _mainForm.UpdateInterface(_awaker);
                     return;
                 }
 
@@ -322,6 +323,7 @@ namespace EdgeSearch.src.Business
                     else
                     {
                         Stop();
+                        _mainForm.UpdateInterface(_awaker);
                         return;
                     }
                 }
@@ -337,6 +339,7 @@ namespace EdgeSearch.src.Business
                     else
                     {
                         PlayAndStop(false);
+                        _mainForm.UpdateInterface(_awaker);
                         return;
                     }
                 }
