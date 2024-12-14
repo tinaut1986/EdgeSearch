@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Utils.Common;
 using Utils.Extensions;
 
 namespace EdgeSearch.UI
@@ -205,7 +206,7 @@ namespace EdgeSearch.UI
             _profile.Search.URL = wvSearches.Source;
         }
 
-        public void UpdateInterface()
+        public void UpdateInterface(Awaker awaker)
         {
             if (!_profile.Search.IsPlaying)
             {
@@ -237,6 +238,8 @@ namespace EdgeSearch.UI
             UpdateProgressBarRewards(_profile.Search);
 
             UpdateResumeLabels();
+
+            UpdateAwakerLabel(awaker);
         }
 
         private void UpdateResumeLabels()
@@ -257,6 +260,15 @@ namespace EdgeSearch.UI
             SetLabelFont();
 
             FixLabelsWidth();
+        }
+
+        private void UpdateAwakerLabel(Awaker awaker)
+        {
+            string state = awaker.Enabled ? "ON" : "OFF";
+            string lastAwake = $"{awaker.LastAwake?.ToShortDateString()} {awaker.LastAwake?.ToShortTimeString()}";
+            lblAwaker.Text = $"Awaker: {state}";
+            if (!string.IsNullOrWhiteSpace(lastAwake))
+                lblAwaker.Text = $"{lblAwaker.Text} | Last awake: {lastAwake}";
         }
 
         private void FixLabelsWidth()
@@ -291,8 +303,10 @@ namespace EdgeSearch.UI
             DateTime streakTime = (profile.Search.StreakTime ?? now);
 
             string streakCount = $"{profile.Search.StreakCount}/{profile.Search.StreakAmount}";
-            string streakSeconds = $"{Convert.ToInt32((now - streakTime).TotalSeconds)}/{profile.Search.StreakDelay} sec";
-            string searchsSeconds = $"{profile.Search.ElapsedSeconds}/{profile.Search.SecondsToWait} sec";
+            int streakDelay = profile.Search.StreakDelay;
+            int elapsedStreakDelay = Convert.ToInt32((now - streakTime).TotalSeconds);
+            string streakSeconds = $"{TimeSpan.FromSeconds(streakDelay - elapsedStreakDelay):mm\\:ss} / {TimeSpan.FromSeconds(streakDelay):mm\\:ss}";
+            string searchsSeconds = $"{TimeSpan.FromSeconds(profile.Search.ElapsedSeconds):mm\\:ss} / {TimeSpan.FromSeconds(profile.Search.SecondsToWait):mm\\:ss}";
 
             UpdateProgressBar(profile, streakCount, streakSeconds, searchsSeconds);
         }
@@ -303,7 +317,7 @@ namespace EdgeSearch.UI
             if (profile.Search.StreakTime != null)
                 seconds = streakSeconds;
 
-            pbSearches.Text = $"Searches: {streakCount} ({seconds}) | Expected time: {ExecutionTimeCalculator.GetTotalExpectedTime(profile)}";
+            pbSearches.Text = $"Searches: {streakCount} - {seconds} | Expected time: {ExecutionTimeCalculator.GetTotalExpectedTime(profile)}";
 
             pbSearches.Maximum = profile.SearchesProgressBarMax;
             pbSearches.Value = profile.SearchesProgressBarValue;

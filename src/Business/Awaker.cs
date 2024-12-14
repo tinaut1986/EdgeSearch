@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace EdgeSearch.src.Business
 {
-    internal class Awaker
+    public class Awaker
     {
         // Importación de la función SetThreadExecutionState desde kernel32.dll
         [DllImport("kernel32.dll")]
@@ -13,6 +13,14 @@ namespace EdgeSearch.src.Business
         const uint ES_CONTINUOUS = 0x80000000;
         const uint ES_SYSTEM_REQUIRED = 0x00000001;
         private Timer _awakeTimer;
+        private DateTime? lastAwake;
+
+        public bool Enabled => _awakeTimer?.Enabled ?? false;
+        public DateTime? LastAwake
+        {
+            get => lastAwake;
+            set => lastAwake = value;
+        }
 
         public Awaker()
         {
@@ -25,6 +33,7 @@ namespace EdgeSearch.src.Business
         {
             // Evitar que el PC entre en suspensión
             SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED);
+            lastAwake = DateTime.Now;
         }
 
         public void Stop()

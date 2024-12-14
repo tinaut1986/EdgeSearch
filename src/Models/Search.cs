@@ -292,9 +292,9 @@ namespace EdgeSearch.src.Models
             UsedSearchs.Add(new Tuple<DateTime, SearchMode, string>(DateTime.Now, CurrentMode, search));
         }
 
-        public bool CanDoSearch()
+        public bool EmergencyStop()
         {
-            return UsedSearchs.Count(x => Math.Abs((x.Item1 - DateTime.Now).TotalSeconds) < 10) < 3;
+            return UsedSearchs.Count(x => Math.Abs((x.Item1 - DateTime.Now).TotalSeconds) < 10) >= 3;
         }
 
         public void IncreaseSearchCount()

@@ -46,6 +46,7 @@ namespace EdgeSearch.UI
             panel2 = new System.Windows.Forms.Panel();
             flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             pbRewards = new CustomProgressBar();
+            lblAwaker = new System.Windows.Forms.Label();
             tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             lblSeparator1 = new System.Windows.Forms.Label();
@@ -315,6 +316,7 @@ namespace EdgeSearch.UI
             flowLayoutPanel1.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             flowLayoutPanel1.Controls.Add(pbSearches);
             flowLayoutPanel1.Controls.Add(pbRewards);
+            flowLayoutPanel1.Controls.Add(lblAwaker);
             flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
             flowLayoutPanel1.Size = new System.Drawing.Size(1337, 29);
@@ -330,6 +332,17 @@ namespace EdgeSearch.UI
             pbRewards.PaintedForeColor = System.Drawing.Color.White;
             pbRewards.Size = new System.Drawing.Size(324, 23);
             pbRewards.TabIndex = 19;
+            // 
+            // lblAwaker
+            // 
+            lblAwaker.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            lblAwaker.Location = new System.Drawing.Point(859, 6);
+            lblAwaker.Margin = new System.Windows.Forms.Padding(0);
+            lblAwaker.Name = "lblAwaker";
+            lblAwaker.Size = new System.Drawing.Size(301, 23);
+            lblAwaker.TabIndex = 20;
+            lblAwaker.Text = "Awaker OFF";
+            lblAwaker.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tableLayoutPanel2
             // 
@@ -489,6 +502,7 @@ namespace EdgeSearch.UI
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label lblSeparator1;
         private System.Windows.Forms.Label lblSeparator2;
+        private System.Windows.Forms.Label lblAwaker;
     }
 }
 

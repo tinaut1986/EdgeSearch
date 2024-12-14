@@ -162,7 +162,7 @@ namespace EdgeSearch.src.Business
         private void RefreshNextSearch()
         {
             _profile.Search.NextSearch = _profile.Search.CreateSearch();
-            _mainForm.UpdateInterface();
+            _mainForm.UpdateInterface(_awaker);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace EdgeSearch.src.Business
         private async Task ExecuteSearchProcess()
         {
             // Check if a search can be performed; if not, stop the process
-            if (!_profile.Search.CanDoSearch())
+            if (_profile.Search.EmergencyStop())
                 Stop();
 
             string currentSearch = _profile.Search.NextSearch; // Get the next search term
@@ -182,9 +182,9 @@ namespace EdgeSearch.src.Business
 
             AddHistoryicSearch(currentSearch); // Add the current search to history
 
-            _profile.Search.IncreaseSearchCount(); // Increment the search count
+            //_profile.Search.IncreaseSearchCount(); // Increment the search count
 
-            _mainForm.UpdateInterface(); // Update the main interface to reflect changes
+            _mainForm.UpdateInterface(_awaker); // Update the main interface to reflect changes
         }
 
         /// <summary>
@@ -255,13 +255,16 @@ namespace EdgeSearch.src.Business
         {
             DateTime now = DateTime.Now;
 
+            // Si estamos en espera entre rachas
             if (_profile.Search.StreakTime != null)
             {
+                // Si todavia no hemos superado el tiempo que hay que esperar entre rachas
                 if (Convert.ToInt32((now - _profile.Search.StreakTime.Value).TotalSeconds) <= _profile.Search.StreakDelay)
                 {
                     _mainForm.UpdateProgressBarSearches(_profile);
                     return;
                 }
+                // Una vez superado el tiempo de espera entre rachas, se reincia la racha para empezar una nueva
                 else
                 {
                     _profile.Search.StreakCount = 0;
@@ -271,11 +274,14 @@ namespace EdgeSearch.src.Business
                 }
             }
 
+            // Si hay configurado algun numero de repeticiones por rachas en preferencias
             if (_profile.Preferences.MaxStreakAmount > 0)
             {
+                // Si estamos iniciando una racha, obtenemos la cantidad de repeticiones para la racha actual
                 if (_profile.Search.StreakAmount == null)
                     _profile.Search.StreakAmount = _profile.Preferences.GetStreakAmount();
 
+                // Si hemos alcanzado el numero maximo de repeticiones, acabamos la racha y iniciamos el "tiempo de espera" entre rachas
                 if (_profile.Search.StreakCount >= _profile.Search.StreakAmount)
                 {
                     if (_profile.Search.StreakTime == null)
@@ -289,34 +295,45 @@ namespace EdgeSearch.src.Business
 
             _profile.Search.ElapsedSeconds++;
 
+            // Si superamos el tiempo de espera entre repeticiones, pasaremos a la siguiente repeticion
             if (_profile.Search.ElapsedSeconds >= _profile.Search.SecondsToWait)
             {
+                // Si no hay ninguna busqueda por hacer, paramos las busquedas
                 if (_profile.Search.ToSearch.Count() == 0)
                 {
-                    PlayAndStop(false);
+                    Stop();
                     return;
                 }
 
+                // puntos de escritorio alcanzados
                 bool desktopPointsReached = _profile.Search.DesktopSearchesCount * _profile.Preferences.DesktopPointsPersearch >= _profile.Preferences.DesktopTotalPoints;
+                // puntos mobiles alcanzados
                 bool mobilePointsReached = _profile.Search.MobileSearchesCount * _profile.Preferences.MobilePointsPersearch >= _profile.Preferences.MobileTotalPoints;
+
+                // Si estamos haciendo la busqueda de escritorio y hemos alcanzado los puntos de escritorio
                 if (!_profile.Search.IsMobile && desktopPointsReached)
                 {
+                    // Si no hemos alcanzado los puntos mobiles, cambiamos a modo "movil"
                     if (!mobilePointsReached)
                     {
                         await ChangeMobileMode(SearchMode.Mobile, false);
                     }
+                    // En caso contrario, paramos la ejecucion
                     else
                     {
-                        PlayAndStop(false);
+                        Stop();
                         return;
                     }
                 }
+                // Si estamos haciendo la busqueda movil y hemos alcanzado los puntos moviles
                 else if (_profile.Search.IsMobile && mobilePointsReached)
                 {
+                    // Si no hemos alcanzado los puntos de escritorio, cambiamos al modo "Escritorio"
                     if (!desktopPointsReached)
                     {
                         await ChangeMobileMode(SearchMode.Desktop, false);
                     }
+                    // En caso contrario, paramos la ejecucion
                     else
                     {
                         PlayAndStop(false);
@@ -324,16 +341,19 @@ namespace EdgeSearch.src.Business
                     }
                 }
 
-                RestartLimits();
+                // Reiniciamos los limites de la repeticion
+                RestartRepetitionsLimits();
                 if (_profile.Preferences.MinStreakAmount > 0)
                     _profile.Search.StreakCount++;
 
+                // Hacemos la busqueda
                 await ExecuteSearchProcess();
 
+                // Extraemos los puntos alcanzados del html de rewards
                 await ExtractPoints();
             }
 
-            _mainForm.UpdateInterface();
+            _mainForm.UpdateInterface(_awaker);
         }
 
         private async Task ExtractPoints()
@@ -396,7 +416,7 @@ namespace EdgeSearch.src.Business
             else
                 Stop();
 
-            _mainForm.UpdateInterface();
+            _mainForm.UpdateInterface(_awaker);
         }
 
         private void Stop()
@@ -412,18 +432,18 @@ namespace EdgeSearch.src.Business
 
         private void Play()
         {
-            RestartLimits();
+            RestartRepetitionsLimits();
 
             _refreshTimer.Start(); // Inicia el temporizador cuando se presiona el botón
             _profile.Search.IsPlaying = true;
             _awaker.Start();
         }
 
-        public void RestartLimits()
+        public void RestartRepetitionsLimits()
         {
             _profile.RestartLimits();
 
-            _mainForm.UpdateInterface();
+            _mainForm.UpdateInterface(_awaker);
         }
 
         private async Task RefreshMobileMode(bool reloadWeb)
@@ -437,7 +457,7 @@ namespace EdgeSearch.src.Business
 
             await _wvSearchesController.DeleteSessionCookies();
 
-            if (!_profile.Search.CanDoSearch())
+            if (_profile.Search.EmergencyStop())
             {
                 Stop();
                 return;
@@ -449,7 +469,7 @@ namespace EdgeSearch.src.Business
                 await _wvSearchesController.ReloadSearchsWeb();
             }
 
-            _mainForm.UpdateInterface();
+            _mainForm.UpdateInterface(_awaker);
         }
 
         public void Show()
@@ -491,7 +511,7 @@ namespace EdgeSearch.src.Business
 
             await ExtractPoints();
 
-            _mainForm.UpdateInterface();
+            _mainForm.UpdateInterface(_awaker);
 
             _mainForm.BindFields();
 
@@ -530,7 +550,7 @@ namespace EdgeSearch.src.Business
             _profile.Search.MobileSearchesCount = 0;
             _profile.Search.DesktopSearchesCount = 0;
             await ChangeMobileMode(SearchMode.Desktop, true);
-            _mainForm.UpdateInterface();
+            _mainForm.UpdateInterface(_awaker);
         }
 
         private void _mainForm_PreferencesClciked(object sender, EventArgs e)
@@ -541,7 +561,7 @@ namespace EdgeSearch.src.Business
                 form.ShowDialog();
                 _profile.Preferences = new Preferences($"{_profile.Path}\\Config\\config.json");
                 _mainForm.BindFields();
-                _mainForm.UpdateInterface();
+                _mainForm.UpdateInterface(_awaker);
             }
         }
 
