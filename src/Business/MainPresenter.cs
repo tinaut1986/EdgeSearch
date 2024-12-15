@@ -425,10 +425,7 @@ namespace EdgeSearch.src.Business
         private void Stop()
         {
             _refreshTimer.Stop(); // Detiene el temporizador si ya está activo
-            _profile.Search.IsPlaying = false;
-            _profile.Search.StreakCount = 0;
-            _profile.Search.StreakTime = null;
-            _profile.Search.ElapsedSeconds = 0;
+            _profile.Search.Stop();
 
             _awaker.Stop();
         }

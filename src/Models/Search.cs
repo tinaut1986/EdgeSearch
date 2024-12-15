@@ -28,9 +28,6 @@ namespace EdgeSearch.src.Models
         private int _currentRewards;
         private int _totalRewards;
 
-        private int _currentAmbassadors;
-        private int _totalAmbassadors;
-
         public event PropertyChangedEventHandler PropertyChanged;
         #endregion
 
@@ -204,20 +201,6 @@ namespace EdgeSearch.src.Models
             set => _rewardsPlayed = value;
         }
 
-        public int CurrentAmbassadors
-        {
-            get => _currentAmbassadors;
-            set => _currentAmbassadors = value;
-        }
-
-        public int TotalAmbassadors
-        {
-            get => _totalAmbassadors;
-            set => _totalAmbassadors = value;
-        }
-
-        public string AmbassadorsString => $"Ambassadors: {CurrentAmbassadors}/{TotalAmbassadors}";
-
         public int CurrentRewards
         {
             get => _currentRewards;
@@ -303,6 +286,17 @@ namespace EdgeSearch.src.Models
                 MobileSearchesCount++;
             else
                 DesktopSearchesCount++;
+        }
+
+        public void Stop()
+        {
+            IsPlaying = false;
+            StreakCount = 0;
+            StreakAmount = null;
+            StreakDelay = 0;
+            StreakTime = null;
+            ElapsedSeconds = 0;
+            SecondsToWait = 0;
         }
 
         // This method is called by the Set accessor of each property.  
