@@ -69,7 +69,7 @@ namespace EdgeSearch.src.Business
 
         private void _mainForm_SearchesCoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
         {
-
+            _wvSearchesController.DeleteOldCache();
         }
 
         private async void _mainForm_RewardsCoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)

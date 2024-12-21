@@ -2,10 +2,10 @@
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Utils.Common;
 
 namespace EdgeSearch.src.Business
 {
@@ -29,9 +29,57 @@ namespace EdgeSearch.src.Business
         {
             FinalizeEvents();
         }
-        #endregion
 
-        #region Methods
+        /// <summary>
+        /// Deletes cache files that accumulate in the user profile.
+        /// </summary>
+        /// <remarks>
+        /// This method targets specific cache folders within the WebView2 user data directory.
+        /// It attempts to delete individual files rather than entire directories to maintain
+        /// folder structure and permissions.
+        /// </remarks>
+        public void DeleteOldCache()
+        {
+            string[] cachePaths = new string[]
+            {
+                Path.Combine(_profile.Path, "EBWebView", "Default", "Cache"),
+                Path.Combine(_profile.Path, "EBWebView", "Default", "Code Cache")
+
+            };
+            foreach (var path in cachePaths)
+            {
+                TryDeleteFiles(path);
+            }
+        }
+
+        /// <summary>
+        /// Attempts to delete all files within a specified directory and its subdirectories.
+        /// </summary>
+        /// <param name="path">The path to the directory containing files to delete.</param>
+        /// <remarks>
+        /// This method catches and ignores exceptions for individual file deletions,
+        /// allowing the process to continue even if some files cannot be deleted.
+        /// Consider logging exceptions for debugging purposes.
+        /// </remarks>
+        private void TryDeleteFiles(string path)
+        {
+            if (!Directory.Exists(path))
+                return; // Exit if the directory doesn't exist
+
+            foreach (var file in LibFileSystem.GetEntries(path, LibFileSystem.EntryType.Files, true))
+            {
+                try
+                {
+                    File.Delete(file);
+                }
+                catch (Exception ex)
+                {
+                    // Consider logging the exception for debugging
+                    // Logger.LogWarning($"Failed to delete file: {file}. Error: {ex.Message}");
+                }
+            }
+        }
+
         public void InitializeWebView(WebView2 webView2)
         {
             _wvSearches = webView2;
