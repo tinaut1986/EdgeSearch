@@ -13,13 +13,13 @@ namespace EdgeSearch.src.Business
         const uint ES_CONTINUOUS = 0x80000000; // Maintain continuous state
         const uint ES_SYSTEM_REQUIRED = 0x00000001; // Prevent the system from entering sleep mode
 
-        private Timer _awakeTimer; // Timer to send periodic signals
+        private Timer _timer; // Timer to send periodic signals
         private DateTime? lastAwake; // Stores the last time a signal was sent
 
         /// <summary>
         /// Property that indicates if the timer is enabled.
         /// </summary>
-        public bool Enabled => _awakeTimer?.Enabled ?? false;
+        public bool Enabled => _timer?.Enabled ?? false;
 
         /// <summary>
         /// Property to get and set the last awake time.
@@ -35,9 +35,9 @@ namespace EdgeSearch.src.Business
         /// </summary>
         public Awaker()
         {
-            _awakeTimer = new Timer(); // Initializes the timer
-            _awakeTimer.Interval = 60000; // Update interval every minute (60,000 ms)
-            _awakeTimer.Tick += RefreshTimer_Tick; // Associates the Tick event with the RefreshTimer_Tick method
+            _timer = new Timer(); // Initializes the timer
+            _timer.Interval = 60000; // Update interval every minute (60,000 ms)
+            _timer.Tick += RefreshTimer_Tick; // Associates the Tick event with the RefreshTimer_Tick method
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace EdgeSearch.src.Business
         /// </summary>
         public void Stop()
         {
-            _awakeTimer?.Stop(); // Stops the timer
+            _timer?.Stop(); // Stops the timer
 
             try
             {
@@ -78,7 +78,7 @@ namespace EdgeSearch.src.Business
         /// </summary>
         public void Start()
         {
-            _awakeTimer?.Start(); // Starts the timer
+            _timer?.Start(); // Starts the timer
         }
     }
 }

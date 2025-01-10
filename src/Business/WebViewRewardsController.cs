@@ -56,64 +56,69 @@ namespace EdgeSearch.src.Business
 
             _profile.Search.RewardsPlayed = true;
 
-            // Definir la clase CSS que se va a usar
+            // Definir las clases CSS que se usarán
             string className = "mee-icon-AddMedium";
             string excludeClassName = "exclusiveLockedPts";
 
             while (true)
             {
-                // Definir el script de JavaScript para ejecutar en la página usando string.Format
-                string script = string.Format(@"
-                    (function() {{
-                        // Obtener una referencia a los botones por su clase CSS
-                        var buttons = document.getElementsByClassName('{0}');
+                // Refrescar la página
+                await _wvRewards.ExecuteScriptAsync("location.reload();");
+                await Task.Delay(5000); // Esperar 5 segundos para asegurar que la página carga
 
-                        // Filtrar los botones que no tengan la clase 'exclusiveLockedPts'
+                // Verificar si hay botones disponibles
+                string checkScript = string.Format(@"
+                    (function() {{
+                        var buttons = document.getElementsByClassName('{0}');
                         var validButtons = Array.prototype.filter.call(buttons, function(button) {{
                             return !button.classList.contains('{1}');
                         }});
-
-                        // Verificar si hay elementos con esa clase filtrados
-                        if (validButtons.length > 0) {{
-                            // Mostrar en la consola el número de elementos válidos encontrados
-                            console.log('Elementos válidos encontrados con la clase {0}: ' + validButtons.length);
-
-                            // Simular el clic en el primer botón válido encontrado
-                            validButtons[0].click();
-
-                            // Esperar 5 segundos antes de recargar
-                            setTimeout(function() {{
-                                // Refrescar la página después de que el bucle haya terminado
-                                location.reload();
-                            }}, 5000);
-
-                            // Guardar el resultado en window para accederlo más tarde
-                            window.scriptResult = true;
-                        }} else {{
-                            console.log('No se encontraron elementos válidos con la clase {0}');
-                            // Guardar el resultado en window para accederlo más tarde
-                            window.scriptResult = false;
-                        }}
-                    }})();
+                        return validButtons.length;
+                    }})()
                 ", className, excludeClassName);
 
-                // Ejecutar el script
-                await _wvRewards.ExecuteScriptAsync(script);
-
-                // Esperar un breve momento para asegurarse de que el script se ejecuta
-                await Task.Delay(100);
-
-                // Recuperar el resultado almacenado en window.scriptResult
-                var result = await _wvRewards.ExecuteScriptAsync("window.scriptResult");
-
-                // Verificar el resultado y salir si ya no quedan más elementos
-                if (result == null || result.ToString().ToLower() != "true")
+                var buttonCountResult = await _wvRewards.ExecuteScriptAsync(checkScript);
+                if (buttonCountResult == null || int.Parse(buttonCountResult.ToString()) == 0)
                 {
-                    Console.WriteLine("No quedan más botones para pulsar.");
+                    Console.WriteLine("No hay más botones disponibles para pulsar.");
                     break;
                 }
 
-                await Task.Delay(6000); // Espera 6 segundos antes de volver a ejecutar la función
+                // Recorrer y pulsar botones uno por uno
+                int buttonCount = int.Parse(buttonCountResult.ToString());
+                Console.WriteLine($"Se encontraron {buttonCount} botones válidos.");
+                for (int i = 0; i < buttonCount; i++)
+                {
+                    string clickScript = string.Format(@"
+                        (function() {{
+                            var buttons = document.getElementsByClassName('{0}');
+                            var validButtons = Array.prototype.filter.call(buttons, function(button) {{
+                                return !button.classList.contains('{1}');
+                            }});
+                            if (validButtons.length > {2}) {{
+                                validButtons[{2}].click();
+                                return true;
+                            }}
+                            return false;
+                        }})()
+                    ", className, excludeClassName, i);
+
+                    var clickResult = await _wvRewards.ExecuteScriptAsync(clickScript);
+                    if (clickResult == null || clickResult.ToString().ToLower() != "true")
+                    {
+                        Console.WriteLine($"Error al pulsar el botón {i + 1}.");
+                        break;
+                    }
+
+                    Console.WriteLine($"Botón {i + 1} pulsado correctamente.");
+                    int delay = new Random().Next(15000, 30001); // Esperar entre 15 y 30 segundos
+                    await Task.Delay(delay);
+                }
+
+                // Esperar entre 10 y 15 minutos antes de volver a intentarlo
+                int waitTime = new Random().Next(10 * 60 * 1000, 15 * 60 * 1000);
+                Console.WriteLine($"Esperando {waitTime / 60000} minutos antes de continuar.");
+                await Task.Delay(waitTime);
             }
 
             _profile.Search.RewardsPlayed = false;

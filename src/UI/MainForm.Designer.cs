@@ -46,6 +46,7 @@ namespace EdgeSearch.UI
             panel2 = new System.Windows.Forms.Panel();
             flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             pbRewards = new CustomProgressBar();
+            pbExtractPoints = new CustomProgressBar();
             lblAwaker = new System.Windows.Forms.Label();
             tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
@@ -316,6 +317,7 @@ namespace EdgeSearch.UI
             flowLayoutPanel1.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             flowLayoutPanel1.Controls.Add(pbSearches);
             flowLayoutPanel1.Controls.Add(pbRewards);
+            flowLayoutPanel1.Controls.Add(pbExtractPoints);
             flowLayoutPanel1.Controls.Add(lblAwaker);
             flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
@@ -330,13 +332,24 @@ namespace EdgeSearch.UI
             pbRewards.Name = "pbRewards";
             pbRewards.PaintedColor = System.Drawing.Color.Green;
             pbRewards.PaintedForeColor = System.Drawing.Color.White;
-            pbRewards.Size = new System.Drawing.Size(324, 23);
+            pbRewards.Size = new System.Drawing.Size(145, 23);
             pbRewards.TabIndex = 19;
+            // 
+            // pbExtractPoints
+            // 
+            pbExtractPoints.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            pbExtractPoints.ForeColor = System.Drawing.Color.Black;
+            pbExtractPoints.Location = new System.Drawing.Point(683, 3);
+            pbExtractPoints.Name = "pbExtractPoints";
+            pbExtractPoints.PaintedColor = System.Drawing.Color.Purple;
+            pbExtractPoints.PaintedForeColor = System.Drawing.Color.White;
+            pbExtractPoints.Size = new System.Drawing.Size(227, 23);
+            pbExtractPoints.TabIndex = 21;
             // 
             // lblAwaker
             // 
             lblAwaker.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            lblAwaker.Location = new System.Drawing.Point(859, 6);
+            lblAwaker.Location = new System.Drawing.Point(913, 6);
             lblAwaker.Margin = new System.Windows.Forms.Padding(0);
             lblAwaker.Name = "lblAwaker";
             lblAwaker.Size = new System.Drawing.Size(301, 23);
@@ -503,6 +516,7 @@ namespace EdgeSearch.UI
         private System.Windows.Forms.Label lblSeparator1;
         private System.Windows.Forms.Label lblSeparator2;
         private System.Windows.Forms.Label lblAwaker;
+        private CustomProgressBar pbExtractPoints;
     }
 }
 

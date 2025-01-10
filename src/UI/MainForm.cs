@@ -206,7 +206,7 @@ namespace EdgeSearch.UI
             _profile.Search.URL = wvSearches.Source;
         }
 
-        public void UpdateInterface(Awaker awaker)
+        public void UpdateInterface(Awaker awaker, ExtractPointsTimer extractPointsTimer)
         {
             if (!_profile.Search.IsPlaying)
             {
@@ -237,9 +237,34 @@ namespace EdgeSearch.UI
 
             UpdateProgressBarRewards(_profile.Search);
 
+            UpdateProgressBarExtractPoints(extractPointsTimer);
+
             UpdateResumeLabels();
 
             UpdateAwakerLabel(awaker);
+        }
+
+        private void UpdateProgressBarExtractPoints(ExtractPointsTimer extractPointsTimer)
+        {
+            DateTime? previousTime = LibDateTime.MaxDate(extractPointsTimer.LastExtraction, extractPointsTimer.StartTime);
+            if (previousTime == null)
+            {
+                pbExtractPoints.Text = "Extract points";
+
+                pbExtractPoints.Minimum = 0;
+                pbExtractPoints.Maximum = 0;
+                pbExtractPoints.Value = 0;
+            }
+            else
+            {
+                pbExtractPoints.Minimum = 0;
+                int maximum = (extractPointsTimer.Interval / 1000);
+                int value = maximum - Convert.ToInt32((DateTime.Now - previousTime.Value).TotalSeconds);
+                pbExtractPoints.Maximum = maximum;
+                pbExtractPoints.Value = value;
+
+                pbExtractPoints.Text = $"Next extraction: {TimeSpan.FromSeconds(value):mm\\:ss} / {TimeSpan.FromSeconds(maximum):mm\\:ss}";
+            }
         }
 
         private void UpdateResumeLabels()

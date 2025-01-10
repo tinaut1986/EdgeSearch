@@ -53,6 +53,7 @@ namespace EdgeSearch.src.Models
         /// After "MinStreakAmount/MaxStreakAmount" searches, a pause of "MinStreakDelay/MaxStreakDelay" seconds is done.
         /// </summary>
         public int MinStreakDelay { get; set; }
+
         /// <summary>
         /// After "MinStreakAmount/MaxStreakAmount" searches, a pause of "MinStreakDelay/MaxStreakDelay" seconds is done.
         /// </summary>
@@ -61,8 +62,21 @@ namespace EdgeSearch.src.Models
         public int MarginStreakDelay
         {
             get => MaxStreakDelay - MinStreakDelay;
-            set => MaxStreakDelay = MinStreakDelay
-                + value;
+            set => MaxStreakDelay = MinStreakDelay + value;
+        }
+
+        /// <summary>
+        /// After "MinExtractPointsDelay/MaxExtractPointsDelay" seconds, the points are extracted from the web.
+        /// </summary>
+        public int MinExtractPointsDelay { get; set; }
+        /// <summary>
+        /// After "MinExtractPointsDelay/MaxExtractPointsDelay" seconds, the points are extracted from the web.
+        /// </summary>
+        public int MaxExtractPointsDelay { get; set; }
+        public int MarginExtractPointsDelay
+        {
+            get => MaxExtractPointsDelay - MinExtractPointsDelay;
+            set => MaxExtractPointsDelay = MinExtractPointsDelay + value;
         }
 
         public SearchMode InitialMode { get; set; }
@@ -84,6 +98,8 @@ namespace EdgeSearch.src.Models
             MaxStreakAmount = 0;
             MinStreakDelay = 900;
             MaxStreakDelay = 1200;
+            MinExtractPointsDelay = 300;
+            MaxExtractPointsDelay = 600;
             MobileUserAgent = "Mozilla/5.0 (Linux; Android 9; ASUS_X00TD; Flow) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/359.0.0.288 Mobile Safari/537.36"; ;
             DesktopUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36";
             SimulateKeyboardTyping = true;
@@ -140,6 +156,8 @@ namespace EdgeSearch.src.Models
             MaxStreakAmount = preferences.MaxStreakAmount;
             MinStreakDelay = preferences.MinStreakDelay;
             MaxStreakDelay = preferences.MaxStreakDelay;
+            MinExtractPointsDelay = preferences.MinExtractPointsDelay;
+            MaxExtractPointsDelay = preferences.MaxExtractPointsDelay;
             DesktopUserAgent = preferences.DesktopUserAgent;
             MobileUserAgent = preferences.MobileUserAgent;
             SimulateKeyboardTyping = preferences.SimulateKeyboardTyping;
@@ -169,6 +187,11 @@ namespace EdgeSearch.src.Models
         public int GetStreakDelay()
         {
             return new Random().Next(MinStreakDelay, MaxStreakDelay);
+        }
+
+        public int GetExtractPointsDelay()
+        {
+            return new Random().Next(MinExtractPointsDelay, MaxExtractPointsDelay);
         }
 
         public void Save()

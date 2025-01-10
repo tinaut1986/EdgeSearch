@@ -4,6 +4,7 @@ using Microsoft.Web.WebView2.WinForms;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Utils.Common;
 
@@ -76,6 +77,61 @@ namespace EdgeSearch.src.Business
                 {
                     // Consider logging the exception for debugging
                     // Logger.LogWarning($"Failed to delete file: {file}. Error: {ex.Message}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to simulate random horizontal scroll
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task SimulateHorizontalScrollAsync(CancellationToken cancellationToken)
+        {
+            Random random = new Random();
+
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                // Generate random delay (e.g., between 10 to 300 seconds)
+                int delay = random.Next(10000, 25000);
+
+                try
+                {
+                    // Wait for the delay before scrolling
+                    await Task.Delay(delay, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    Console.WriteLine("Delay task was canceled.");
+                    return;
+                }
+
+                for (int i = 0; i < random.Next(1, 10); i++)
+                {
+                    // Generate random scroll distance (e.g., between -800 and 800 pixels)
+                    int scrollAmount = random.Next(-800, 801);
+
+                    // JavaScript to scroll the page horizontally
+                    string script = $"window.scrollBy({{top: {scrollAmount}, left: 0, behavior: 'smooth'}});";
+
+                    try
+                    {
+                        // Execute the script in the WebView
+                        await _wvSearches.ExecuteScriptAsync(script);
+                        
+                        // Wait a short time before the next scroll
+                        await Task.Delay(random.Next(100, 2000), cancellationToken);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // Stop execution if cancellation is requested
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle errors (e.g., WebView not ready or script execution failed)
+                        Console.WriteLine($"Error executing script: {ex.Message}");
+                    }
                 }
             }
         }
