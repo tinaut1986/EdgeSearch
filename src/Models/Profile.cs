@@ -185,7 +185,7 @@ namespace EdgeSearch.src.Models
                 _search = new Search();
         }
 
-        public void RestartLimits()
+        public void RestartWaitTimeBetweenSearches()
         {
             _search.ElapsedSeconds = 0;
             _search.SecondsToWait = _preferences.GetSearchWaitTime();

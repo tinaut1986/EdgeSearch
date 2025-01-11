@@ -344,7 +344,7 @@ namespace EdgeSearch.src.Business
 
         public void RestartRepetitionsLimits()
         {
-            _profile.RestartLimits();
+            _profile.RestartWaitTimeBetweenSearches();
 
             _mainForm.UpdateInterface(_awaker, _extractPointsTimer);
         }
@@ -419,6 +419,7 @@ namespace EdgeSearch.src.Business
                         _profile.Search.StreakTime = now;
                         _profile.Search.StreakDelay = _profile.Preferences.GetStreakDelay();
                         _profile.Search.StreakAmount = 0;
+                        _profile.Search.StreakCount = 0;
 
                         await _cancellationTokenSource.CancelAsync();
                     }

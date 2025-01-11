@@ -73,6 +73,9 @@ namespace EdgeSearch.src.Business
         /// </summary>
         public void Start()
         {
+            if (_timer.Enabled)
+                return;
+
             _timer.Interval = GetNextInterval();
 
             _timer?.Start();

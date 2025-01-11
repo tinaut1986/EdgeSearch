@@ -219,7 +219,7 @@ namespace EdgeSearch.src.Models
 
         public bool IsOnStreakDelay => StreakTime != null;
 
-        public bool IsPendingEnterOnStreakDelay => StreakCount >= StreakAmount;
+        public bool IsPendingEnterOnStreakDelay => StreakCount > 0 && StreakCount >= StreakAmount;
 
         public bool IsPendingStartNextSearch => ElapsedSeconds >= SecondsToWait;
 
