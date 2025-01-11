@@ -7,7 +7,7 @@ namespace EdgeSearch.src.Business
 {
     public class ExtractPointsTimer
     {
-        private Preferences _preferences;
+        private Profile _profile;
         private readonly Func<Task> _extractPoints;
         private Timer _timer; // Timer to send periodic signals
         private DateTime? lastExtraction; // Stores the last time a extraction has been done
@@ -40,14 +40,43 @@ namespace EdgeSearch.src.Business
         /// <summary>
         /// Constructor of the Awaker class.
         /// </summary>
-        public ExtractPointsTimer(Preferences preferences, Func<System.Threading.Tasks.Task> extractPoints)
+        public ExtractPointsTimer(Profile profile, Func<Task> extractPoints)
         {
-            _preferences = preferences;
+            _profile = profile;
             _extractPoints = extractPoints;
 
             _timer = new Timer(); // Initializes the timer
 
             _timer.Tick += RefreshTimer_Tick; // Associates the Tick event with the RefreshTimer_Tick method
+        }
+
+        /// <summary>
+        /// Get the next random interval between MinWait and MaxWait
+        /// </summary>
+        /// <returns>Next random interval between MinWait and MaxWait</returns>
+        private int GetNextInterval()
+        {
+            return _profile.Preferences.GetExtractPointsDelay() * 1000;
+        }
+
+        /// <summary>
+        /// Method to stop the timer and reset the system state.
+        /// </summary>
+        public void Stop()
+        {
+            _timer?.Stop();
+            startTime = null;
+        }
+
+        /// <summary>
+        /// Method to start the timer.
+        /// </summary>
+        public void Start()
+        {
+            _timer.Interval = GetNextInterval();
+
+            _timer?.Start();
+            startTime = DateTime.Now;
         }
 
         /// <summary>
@@ -57,10 +86,17 @@ namespace EdgeSearch.src.Business
         {
             try
             {
-                _extractPoints?.Invoke(); // Extracts points
+                // Extracts points
+                _extractPoints?.Invoke();
 
-                _timer.Interval = _preferences.GetExtractPointsDelay() * 1000; // Update interval on a random interval between MinWait and MaxWait
-                lastExtraction = DateTime.Now; // Updates the last awake time
+                // Stops the timer if the search is on a streak delay
+                if (_profile.Search.State == Common.SearchState.OnStreaksDelay)
+                    _timer.Stop();
+
+                _timer.Interval = GetNextInterval();
+
+                // Updates the last awake time
+                lastExtraction = DateTime.Now;
             }
             catch (Exception ex)
             {
@@ -68,23 +104,5 @@ namespace EdgeSearch.src.Business
             }
         }
 
-        /// <summary>
-        /// Method to stop the timer and reset the system state.
-        /// </summary>
-        public void Stop()
-        {
-            _timer?.Stop(); // Stops the timer
-        }
-
-        /// <summary>
-        /// Method to start the timer.
-        /// </summary>
-        public void Start()
-        {
-            _timer.Interval = _preferences.GetExtractPointsDelay() * 1000; // Update interval on a random interval between MinWait and MaxWait
-
-            _timer?.Start(); // Starts the timer
-            startTime = DateTime.Now;
-        }
     }
 }

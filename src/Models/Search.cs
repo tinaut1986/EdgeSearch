@@ -215,6 +215,34 @@ namespace EdgeSearch.src.Models
 
         public string RewardsString => $"Rewards: {CurrentRewards}/{TotalRewards}";
 
+        public bool IsBetweenSearches => StreakTime == null;
+
+        public bool IsOnStreakDelay => StreakTime != null;
+
+        public bool IsPendingEnterOnStreakDelay => StreakCount >= StreakAmount;
+
+        public bool IsPendingStartNextSearch => ElapsedSeconds >= SecondsToWait;
+
+        public SearchState State
+        {
+            get
+            {
+                if (IsPendingEnterOnStreakDelay)
+                    return SearchState.PendingEnterOnStreakDelay;
+
+                if (IsPendingStartNextSearch)
+                    return SearchState.PendingStartNextSearch;
+
+                if (IsBetweenSearches)
+                    return SearchState.BetweenSearches;
+
+                if (IsOnStreakDelay)
+                    return SearchState.OnStreaksDelay;
+
+                return SearchState.Stopped;
+            }
+        }
+
         #endregion
 
         #region Constructors

@@ -92,9 +92,10 @@ namespace EdgeSearch.src.Business
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                // Generate random delay (e.g., between 10 to 300 seconds)
+                // Generate random delay (e.g., between 10 to 25 seconds)
                 int delay = random.Next(10000, 25000);
 
+                Console.WriteLine($"Waiting {delay / 1000} secs to scroll.");
                 try
                 {
                     // Wait for the delay before scrolling
@@ -110,6 +111,7 @@ namespace EdgeSearch.src.Business
                 {
                     // Generate random scroll distance (e.g., between -800 and 800 pixels)
                     int scrollAmount = random.Next(-800, 801);
+                    Console.WriteLine($"Scroll will be of {scrollAmount} amount of pixels");
 
                     // JavaScript to scroll the page horizontally
                     string script = $"window.scrollBy({{top: {scrollAmount}, left: 0, behavior: 'smooth'}});";
@@ -118,7 +120,8 @@ namespace EdgeSearch.src.Business
                     {
                         // Execute the script in the WebView
                         await _wvSearches.ExecuteScriptAsync(script);
-                        
+                        Console.WriteLine($"Scrolling {scrollAmount} amount of pixels");
+
                         // Wait a short time before the next scroll
                         await Task.Delay(random.Next(100, 2000), cancellationToken);
                     }

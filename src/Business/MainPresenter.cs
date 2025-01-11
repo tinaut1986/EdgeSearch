@@ -162,7 +162,7 @@ namespace EdgeSearch.src.Business
             _refreshTimer.Interval = 1000; // Intervalo de actualización cada segundo
             _refreshTimer.Tick += RefreshTimer_Tick;
 
-            _extractPointsTimer = new ExtractPointsTimer(_profile.Preferences, ExtractPoints);
+            _extractPointsTimer = new ExtractPointsTimer(_profile, ExtractPoints);
         }
 
         private void RefreshNextSearch()
@@ -224,7 +224,6 @@ namespace EdgeSearch.src.Business
                 Console.WriteLine("Search initiated through direct URL navigation.");
             }
         }
-
 
         private void AddHistoryicSearch(string search)
         {
@@ -298,7 +297,6 @@ namespace EdgeSearch.src.Business
             _mainForm.BindFields();
         }
 
-
         private async Task ChangeMobileMode(SearchMode mode, bool reloadWeb)
         {
             _profile.Search.CurrentMode = mode;
@@ -339,6 +337,8 @@ namespace EdgeSearch.src.Business
             _profile.Search.IsPlaying = true;
             _awaker.Start();
 
+            EnsureFreshCancellationTokenSource();
+
             await _wvSearchesController.SimulateHorizontalScrollAsync(_cancellationTokenSource.Token);
         }
 
@@ -373,6 +373,130 @@ namespace EdgeSearch.src.Business
             }
 
             _mainForm.UpdateInterface(_awaker, _extractPointsTimer);
+        }
+
+        private async Task ManageSearch()
+        {
+            DateTime now = DateTime.Now;
+
+            // Si estamos en espera entre rachas
+            if (_profile.Search.State == SearchState.OnStreaksDelay)
+            {
+                // Si todavia no hemos superado el tiempo que hay que esperar entre rachas
+                if (Convert.ToInt32((now - _profile.Search.StreakTime.Value).TotalSeconds) <= _profile.Search.StreakDelay)
+                {
+                    _mainForm.UpdateInterface(_awaker, _extractPointsTimer);
+                    return;
+                }
+                // Una vez superado el tiempo de espera entre rachas, se reincia la racha para empezar una nueva
+                else
+                {
+                    _profile.Search.StreakCount = 0;
+                    _profile.Search.StreakTime = null;
+                    _profile.Search.StreakDelay = 0;
+                    _profile.Search.StreakAmount = _profile.Preferences.GetStreakAmount();
+
+                    _extractPointsTimer.Start();
+
+                    EnsureFreshCancellationTokenSource();
+
+                    await _wvSearchesController.SimulateHorizontalScrollAsync(_cancellationTokenSource.Token);
+                }
+            }
+
+            // Si hay configurado algun numero de repeticiones por rachas en preferencias
+            if (_profile.Preferences.MaxStreakAmount > 0)
+            {
+                // Si estamos iniciando una racha, obtenemos la cantidad de repeticiones para la racha actual
+                if (_profile.Search.StreakAmount == null)
+                    _profile.Search.StreakAmount = _profile.Preferences.GetStreakAmount();
+
+                // Si hemos alcanzado el numero maximo de repeticiones, acabamos la racha y iniciamos el "tiempo de espera" entre rachas
+                if (_profile.Search.State == SearchState.PendingEnterOnStreakDelay)
+                {
+                    if (_profile.Search.StreakTime == null)
+                    {
+                        _profile.Search.StreakTime = now;
+                        _profile.Search.StreakDelay = _profile.Preferences.GetStreakDelay();
+                        _profile.Search.StreakAmount = 0;
+
+                        await _cancellationTokenSource.CancelAsync();
+                    }
+                }
+            }
+
+            _profile.Search.ElapsedSeconds++;
+
+            // Si superamos el tiempo de espera entre repeticiones, pasaremos a la siguiente repeticion
+            if (_profile.Search.State == SearchState.PendingStartNextSearch)
+            {
+                // Si no hay ninguna busqueda por hacer, paramos las busquedas
+                if (_profile.Search.ToSearch.Count() == 0)
+                {
+                    Stop();
+                    _mainForm.UpdateInterface(_awaker, _extractPointsTimer);
+                    return;
+                }
+
+                // puntos de escritorio alcanzados
+                bool desktopPointsReached = _profile.Search.DesktopSearchesCount * _profile.Preferences.DesktopPointsPersearch >= _profile.Preferences.DesktopTotalPoints;
+
+                // puntos mobiles alcanzados
+                bool mobilePointsReached = _profile.Search.MobileSearchesCount * _profile.Preferences.MobilePointsPersearch >= _profile.Preferences.MobileTotalPoints;
+
+                // Si estamos haciendo la busqueda de escritorio y hemos alcanzado los puntos de escritorio
+                if (!_profile.Search.IsMobile && desktopPointsReached)
+                {
+                    // Si no hemos alcanzado los puntos mobiles, cambiamos a modo "movil"
+                    if (!mobilePointsReached)
+                        await ChangeMobileMode(SearchMode.Mobile, false);
+
+                    // En caso contrario, paramos la ejecucion
+                    else
+                    {
+                        Stop();
+                        _mainForm.UpdateInterface(_awaker, _extractPointsTimer);
+                        return;
+                    }
+                }
+                // Si estamos haciendo la busqueda movil y hemos alcanzado los puntos moviles
+                else if (_profile.Search.IsMobile && mobilePointsReached)
+                {
+                    // Si no hemos alcanzado los puntos de escritorio, cambiamos al modo "Escritorio"
+                    if (!desktopPointsReached)
+                        await ChangeMobileMode(SearchMode.Desktop, false);
+
+                    // En caso contrario, paramos la ejecucion
+                    else
+                    {
+                        PlayAndStop(false);
+                        _mainForm.UpdateInterface(_awaker, _extractPointsTimer);
+                        return;
+                    }
+                }
+
+                // Reiniciamos los limites de la repeticion
+                RestartRepetitionsLimits();
+                if (_profile.Preferences.MinStreakAmount > 0)
+                    _profile.Search.StreakCount++;
+
+                // Hacemos la busqueda
+                await ExecuteSearchProcess();
+            }
+
+            _mainForm.UpdateInterface(_awaker, _extractPointsTimer);
+        }
+
+        /// <summary>
+        /// Ensure that the cancellation token source is fresh and not cancelled.
+        /// </summary>
+        private void EnsureFreshCancellationTokenSource()
+        {
+            if (_cancellationTokenSource.IsCancellationRequested)
+            {
+                _cancellationTokenSource.Dispose();
+                _cancellationTokenSource = new CancellationTokenSource();
+            }
         }
 
         public void Show()
@@ -473,110 +597,7 @@ namespace EdgeSearch.src.Business
 
         private async void RefreshTimer_Tick(object sender, EventArgs e)
         {
-            DateTime now = DateTime.Now;
-
-            // Si estamos en espera entre rachas
-            if (_profile.Search.StreakTime != null)
-            {
-                // Si todavia no hemos superado el tiempo que hay que esperar entre rachas
-                if (Convert.ToInt32((now - _profile.Search.StreakTime.Value).TotalSeconds) <= _profile.Search.StreakDelay)
-                {
-                    _mainForm.UpdateInterface(_awaker, _extractPointsTimer);
-                    return;
-                }
-                // Una vez superado el tiempo de espera entre rachas, se reincia la racha para empezar una nueva
-                else
-                {
-                    _profile.Search.StreakCount = 0;
-                    _profile.Search.StreakTime = null;
-                    _profile.Search.StreakDelay = 0;
-                    _profile.Search.StreakAmount = _profile.Preferences.GetStreakAmount();
-
-                    await _wvSearchesController.SimulateHorizontalScrollAsync(_cancellationTokenSource.Token);
-                }
-            }
-
-            // Si hay configurado algun numero de repeticiones por rachas en preferencias
-            if (_profile.Preferences.MaxStreakAmount > 0)
-            {
-                // Si estamos iniciando una racha, obtenemos la cantidad de repeticiones para la racha actual
-                if (_profile.Search.StreakAmount == null)
-                    _profile.Search.StreakAmount = _profile.Preferences.GetStreakAmount();
-
-                // Si hemos alcanzado el numero maximo de repeticiones, acabamos la racha y iniciamos el "tiempo de espera" entre rachas
-                if (_profile.Search.StreakCount >= _profile.Search.StreakAmount)
-                {
-                    if (_profile.Search.StreakTime == null)
-                    {
-                        _profile.Search.StreakTime = now;
-                        _profile.Search.StreakDelay = _profile.Preferences.GetStreakDelay();
-                        _profile.Search.StreakAmount = 0;
-
-                        await _cancellationTokenSource.CancelAsync();
-                    }
-                }
-            }
-
-            _profile.Search.ElapsedSeconds++;
-
-            // Si superamos el tiempo de espera entre repeticiones, pasaremos a la siguiente repeticion
-            if (_profile.Search.ElapsedSeconds >= _profile.Search.SecondsToWait)
-            {
-                // Si no hay ninguna busqueda por hacer, paramos las busquedas
-                if (_profile.Search.ToSearch.Count() == 0)
-                {
-                    Stop();
-                    _mainForm.UpdateInterface(_awaker, _extractPointsTimer);
-                    return;
-                }
-
-                // puntos de escritorio alcanzados
-                bool desktopPointsReached = _profile.Search.DesktopSearchesCount * _profile.Preferences.DesktopPointsPersearch >= _profile.Preferences.DesktopTotalPoints;
-
-                // puntos mobiles alcanzados
-                bool mobilePointsReached = _profile.Search.MobileSearchesCount * _profile.Preferences.MobilePointsPersearch >= _profile.Preferences.MobileTotalPoints;
-
-                // Si estamos haciendo la busqueda de escritorio y hemos alcanzado los puntos de escritorio
-                if (!_profile.Search.IsMobile && desktopPointsReached)
-                {
-                    // Si no hemos alcanzado los puntos mobiles, cambiamos a modo "movil"
-                    if (!mobilePointsReached)
-                        await ChangeMobileMode(SearchMode.Mobile, false);
-
-                    // En caso contrario, paramos la ejecucion
-                    else
-                    {
-                        Stop();
-                        _mainForm.UpdateInterface(_awaker, _extractPointsTimer);
-                        return;
-                    }
-                }
-                // Si estamos haciendo la busqueda movil y hemos alcanzado los puntos moviles
-                else if (_profile.Search.IsMobile && mobilePointsReached)
-                {
-                    // Si no hemos alcanzado los puntos de escritorio, cambiamos al modo "Escritorio"
-                    if (!desktopPointsReached)
-                        await ChangeMobileMode(SearchMode.Desktop, false);
-
-                    // En caso contrario, paramos la ejecucion
-                    else
-                    {
-                        PlayAndStop(false);
-                        _mainForm.UpdateInterface(_awaker, _extractPointsTimer);
-                        return;
-                    }
-                }
-
-                // Reiniciamos los limites de la repeticion
-                RestartRepetitionsLimits();
-                if (_profile.Preferences.MinStreakAmount > 0)
-                    _profile.Search.StreakCount++;
-
-                // Hacemos la busqueda
-                await ExecuteSearchProcess();
-            }
-
-            _mainForm.UpdateInterface(_awaker, _extractPointsTimer);
+            await ManageSearch();
         }
 
         #endregion

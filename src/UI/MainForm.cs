@@ -247,7 +247,7 @@ namespace EdgeSearch.UI
         private void UpdateProgressBarExtractPoints(ExtractPointsTimer extractPointsTimer)
         {
             DateTime? previousTime = LibDateTime.MaxDate(extractPointsTimer.LastExtraction, extractPointsTimer.StartTime);
-            if (previousTime == null)
+            if (previousTime == null || !extractPointsTimer.Enabled)
             {
                 pbExtractPoints.Text = "Extract points";
 
