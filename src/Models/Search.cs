@@ -25,8 +25,8 @@ namespace EdgeSearch.src.Models
         private DateTime? _streakTime;
         private int _streakDelay;
 
-        private int _currentRewards;
-        private int _totalRewards;
+        private int? _currentRewards;
+        private int? _totalRewards;
 
         public event PropertyChangedEventHandler PropertyChanged;
         #endregion
@@ -201,13 +201,13 @@ namespace EdgeSearch.src.Models
             set => _rewardsPlayed = value;
         }
 
-        public int CurrentRewards
+        public int? CurrentRewards
         {
             get => _currentRewards;
             set => _currentRewards = value;
         }
 
-        public int TotalRewards
+        public int? TotalRewards
         {
             get => _totalRewards;
             set => _totalRewards = value;

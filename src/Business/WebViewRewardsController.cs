@@ -51,15 +51,18 @@ namespace EdgeSearch.src.Business
 
         public async void OpenRewards()
         {
+            // Si ya estamos ejecutando los puntos, no hacer nada
             if (_profile.Search.RewardsPlayed)
                 return;
 
+            // Marcar que empezamos a ejecutar los puntos
             _profile.Search.RewardsPlayed = true;
 
             // Definir las clases CSS que se usarán
             string className = "mee-icon-AddMedium";
             string excludeClassName = "exclusiveLockedPts";
 
+            // Iniciar un bucle infinito para ejecutar los puntos
             while (true)
             {
                 // Refrescar la página
@@ -78,14 +81,22 @@ namespace EdgeSearch.src.Business
                 ", className, excludeClassName);
 
                 var buttonCountResult = await _wvRewards.ExecuteScriptAsync(checkScript);
-                if (buttonCountResult == null || int.Parse(buttonCountResult.ToString()) == 0)
+                int buttonCount;
+
+                int.TryParse(buttonCountResult, out buttonCount);
+                
+                // Configurar los puntos actuales y totales
+                _profile.Search.TotalRewards = _profile.Search.TotalRewards ?? buttonCount;
+                _profile.Search.CurrentRewards = _profile.Search.TotalRewards - buttonCount;
+
+                // Si no hay botones disponibles, salir del bucle
+                if (buttonCountResult == null || buttonCount == 0)
                 {
                     Console.WriteLine("No hay más botones disponibles para pulsar.");
                     break;
                 }
 
                 // Recorrer y pulsar botones uno por uno
-                int buttonCount = int.Parse(buttonCountResult.ToString());
                 Console.WriteLine($"Se encontraron {buttonCount} botones válidos.");
                 for (int i = 0; i < buttonCount; i++)
                 {
@@ -121,6 +132,7 @@ namespace EdgeSearch.src.Business
                 await Task.Delay(waitTime);
             }
 
+            // Al salir del bucle, marcar que ya se han ejecutado los puntos
             _profile.Search.RewardsPlayed = false;
         }
 

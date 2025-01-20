@@ -107,8 +107,6 @@ namespace EdgeSearch.src.Business
                 newWebView.Source = new Uri(e.Uri);
                 _mainForm.SetRewardsProgressBarState(_profile.Search.RewardsPlayed);
 
-                _profile.Search.CurrentRewards++; // Increment current rewards count
-                _profile.Search.TotalRewards++; // Increment total rewards count
                 _mainForm.UpdateProgressBarRewards(_profile.Search); // Update progress bar
 
                 // Event handler for navigation completed
@@ -126,7 +124,6 @@ namespace EdgeSearch.src.Business
                         // newWebView.CoreWebView2.NavigationCompleted -= handler; // Unsubscribe from the event
 
                         newWebView.Dispose(); // Dispose of the WebView2 instance
-                        _profile.Search.CurrentRewards--; // Decrement current rewards count
                         _mainForm.SetRewardsProgressBarState(_profile.Search.RewardsPlayed);
                         _mainForm.UpdateProgressBarRewards(_profile.Search); // Update progress bar again
                     }
