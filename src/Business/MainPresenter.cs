@@ -97,6 +97,8 @@ namespace EdgeSearch.src.Business
             // Create a new instance of WebView2 for the new window
             var newWebView = new WebView2 { Dock = DockStyle.Fill };
 
+            _profile.Search.OpenedRewards++;
+
             // Post the following code to the UI context
             uiContext.Post(async _ =>
             {
@@ -105,8 +107,8 @@ namespace EdgeSearch.src.Business
 
                 // Navigate to the requested URI
                 newWebView.Source = new Uri(e.Uri);
-                _mainForm.SetRewardsProgressBarState(_profile.Search.RewardsPlayed);
-
+                
+                _mainForm.SetRewardsProgressBarState(_profile.Search);
                 _mainForm.UpdateProgressBarRewards(_profile.Search); // Update progress bar
 
                 // Event handler for navigation completed
@@ -119,12 +121,10 @@ namespace EdgeSearch.src.Business
                     {
                         await Task.Delay(15000); // Wait for 15 seconds before closing the window
 
-                        // TODO: For some reason, this code runs more than once. 
-                        // Investigate how to prevent the counter from decrementing multiple times.
-                        // newWebView.CoreWebView2.NavigationCompleted -= handler; // Unsubscribe from the event
+                        _profile.Search.OpenedRewards--;
 
                         newWebView.Dispose(); // Dispose of the WebView2 instance
-                        _mainForm.SetRewardsProgressBarState(_profile.Search.RewardsPlayed);
+                        _mainForm.SetRewardsProgressBarState(_profile.Search);
                         _mainForm.UpdateProgressBarRewards(_profile.Search); // Update progress bar again
                     }
                 };
@@ -133,7 +133,7 @@ namespace EdgeSearch.src.Business
 
             }, null);
 
-            _mainForm.SetRewardsProgressBarState(_profile.Search.RewardsPlayed);
+            _mainForm.SetRewardsProgressBarState(_profile.Search);
             _mainForm.BindFields(); // Bind fields in the main form
         }
 

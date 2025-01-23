@@ -235,6 +235,8 @@ namespace EdgeSearch.UI
 
             UpdateProgressBarSearches(_profile);
 
+            SetRewardsProgressBarState(_profile.Search);
+
             UpdateProgressBarRewards(_profile.Search);
 
             UpdateProgressBarExtractPoints(extractPointsTimer);
@@ -319,7 +321,13 @@ namespace EdgeSearch.UI
 
         public void UpdateProgressBarRewards(Search search)
         {
-            pbRewards.Text = search.RewardsString;
+            int openedRewards = search.OpenedRewards;
+            int currentRewards = search.CurrentRewards ?? 0;
+            int totalRewards = search.TotalRewards ?? 0;
+            string currentTime = $"{TimeSpan.FromSeconds(search.CurrentRewardsProgress):mm\\:ss}";
+            string maxTimee = $"{TimeSpan.FromSeconds(search.MaxRewardsProgress):mm\\:ss}";
+
+            pbRewards.Text = $"Rewards: ({openedRewards}) | {currentRewards} / {totalRewards} | {currentTime} / {maxTimee}";
         }
 
         public void UpdateProgressBarSearches(Profile profile)
@@ -380,12 +388,26 @@ namespace EdgeSearch.UI
             pbSearches.PaintedForeColor = colors.FilledTextColor;
         }
 
-        public void SetRewardsProgressBarState(bool play)
+        public void SetRewardsProgressBarState(Search search)
         {
-            if (play)
-                pbRewards.Style = ProgressBarStyle.Marquee;
+            if (search.DelayBetweenRewardsTime != null)
+            {
+                pbRewards.Maximum = search.DelayBetweenRewards.Value;
+                pbRewards.Value = Convert.ToInt32((DateTime.Now - search.DelayBetweenRewardsTime.Value).TotalSeconds);
+                pbRewards.Minimum = 0;
+            }
+            else if (search.DelayToRetryRewardsTime != null)
+            {
+                pbRewards.Maximum = search.DelayToRetryRewards.Value;
+                pbRewards.Value = search.DelayToRetryRewards.Value - Convert.ToInt32((DateTime.Now - search.DelayToRetryRewardsTime.Value).TotalSeconds);
+                pbRewards.Minimum = 0;
+            }
             else
-                pbRewards.Style = ProgressBarStyle.Continuous;
+            {
+                pbRewards.Maximum = 0;
+                pbRewards.Value = 0;
+                pbRewards.Minimum = 0;
+            }
         }
 
         #endregion

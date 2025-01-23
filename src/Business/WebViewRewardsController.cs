@@ -84,7 +84,7 @@ namespace EdgeSearch.src.Business
                 int buttonCount;
 
                 int.TryParse(buttonCountResult, out buttonCount);
-                
+
                 // Configurar los puntos actuales y totales
                 _profile.Search.TotalRewards = _profile.Search.TotalRewards ?? buttonCount;
                 _profile.Search.CurrentRewards = _profile.Search.TotalRewards - buttonCount;
@@ -122,14 +122,15 @@ namespace EdgeSearch.src.Business
                     }
 
                     Console.WriteLine($"Botón {i + 1} pulsado correctamente.");
-                    int delay = new Random().Next(15000, 30001); // Esperar entre 15 y 30 segundos
-                    await Task.Delay(delay);
+                    _profile.SetDelayBetweenRewards();
+                    await Task.Delay(_profile.Search.DelayBetweenRewards.Value);
+                    _profile.ResetDelayBetweenRewards();
                 }
 
-                // Esperar entre 10 y 15 minutos antes de volver a intentarlo
-                int waitTime = new Random().Next(10 * 60 * 1000, 15 * 60 * 1000);
-                Console.WriteLine($"Esperando {waitTime / 60000} minutos antes de continuar.");
-                await Task.Delay(waitTime);
+                _profile.SetDelayToRetryRewards();
+                Console.WriteLine($"Esperando {_profile.Search.DelayToRetryRewards.Value / 60000} minutos antes de continuar.");
+                await Task.Delay(_profile.Search.DelayToRetryRewards.Value);
+                _profile.ResetDelayToRetryRewards();
             }
 
             // Al salir del bucle, marcar que ya se han ejecutado los puntos

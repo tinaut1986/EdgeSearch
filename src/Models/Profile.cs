@@ -277,6 +277,30 @@ namespace EdgeSearch.src.Models
             }
         }
 
+        public void SetDelayBetweenRewards()
+        {
+            Search.DelayBetweenRewards = new Random().Next(Preferences.MinDelayBetweenRewards, Preferences.MaxDelayBetweenRewards);
+            Search.DelayBetweenRewardsTime = DateTime.Now;
+        }
+
+        public void ResetDelayBetweenRewards()
+        {
+            Search.DelayBetweenRewards = 0;
+            Search.DelayBetweenRewardsTime = null;
+        }
+
+        public void SetDelayToRetryRewards()
+        {
+            Search.DelayToRetryRewards = new Random().Next(Preferences.MinDelayToRetryRewards, Preferences.MaxDelayToRetryRewards);
+            Search.DelayToRetryRewardsTime = DateTime.Now;
+        }
+
+        public void ResetDelayToRetryRewards()
+        {
+            Search.DelayToRetryRewards = 0;
+            Search.DelayToRetryRewardsTime = null;
+        }
+
         #endregion
     }
 }

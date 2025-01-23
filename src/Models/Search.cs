@@ -27,6 +27,11 @@ namespace EdgeSearch.src.Models
 
         private int? _currentRewards;
         private int? _totalRewards;
+        private int _openedRewards;
+        private int? currentDelayBetweenRewards;
+        private int? currentDelayToRetryRewards;
+        private DateTime? delayBetweenRewardsTime;
+        private DateTime? delayToRetryRewardsTime;
 
         public event PropertyChangedEventHandler PropertyChanged;
         #endregion
@@ -138,6 +143,46 @@ namespace EdgeSearch.src.Models
             }
         }
 
+        public int? DelayBetweenRewards
+        {
+            get => currentDelayBetweenRewards;
+            set
+            {
+                currentDelayBetweenRewards = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public DateTime? DelayBetweenRewardsTime
+        {
+            get => delayBetweenRewardsTime;
+            set
+            {
+                delayBetweenRewardsTime = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public int? DelayToRetryRewards
+        {
+            get => currentDelayToRetryRewards;
+            set
+            {
+                currentDelayToRetryRewards = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public DateTime? DelayToRetryRewardsTime
+        {
+            get => delayToRetryRewardsTime;
+            set
+            {
+                delayToRetryRewardsTime = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         public Uri URL
         {
             get => _url;
@@ -198,22 +243,72 @@ namespace EdgeSearch.src.Models
         public bool RewardsPlayed
         {
             get => _rewardsPlayed;
-            set => _rewardsPlayed = value;
-        }
-
-        public int? CurrentRewards
-        {
-            get => _currentRewards;
-            set => _currentRewards = value;
+            set
+            {
+                _rewardsPlayed = value;
+                NotifyPropertyChanged();
+            }
         }
 
         public int? TotalRewards
         {
             get => _totalRewards;
-            set => _totalRewards = value;
+            set
+            {
+                _totalRewards = value;
+                NotifyPropertyChanged();
+            }
         }
 
-        public string RewardsString => $"Rewards: {CurrentRewards}/{TotalRewards}";
+        public int? CurrentRewards
+        {
+            get => _currentRewards;
+            set
+            {
+                _currentRewards = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public int RewardsLeft => TotalRewards - CurrentRewards ?? 0;
+
+        public int OpenedRewards
+        {
+            get => _openedRewards;
+            set
+            {
+                _openedRewards = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public int CurrentRewardsProgress
+        {
+            get
+            {
+                if (DelayBetweenRewardsTime != null)
+                    return Convert.ToInt32((DateTime.Now - DelayBetweenRewardsTime.Value).TotalSeconds);
+                else if (DelayToRetryRewardsTime != null)
+                    return DelayToRetryRewards.Value - Convert.ToInt32((DateTime.Now - DelayToRetryRewardsTime.Value).TotalSeconds);
+                else
+                    return 0;
+            }
+        }
+
+        public int MaxRewardsProgress
+        {
+            get
+            {
+                if (DelayBetweenRewardsTime != null)
+                    return DelayBetweenRewards.Value;
+
+                else if (DelayToRetryRewardsTime != null)
+                    return DelayToRetryRewards.Value;
+
+                else
+                    return 0;
+            }
+        }
 
         public bool IsBetweenSearches => StreakTime == null;
 

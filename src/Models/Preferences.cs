@@ -79,6 +79,22 @@ namespace EdgeSearch.src.Models
             set => MaxExtractPointsDelay = MinExtractPointsDelay + value;
         }
 
+        public int MinDelayBetweenRewards { get; set; }
+        public int MaxDelayBetweenRewards { get; set; }
+        public int MarginDelayBetweenRewards
+        {
+            get => MaxDelayBetweenRewards - MinDelayBetweenRewards;
+            set => MaxDelayBetweenRewards = MinDelayBetweenRewards + value;
+        }
+
+        public int MinDelayToRetryRewards { get; set; }
+        public int MaxDelayToRetryRewards { get; set; }
+        public int MarginDelayToRetryReward
+        {
+            get => MaxDelayToRetryRewards - MinDelayToRetryRewards;
+            set => MaxDelayToRetryRewards = MinDelayToRetryRewards + value;
+        }
+
         public SearchMode InitialMode { get; set; }
 
         private readonly string _configFilePath;
@@ -91,17 +107,21 @@ namespace EdgeSearch.src.Models
             DesktopPointsPersearch = 3;
             MinWait = 20;
             MaxWait = 40;
-            InitialMode = SearchMode.Desktop;
-            MobileTotalPoints = 60;
-            DesktopTotalPoints = 90;
+            InitialMode = SearchMode.Desktop; // Start with desktop mode
+            MobileTotalPoints = 60; // 20 searches
+            DesktopTotalPoints = 90; // 30 searches
             MinStreakAmount = 0;
             MaxStreakAmount = 0;
-            MinStreakDelay = 900;
-            MaxStreakDelay = 1200;
-            MinExtractPointsDelay = 300;
-            MaxExtractPointsDelay = 600;
-            MobileUserAgent = "Mozilla/5.0 (Linux; Android 9; ASUS_X00TD; Flow) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/359.0.0.288 Mobile Safari/537.36"; ;
-            DesktopUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36";
+            MinStreakDelay = 900; // 15 minutes
+            MaxStreakDelay = 1200; // 20 minutes
+            MinExtractPointsDelay = 300; // 5 minutes
+            MaxExtractPointsDelay = 600; // 10 minutes
+            MinDelayBetweenRewards = 15000; // 15 seconds
+            MaxDelayBetweenRewards = 30000; // 30 seconds
+            MinDelayToRetryRewards = 10 * 60 * 1000; // 10 minutes
+            MaxDelayToRetryRewards = 15 * 60 * 1000; // 15 minutes
+            MobileUserAgent = "Mozilla/5.0 (Linux; Android 9; ASUS_X00TD; Flow) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/359.0.0.288 Mobile Safari/537.36"; // ASUS Zenfone Max Pro M1
+            DesktopUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36"; // Windows 10
             SimulateKeyboardTyping = true;
 
             desktopNormalProgressBarColors = new ProgressBarColors() { FilledColor = Color.Green, TextColor = Color.Black, FilledTextColor = Color.White };
@@ -156,6 +176,10 @@ namespace EdgeSearch.src.Models
             MaxStreakAmount = preferences.MaxStreakAmount;
             MinStreakDelay = preferences.MinStreakDelay;
             MaxStreakDelay = preferences.MaxStreakDelay;
+            MinDelayToRetryRewards = preferences.MinDelayToRetryRewards;
+            MaxDelayToRetryRewards = preferences.MaxDelayToRetryRewards;
+            MinDelayBetweenRewards = preferences.MinDelayBetweenRewards;
+            MaxDelayBetweenRewards = preferences.MaxDelayBetweenRewards;
             MinExtractPointsDelay = preferences.MinExtractPointsDelay;
             MaxExtractPointsDelay = preferences.MaxExtractPointsDelay;
             DesktopUserAgent = preferences.DesktopUserAgent;
@@ -192,6 +216,16 @@ namespace EdgeSearch.src.Models
         public int GetExtractPointsDelay()
         {
             return new Random().Next(MinExtractPointsDelay, MaxExtractPointsDelay);
+        }
+
+        public int GetDelayBetweenRewards()
+        {
+            return new Random().Next(MinDelayBetweenRewards, MaxDelayBetweenRewards);
+        }
+
+        public int GetDelayToRetryReward()
+        {
+            return new Random().Next(MinDelayToRetryRewards, MaxDelayToRetryRewards);
         }
 
         public void Save()

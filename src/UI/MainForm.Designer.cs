@@ -332,14 +332,14 @@ namespace EdgeSearch.UI
             pbRewards.Name = "pbRewards";
             pbRewards.PaintedColor = System.Drawing.Color.Green;
             pbRewards.PaintedForeColor = System.Drawing.Color.White;
-            pbRewards.Size = new System.Drawing.Size(145, 23);
+            pbRewards.Size = new System.Drawing.Size(236, 23);
             pbRewards.TabIndex = 19;
             // 
             // pbExtractPoints
             // 
             pbExtractPoints.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             pbExtractPoints.ForeColor = System.Drawing.Color.Black;
-            pbExtractPoints.Location = new System.Drawing.Point(683, 3);
+            pbExtractPoints.Location = new System.Drawing.Point(774, 3);
             pbExtractPoints.Name = "pbExtractPoints";
             pbExtractPoints.PaintedColor = System.Drawing.Color.Purple;
             pbExtractPoints.PaintedForeColor = System.Drawing.Color.White;
@@ -349,7 +349,7 @@ namespace EdgeSearch.UI
             // lblAwaker
             // 
             lblAwaker.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            lblAwaker.Location = new System.Drawing.Point(913, 6);
+            lblAwaker.Location = new System.Drawing.Point(1004, 6);
             lblAwaker.Margin = new System.Windows.Forms.Padding(0);
             lblAwaker.Name = "lblAwaker";
             lblAwaker.Size = new System.Drawing.Size(301, 23);
