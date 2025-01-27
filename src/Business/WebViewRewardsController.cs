@@ -49,14 +49,14 @@ namespace EdgeSearch.src.Business
             _wvRewards.CoreWebView2InitializationCompleted -= WebView_CoreWebView2InitializationCompleted;
         }
 
-        public async void OpenRewards()
+        public async Task OpenRewards()
         {
             // Si ya estamos ejecutando los puntos, no hacer nada
-            if (_profile.Search.RewardsPlayed)
+            if (_profile.Search.RewardsPlaying)
                 return;
 
             // Marcar que empezamos a ejecutar los puntos
-            _profile.Search.RewardsPlayed = true;
+            _profile.Search.RewardsPlaying = true;
 
             // Definir las clases CSS que se usarán
             string className = "mee-icon-AddMedium";
@@ -134,7 +134,7 @@ namespace EdgeSearch.src.Business
             }
 
             // Al salir del bucle, marcar que ya se han ejecutado los puntos
-            _profile.Search.RewardsPlayed = false;
+            _profile.Search.RewardsPlaying = false;
         }
 
         public async Task SetRewardsURL(Uri url)

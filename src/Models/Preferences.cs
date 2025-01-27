@@ -10,6 +10,10 @@ namespace EdgeSearch.src.Models
     public class Preferences
     {
         #region Properties
+        public string RewardsUrl { get; set; }
+        public string SearchesEmptyUrl { get; set; }
+        public string SearchesUrl { get; set; }
+
         public int MobilePointsPersearch { get; set; }
         public int DesktopPointsPersearch { get; set; }
         public int MinWait { get; set; }
@@ -123,6 +127,12 @@ namespace EdgeSearch.src.Models
             MobileUserAgent = "Mozilla/5.0 (Linux; Android 9; ASUS_X00TD; Flow) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/359.0.0.288 Mobile Safari/537.36"; // ASUS Zenfone Max Pro M1
             DesktopUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36"; // Windows 10
             SimulateKeyboardTyping = true;
+            //RewardsUrl = "https://rewards.bing.com/pointsbreakdown";
+            RewardsUrl = "file:///C:/Users/tinau/Documents/bing/Microsoft%C2%A0Rewards.html";
+            //SearchesEmptyUrl = "https://www.bing.es";
+            SearchesUrl = "https://www.bing.es/search?q={0}&form=QBLH&sp=-1&ghc=1&lq=0&pq={0}";
+            SearchesEmptyUrl = "file:///C:/Users/tinau/Documents/bing/B%C3%BAsqueda_%20Microsoft%20Bing.html";
+            SearchesUrl = "file:///C:/Users/tinau/Documents/bing/B%C3%BAsqueda_%20Microsoft%20Bing.html/search?q={0}&form=QBLH&sp=-1&ghc=1&lq=0&pq={0}";
 
             desktopNormalProgressBarColors = new ProgressBarColors() { FilledColor = Color.Green, TextColor = Color.Black, FilledTextColor = Color.White };
             desktopReverseProgressBarColors = new ProgressBarColors() { FilledColor = Color.Orange, TextColor = Color.Black, FilledTextColor = Color.White };
@@ -182,6 +192,9 @@ namespace EdgeSearch.src.Models
             MaxDelayBetweenRewards = preferences.MaxDelayBetweenRewards;
             MinExtractPointsDelay = preferences.MinExtractPointsDelay;
             MaxExtractPointsDelay = preferences.MaxExtractPointsDelay;
+            RewardsUrl = preferences.RewardsUrl;
+            SearchesEmptyUrl = preferences.SearchesEmptyUrl;
+            SearchesUrl = preferences.SearchesUrl;
             DesktopUserAgent = preferences.DesktopUserAgent;
             MobileUserAgent = preferences.MobileUserAgent;
             SimulateKeyboardTyping = preferences.SimulateKeyboardTyping;

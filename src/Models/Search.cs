@@ -19,7 +19,7 @@ namespace EdgeSearch.src.Models
         private bool _isPlaying;
         private string _nextSearch;
         private Uri _url;
-        private bool _rewardsPlayed;
+        private bool _rewardsPlaying;
         private int _streakCount;
         private int? _streakAmount;
         private DateTime? _streakTime;
@@ -240,12 +240,12 @@ namespace EdgeSearch.src.Models
             }
         }
 
-        public bool RewardsPlayed
+        public bool RewardsPlaying
         {
-            get => _rewardsPlayed;
+            get => _rewardsPlaying;
             set
             {
-                _rewardsPlayed = value;
+                _rewardsPlaying = value;
                 NotifyPropertyChanged();
             }
         }

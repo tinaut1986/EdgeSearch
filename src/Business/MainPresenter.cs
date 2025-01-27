@@ -107,7 +107,7 @@ namespace EdgeSearch.src.Business
 
                 // Navigate to the requested URI
                 newWebView.Source = new Uri(e.Uri);
-                
+
                 _mainForm.SetRewardsProgressBarState(_profile.Search);
                 _mainForm.UpdateProgressBarRewards(_profile.Search); // Update progress bar
 
@@ -142,10 +142,18 @@ namespace EdgeSearch.src.Business
             _mainForm.RefreshSearchesURL();
         }
 
-        private void _mainForm_PlayRewardsClicked(object sender, EventArgs e)
+        private async void _mainForm_PlayRewardsClicked(object sender, EventArgs e)
         {
-            if (!_profile.Search.RewardsPlayed)
-                _wvRewardsController.OpenRewards();
+            if (!_profile.Search.RewardsPlaying)
+            {
+                if (!_refreshTimer.Enabled)
+                    _refreshTimer.Start(); // Inicia el temporizador cuando se presiona el botón
+
+                await _wvRewardsController.OpenRewards();
+
+                if (!_profile.Search.IsPlaying)
+                    _refreshTimer.Stop();
+            }
         }
 
         private void _mainForm_PlaySearchesClicked(object sender, EventArgs e)
@@ -216,7 +224,7 @@ namespace EdgeSearch.src.Business
             {
                 // Construct and open the search URL directly
                 string encodedSearch = Uri.EscapeDataString(currentSearch);
-                _profile.Search.URL = new Uri($"https://www.bing.com/search?q={encodedSearch}&form=QBLH&sp=-1&ghc=1&lq=0&pq={encodedSearch}");
+                _profile.Search.URL = new Uri(string.Format(_profile.Preferences.SearchesUrl, encodedSearch));
                 await _wvSearchesController.OpenSearchesURL(_profile.Search.URL);
                 Console.WriteLine("Search initiated through direct URL navigation.");
             }
@@ -255,7 +263,7 @@ namespace EdgeSearch.src.Business
 
         private async Task ExtractPoints()
         {
-            await _wvRewardsController.SetRewardsURL(new Uri("https://rewards.bing.com/pointsbreakdown"));
+            await _wvRewardsController.SetRewardsURL(new Uri(_profile.Preferences.RewardsUrl));
             await Task.Delay(2000);
 
             // Buscar primero "Búsqueda en PC"
@@ -317,7 +325,8 @@ namespace EdgeSearch.src.Business
 
         private void Stop()
         {
-            _refreshTimer.Stop(); // Detiene el temporizador si ya está activo
+            if (!_profile.Search.RewardsPlaying)
+                _refreshTimer.Stop(); // Detiene el temporizador si ya está activo
             _extractPointsTimer.Stop(); // Detiene el temporizador de extracción de puntos
             _profile.Search.Stop();
 
@@ -529,9 +538,9 @@ namespace EdgeSearch.src.Business
 
             await _wvSearchesController.EnsureCoreWebView2Async();
             await _wvRewardsController.EnsureCoreWebView2Async();
-            _profile.Search.URL = new Uri("https://www.bing.es/");
+            _profile.Search.URL = new Uri(_profile.Preferences.SearchesEmptyUrl);
             await _wvSearchesController.OpenSearchesURL(_profile.Search.URL);
-            await _wvRewardsController.SetRewardsURL(new Uri("https://rewards.bing.com/pointsbreakdown"));
+            await _wvRewardsController.SetRewardsURL(new Uri(_profile.Preferences.RewardsUrl));
             _mainForm.SelectTabAndReturn(TabType.Rewards);
 
             await ExtractPoints();
