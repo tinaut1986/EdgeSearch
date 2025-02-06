@@ -25,11 +25,8 @@ namespace EdgeSearch.src.Models
         private DateTime? _streakTime;
         private int _streakDelay;
 
-        private int _currentRewards;
-        private int _totalRewards;
-
-        private int _currentAmbassadors;
-        private int _totalAmbassadors;
+        private int? _currentRewards;
+        private int? _totalRewards;
 
         public event PropertyChangedEventHandler PropertyChanged;
         #endregion
@@ -204,33 +201,47 @@ namespace EdgeSearch.src.Models
             set => _rewardsPlayed = value;
         }
 
-        public int CurrentAmbassadors
-        {
-            get => _currentAmbassadors;
-            set => _currentAmbassadors = value;
-        }
-
-        public int TotalAmbassadors
-        {
-            get => _totalAmbassadors;
-            set => _totalAmbassadors = value;
-        }
-
-        public string AmbassadorsString => $"Ambassadors: {CurrentAmbassadors}/{TotalAmbassadors}";
-
-        public int CurrentRewards
+        public int? CurrentRewards
         {
             get => _currentRewards;
             set => _currentRewards = value;
         }
 
-        public int TotalRewards
+        public int? TotalRewards
         {
             get => _totalRewards;
             set => _totalRewards = value;
         }
 
         public string RewardsString => $"Rewards: {CurrentRewards}/{TotalRewards}";
+
+        public bool IsBetweenSearches => StreakTime == null;
+
+        public bool IsOnStreakDelay => StreakTime != null;
+
+        public bool IsPendingEnterOnStreakDelay => StreakCount > 0 && StreakCount >= StreakAmount;
+
+        public bool IsPendingStartNextSearch => ElapsedSeconds >= SecondsToWait;
+
+        public SearchState State
+        {
+            get
+            {
+                if (IsPendingEnterOnStreakDelay)
+                    return SearchState.PendingEnterOnStreakDelay;
+
+                if (IsPendingStartNextSearch)
+                    return SearchState.PendingStartNextSearch;
+
+                if (IsBetweenSearches)
+                    return SearchState.BetweenSearches;
+
+                if (IsOnStreakDelay)
+                    return SearchState.OnStreaksDelay;
+
+                return SearchState.Stopped;
+            }
+        }
 
         #endregion
 
@@ -292,9 +303,9 @@ namespace EdgeSearch.src.Models
             UsedSearchs.Add(new Tuple<DateTime, SearchMode, string>(DateTime.Now, CurrentMode, search));
         }
 
-        public bool CanDoSearch()
+        public bool EmergencyStop()
         {
-            return UsedSearchs.Count(x => Math.Abs((x.Item1 - DateTime.Now).TotalSeconds) < 10) < 3;
+            return UsedSearchs.Count(x => Math.Abs((x.Item1 - DateTime.Now).TotalSeconds) < 10) >= 3;
         }
 
         public void IncreaseSearchCount()
@@ -303,6 +314,17 @@ namespace EdgeSearch.src.Models
                 MobileSearchesCount++;
             else
                 DesktopSearchesCount++;
+        }
+
+        public void Stop()
+        {
+            IsPlaying = false;
+            StreakCount = 0;
+            StreakAmount = null;
+            StreakDelay = 0;
+            StreakTime = null;
+            ElapsedSeconds = 0;
+            SecondsToWait = 0;
         }
 
         // This method is called by the Set accessor of each property.  

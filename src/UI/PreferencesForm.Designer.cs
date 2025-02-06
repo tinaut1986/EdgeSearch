@@ -17,6 +17,7 @@ namespace EdgeSearch.UI
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             txtMobileUserAgent = new TextBox();
             lblMobileUserAgent = new Label();
             txtMinWait = new TextBox();
@@ -46,16 +47,23 @@ namespace EdgeSearch.UI
             grpTimes = new GroupBox();
             lblMarginWait = new Label();
             txtMarginWait = new TextBox();
+            lblMarginExtracPointsDelay = new Label();
             lblMarginStreakDelay = new Label();
+            lblMaxExtracPointsDelay = new Label();
             lblMaxStreakDelay = new Label();
+            lblMinExtracPointsDelay = new Label();
             txtMarginStreakAmount = new TextBox();
             lblMarginStreakAmount = new Label();
             txtMaxStreakAmount = new TextBox();
             lblMaxStreakAmount = new Label();
+            txtMarginExtracPointsDelay = new TextBox();
+            txtMaxExtracPointsDelay = new TextBox();
             txtMarginStreakDelay = new TextBox();
+            txtMinExtracPointsDelay = new TextBox();
             txtMaxStreakDelay = new TextBox();
             grpGeneral = new GroupBox();
             cbSimulateKeyboardTyping = new CheckBox();
+            toolTip1 = new ToolTip(components);
             grpMobile.SuspendLayout();
             grpDesktop.SuspendLayout();
             grpTimes.SuspendLayout();
@@ -64,15 +72,17 @@ namespace EdgeSearch.UI
             // 
             // lblMessage
             // 
-            lblMessage.Size = new System.Drawing.Size(1053, 494);
+            lblMessage.Size = new System.Drawing.Size(1053, 532);
             // 
             // txtMobileUserAgent
             // 
+            txtMobileUserAgent.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtMobileUserAgent.Location = new System.Drawing.Point(112, 22);
             txtMobileUserAgent.Margin = new Padding(4, 3, 4, 3);
             txtMobileUserAgent.Name = "txtMobileUserAgent";
-            txtMobileUserAgent.Size = new System.Drawing.Size(618, 23);
+            txtMobileUserAgent.Size = new System.Drawing.Size(887, 23);
             txtMobileUserAgent.TabIndex = 0;
+            toolTip1.SetToolTip(txtMobileUserAgent, "Specifies the User-Agent string used to simulate searches from a mobile browser.");
             // 
             // lblMobileUserAgent
             // 
@@ -83,6 +93,7 @@ namespace EdgeSearch.UI
             lblMobileUserAgent.Size = new System.Drawing.Size(65, 15);
             lblMobileUserAgent.TabIndex = 3;
             lblMobileUserAgent.Text = "User Agent";
+            toolTip1.SetToolTip(lblMobileUserAgent, "Specifies the User-Agent string used to simulate searches from a mobile browser.");
             // 
             // txtMinWait
             // 
@@ -91,6 +102,7 @@ namespace EdgeSearch.UI
             txtMinWait.Name = "txtMinWait";
             txtMinWait.Size = new System.Drawing.Size(67, 23);
             txtMinWait.TabIndex = 0;
+            toolTip1.SetToolTip(txtMinWait, "The minimum waiting time (in seconds) between consecutive searches within a streak. A random value within the range will be selected.");
             // 
             // lblMinWait
             // 
@@ -101,6 +113,7 @@ namespace EdgeSearch.UI
             lblMinWait.Size = new System.Drawing.Size(72, 15);
             lblMinWait.TabIndex = 3;
             lblMinWait.Text = "Min. wait (s)";
+            toolTip1.SetToolTip(lblMinWait, "The minimum waiting time (in seconds) between consecutive searches within a streak. A random value within the range will be selected.");
             // 
             // txtMaxWait
             // 
@@ -109,6 +122,7 @@ namespace EdgeSearch.UI
             txtMaxWait.Name = "txtMaxWait";
             txtMaxWait.Size = new System.Drawing.Size(67, 23);
             txtMaxWait.TabIndex = 1;
+            toolTip1.SetToolTip(txtMaxWait, "The maximum waiting time (in seconds) between consecutive searches within a streak. A random value within the range will be selected.");
             // 
             // lblMaxWait
             // 
@@ -119,6 +133,7 @@ namespace EdgeSearch.UI
             lblMaxWait.Size = new System.Drawing.Size(74, 15);
             lblMaxWait.TabIndex = 3;
             lblMaxWait.Text = "Max. wait (s)";
+            toolTip1.SetToolTip(lblMaxWait, "The maximum waiting time (in seconds) between consecutive searches within a streak. A random value within the range will be selected.");
             // 
             // txtMobilePointsPerSearch
             // 
@@ -128,6 +143,7 @@ namespace EdgeSearch.UI
             txtMobilePointsPerSearch.ReadOnly = true;
             txtMobilePointsPerSearch.Size = new System.Drawing.Size(66, 23);
             txtMobilePointsPerSearch.TabIndex = 1;
+            toolTip1.SetToolTip(txtMobilePointsPerSearch, "The amount of points earned per search.");
             // 
             // lblMobilePointsPerSearch
             // 
@@ -138,6 +154,7 @@ namespace EdgeSearch.UI
             lblMobilePointsPerSearch.Size = new System.Drawing.Size(97, 15);
             lblMobilePointsPerSearch.TabIndex = 3;
             lblMobilePointsPerSearch.Text = "Points per search";
+            toolTip1.SetToolTip(lblMobilePointsPerSearch, "The amount of points earned per search.");
             // 
             // grpMobile
             // 
@@ -149,10 +166,10 @@ namespace EdgeSearch.UI
             grpMobile.Controls.Add(lblMobileTotalPoints);
             grpMobile.Controls.Add(txtMobilePointsPerSearch);
             grpMobile.Controls.Add(lblMobilePointsPerSearch);
-            grpMobile.Location = new System.Drawing.Point(12, 323);
+            grpMobile.Location = new System.Drawing.Point(12, 362);
             grpMobile.Name = "grpMobile";
-            grpMobile.Size = new System.Drawing.Size(760, 164);
-            grpMobile.TabIndex = 2;
+            grpMobile.Size = new System.Drawing.Size(1029, 164);
+            grpMobile.TabIndex = 4;
             grpMobile.TabStop = false;
             grpMobile.Text = "Mobile";
             // 
@@ -188,6 +205,7 @@ namespace EdgeSearch.UI
             txtMobileTotalPoints.ReadOnly = true;
             txtMobileTotalPoints.Size = new System.Drawing.Size(66, 23);
             txtMobileTotalPoints.TabIndex = 2;
+            toolTip1.SetToolTip(txtMobileTotalPoints, "Displays the total possible points to earn.");
             // 
             // lblMobileTotalPoints
             // 
@@ -198,6 +216,7 @@ namespace EdgeSearch.UI
             lblMobileTotalPoints.Size = new System.Drawing.Size(68, 15);
             lblMobileTotalPoints.TabIndex = 3;
             lblMobileTotalPoints.Text = "Total points";
+            toolTip1.SetToolTip(lblMobileTotalPoints, "Displays the total possible points to earn.");
             // 
             // txtMinStreakAmount
             // 
@@ -206,6 +225,7 @@ namespace EdgeSearch.UI
             txtMinStreakAmount.Name = "txtMinStreakAmount";
             txtMinStreakAmount.Size = new System.Drawing.Size(67, 23);
             txtMinStreakAmount.TabIndex = 3;
+            toolTip1.SetToolTip(txtMinStreakAmount, "The minimum number of searches performed in a single streak. A random value within the range will be selected.");
             // 
             // lblMinStreakAmount
             // 
@@ -216,6 +236,7 @@ namespace EdgeSearch.UI
             lblMinStreakAmount.Size = new System.Drawing.Size(110, 15);
             lblMinStreakAmount.TabIndex = 3;
             lblMinStreakAmount.Text = "Min. streak amount";
+            toolTip1.SetToolTip(lblMinStreakAmount, "The minimum number of searches performed in a single streak. A random value within the range will be selected.");
             // 
             // txtMinStreakDelay
             // 
@@ -224,6 +245,7 @@ namespace EdgeSearch.UI
             txtMinStreakDelay.Name = "txtMinStreakDelay";
             txtMinStreakDelay.Size = new System.Drawing.Size(67, 23);
             txtMinStreakDelay.TabIndex = 6;
+            toolTip1.SetToolTip(txtMinStreakDelay, "The minimum waiting time (in seconds) before starting a new streak after completing the current one. A random value within the range will be selected.");
             // 
             // lblMinStreakDelay
             // 
@@ -234,6 +256,7 @@ namespace EdgeSearch.UI
             lblMinStreakDelay.Size = new System.Drawing.Size(112, 15);
             lblMinStreakDelay.TabIndex = 3;
             lblMinStreakDelay.Text = "Min. streak delay (s)";
+            toolTip1.SetToolTip(lblMinStreakDelay, "The minimum waiting time (in seconds) before starting a new streak after completing the current one. A random value within the range will be selected.");
             // 
             // grpDesktop
             // 
@@ -245,10 +268,10 @@ namespace EdgeSearch.UI
             grpDesktop.Controls.Add(lblDesktopTotalPoints);
             grpDesktop.Controls.Add(txtDesktopPointsPerSearch);
             grpDesktop.Controls.Add(lblDesktopPointsPerSearch);
-            grpDesktop.Location = new System.Drawing.Point(12, 137);
+            grpDesktop.Location = new System.Drawing.Point(12, 176);
             grpDesktop.Name = "grpDesktop";
-            grpDesktop.Size = new System.Drawing.Size(760, 180);
-            grpDesktop.TabIndex = 1;
+            grpDesktop.Size = new System.Drawing.Size(1029, 180);
+            grpDesktop.TabIndex = 3;
             grpDesktop.TabStop = false;
             grpDesktop.Text = "Desktop";
             // 
@@ -278,11 +301,13 @@ namespace EdgeSearch.UI
             // 
             // txtDesktopUserAgent
             // 
+            txtDesktopUserAgent.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtDesktopUserAgent.Location = new System.Drawing.Point(112, 22);
             txtDesktopUserAgent.Margin = new Padding(4, 3, 4, 3);
             txtDesktopUserAgent.Name = "txtDesktopUserAgent";
-            txtDesktopUserAgent.Size = new System.Drawing.Size(618, 23);
+            txtDesktopUserAgent.Size = new System.Drawing.Size(887, 23);
             txtDesktopUserAgent.TabIndex = 0;
+            toolTip1.SetToolTip(txtDesktopUserAgent, "Specifies the User-Agent string used to simulate searches from a desktop browser.");
             // 
             // lblDesktopUserAgent
             // 
@@ -293,6 +318,7 @@ namespace EdgeSearch.UI
             lblDesktopUserAgent.Size = new System.Drawing.Size(65, 15);
             lblDesktopUserAgent.TabIndex = 3;
             lblDesktopUserAgent.Text = "User Agent";
+            toolTip1.SetToolTip(lblDesktopUserAgent, "Specifies the User-Agent string used to simulate searches from a desktop browser.");
             // 
             // txtDesktopTotalPoints
             // 
@@ -302,6 +328,7 @@ namespace EdgeSearch.UI
             txtDesktopTotalPoints.ReadOnly = true;
             txtDesktopTotalPoints.Size = new System.Drawing.Size(66, 23);
             txtDesktopTotalPoints.TabIndex = 2;
+            toolTip1.SetToolTip(txtDesktopTotalPoints, "Displays the total possible points to earn.");
             // 
             // lblDesktopTotalPoints
             // 
@@ -321,6 +348,7 @@ namespace EdgeSearch.UI
             txtDesktopPointsPerSearch.ReadOnly = true;
             txtDesktopPointsPerSearch.Size = new System.Drawing.Size(66, 23);
             txtDesktopPointsPerSearch.TabIndex = 1;
+            toolTip1.SetToolTip(txtDesktopPointsPerSearch, "The amount of points earned per search.");
             // 
             // lblDesktopPointsPerSearch
             // 
@@ -331,6 +359,7 @@ namespace EdgeSearch.UI
             lblDesktopPointsPerSearch.Size = new System.Drawing.Size(97, 15);
             lblDesktopPointsPerSearch.TabIndex = 3;
             lblDesktopPointsPerSearch.Text = "Points per search";
+            toolTip1.SetToolTip(lblDesktopPointsPerSearch, "The amount of points earned per search.");
             // 
             // grpTimes
             // 
@@ -339,8 +368,11 @@ namespace EdgeSearch.UI
             grpTimes.Controls.Add(txtMinWait);
             grpTimes.Controls.Add(txtMarginWait);
             grpTimes.Controls.Add(txtMaxWait);
+            grpTimes.Controls.Add(lblMarginExtracPointsDelay);
             grpTimes.Controls.Add(lblMarginStreakDelay);
+            grpTimes.Controls.Add(lblMaxExtracPointsDelay);
             grpTimes.Controls.Add(lblMaxStreakDelay);
+            grpTimes.Controls.Add(lblMinExtracPointsDelay);
             grpTimes.Controls.Add(lblMinStreakDelay);
             grpTimes.Controls.Add(txtMarginStreakAmount);
             grpTimes.Controls.Add(lblMarginStreakAmount);
@@ -348,14 +380,17 @@ namespace EdgeSearch.UI
             grpTimes.Controls.Add(lblMaxStreakAmount);
             grpTimes.Controls.Add(txtMinStreakAmount);
             grpTimes.Controls.Add(lblMinStreakAmount);
+            grpTimes.Controls.Add(txtMarginExtracPointsDelay);
+            grpTimes.Controls.Add(txtMaxExtracPointsDelay);
             grpTimes.Controls.Add(txtMarginStreakDelay);
+            grpTimes.Controls.Add(txtMinExtracPointsDelay);
             grpTimes.Controls.Add(txtMaxStreakDelay);
             grpTimes.Controls.Add(txtMinStreakDelay);
             grpTimes.Controls.Add(lblMinWait);
             grpTimes.Location = new System.Drawing.Point(12, 12);
             grpTimes.Name = "grpTimes";
-            grpTimes.Size = new System.Drawing.Size(760, 119);
-            grpTimes.TabIndex = 0;
+            grpTimes.Size = new System.Drawing.Size(760, 158);
+            grpTimes.TabIndex = 1;
             grpTimes.TabStop = false;
             grpTimes.Text = "Times";
             // 
@@ -368,6 +403,7 @@ namespace EdgeSearch.UI
             lblMarginWait.Size = new System.Drawing.Size(86, 15);
             lblMarginWait.TabIndex = 3;
             lblMarginWait.Text = "Margin wait (s)";
+            toolTip1.SetToolTip(lblMarginWait, "Additional random margin applied to the waiting time between searches, making the intervals less predictable.");
             // 
             // txtMarginWait
             // 
@@ -376,6 +412,18 @@ namespace EdgeSearch.UI
             txtMarginWait.Name = "txtMarginWait";
             txtMarginWait.Size = new System.Drawing.Size(67, 23);
             txtMarginWait.TabIndex = 2;
+            toolTip1.SetToolTip(txtMarginWait, "Additional random margin applied to the waiting time between searches, making the intervals less predictable.");
+            // 
+            // lblMarginExtracPointsDelay
+            // 
+            lblMarginExtracPointsDelay.AutoSize = true;
+            lblMarginExtracPointsDelay.Location = new System.Drawing.Point(532, 113);
+            lblMarginExtracPointsDelay.Margin = new Padding(4, 0, 4, 0);
+            lblMarginExtracPointsDelay.Name = "lblMarginExtracPointsDelay";
+            lblMarginExtracPointsDelay.Size = new System.Drawing.Size(117, 15);
+            lblMarginExtracPointsDelay.TabIndex = 3;
+            lblMarginExtracPointsDelay.Text = "Margin e. p. delay (s)";
+            toolTip1.SetToolTip(lblMarginExtracPointsDelay, "Additional random margin applied to the delay for points extraction, increasing variability.");
             // 
             // lblMarginStreakDelay
             // 
@@ -386,6 +434,18 @@ namespace EdgeSearch.UI
             lblMarginStreakDelay.Size = new System.Drawing.Size(126, 15);
             lblMarginStreakDelay.TabIndex = 3;
             lblMarginStreakDelay.Text = "Margin streak delay (s)";
+            toolTip1.SetToolTip(lblMarginStreakDelay, "Additional random margin applied to the delay between streaks for added unpredictability.");
+            // 
+            // lblMaxExtracPointsDelay
+            // 
+            lblMaxExtracPointsDelay.AutoSize = true;
+            lblMaxExtracPointsDelay.Location = new System.Drawing.Point(269, 113);
+            lblMaxExtracPointsDelay.Margin = new Padding(4, 0, 4, 0);
+            lblMaxExtracPointsDelay.Name = "lblMaxExtracPointsDelay";
+            lblMaxExtracPointsDelay.Size = new System.Drawing.Size(105, 15);
+            lblMaxExtracPointsDelay.TabIndex = 3;
+            lblMaxExtracPointsDelay.Text = "Max. e. p. delay (s)";
+            toolTip1.SetToolTip(lblMaxExtracPointsDelay, "The maximum waiting time (in seconds) before performing a points extraction to check the user's current points. A random value within the range will be selected.");
             // 
             // lblMaxStreakDelay
             // 
@@ -396,6 +456,18 @@ namespace EdgeSearch.UI
             lblMaxStreakDelay.Size = new System.Drawing.Size(114, 15);
             lblMaxStreakDelay.TabIndex = 3;
             lblMaxStreakDelay.Text = "Max. streak delay (s)";
+            toolTip1.SetToolTip(lblMaxStreakDelay, "The maximum waiting time (in seconds) before starting a new streak after completing the current one. A random value within the range will be selected.");
+            // 
+            // lblMinExtracPointsDelay
+            // 
+            lblMinExtracPointsDelay.AutoSize = true;
+            lblMinExtracPointsDelay.Location = new System.Drawing.Point(21, 113);
+            lblMinExtracPointsDelay.Margin = new Padding(4, 0, 4, 0);
+            lblMinExtracPointsDelay.Name = "lblMinExtracPointsDelay";
+            lblMinExtracPointsDelay.Size = new System.Drawing.Size(103, 15);
+            lblMinExtracPointsDelay.TabIndex = 3;
+            lblMinExtracPointsDelay.Text = "Min. e. p. delay (s)";
+            toolTip1.SetToolTip(lblMinExtracPointsDelay, "The minimum waiting time (in seconds) before performing a points extraction to check the user's current points. A random value within the range will be selected.");
             // 
             // txtMarginStreakAmount
             // 
@@ -404,6 +476,7 @@ namespace EdgeSearch.UI
             txtMarginStreakAmount.Name = "txtMarginStreakAmount";
             txtMarginStreakAmount.Size = new System.Drawing.Size(67, 23);
             txtMarginStreakAmount.TabIndex = 5;
+            toolTip1.SetToolTip(txtMarginStreakAmount, "Additional random margin applied to the number of searches in a streak, adding variability.");
             // 
             // lblMarginStreakAmount
             // 
@@ -414,6 +487,7 @@ namespace EdgeSearch.UI
             lblMarginStreakAmount.Size = new System.Drawing.Size(124, 15);
             lblMarginStreakAmount.TabIndex = 3;
             lblMarginStreakAmount.Text = "Margin streak amount";
+            toolTip1.SetToolTip(lblMarginStreakAmount, "Additional random margin applied to the number of searches in a streak, adding variability.");
             // 
             // txtMaxStreakAmount
             // 
@@ -422,6 +496,7 @@ namespace EdgeSearch.UI
             txtMaxStreakAmount.Name = "txtMaxStreakAmount";
             txtMaxStreakAmount.Size = new System.Drawing.Size(67, 23);
             txtMaxStreakAmount.TabIndex = 4;
+            toolTip1.SetToolTip(txtMaxStreakAmount, "The maximum number of searches performed in a single streak. A random value within the range will be selected.");
             // 
             // lblMaxStreakAmount
             // 
@@ -432,6 +507,25 @@ namespace EdgeSearch.UI
             lblMaxStreakAmount.Size = new System.Drawing.Size(112, 15);
             lblMaxStreakAmount.TabIndex = 3;
             lblMaxStreakAmount.Text = "Max. streak amount";
+            toolTip1.SetToolTip(lblMaxStreakAmount, "The maximum number of searches performed in a single streak. A random value within the range will be selected.");
+            // 
+            // txtMarginExtracPointsDelay
+            // 
+            txtMarginExtracPointsDelay.Location = new System.Drawing.Point(663, 109);
+            txtMarginExtracPointsDelay.Margin = new Padding(4, 3, 4, 3);
+            txtMarginExtracPointsDelay.Name = "txtMarginExtracPointsDelay";
+            txtMarginExtracPointsDelay.Size = new System.Drawing.Size(67, 23);
+            txtMarginExtracPointsDelay.TabIndex = 11;
+            toolTip1.SetToolTip(txtMarginExtracPointsDelay, "Additional random margin applied to the delay for points extraction, increasing variability.");
+            // 
+            // txtMaxExtracPointsDelay
+            // 
+            txtMaxExtracPointsDelay.Location = new System.Drawing.Point(388, 109);
+            txtMaxExtracPointsDelay.Margin = new Padding(4, 3, 4, 3);
+            txtMaxExtracPointsDelay.Name = "txtMaxExtracPointsDelay";
+            txtMaxExtracPointsDelay.Size = new System.Drawing.Size(67, 23);
+            txtMaxExtracPointsDelay.TabIndex = 10;
+            toolTip1.SetToolTip(txtMaxExtracPointsDelay, "The maximum waiting time (in seconds) before performing a points extraction to check the user's current points. A random value within the range will be selected.");
             // 
             // txtMarginStreakDelay
             // 
@@ -440,6 +534,16 @@ namespace EdgeSearch.UI
             txtMarginStreakDelay.Name = "txtMarginStreakDelay";
             txtMarginStreakDelay.Size = new System.Drawing.Size(67, 23);
             txtMarginStreakDelay.TabIndex = 8;
+            toolTip1.SetToolTip(txtMarginStreakDelay, "Additional random margin applied to the delay between streaks for added unpredictability.");
+            // 
+            // txtMinExtracPointsDelay
+            // 
+            txtMinExtracPointsDelay.Location = new System.Drawing.Point(158, 109);
+            txtMinExtracPointsDelay.Margin = new Padding(4, 3, 4, 3);
+            txtMinExtracPointsDelay.Name = "txtMinExtracPointsDelay";
+            txtMinExtracPointsDelay.Size = new System.Drawing.Size(67, 23);
+            txtMinExtracPointsDelay.TabIndex = 9;
+            toolTip1.SetToolTip(txtMinExtracPointsDelay, "The minimum waiting time (in seconds) before performing a points extraction to check the user's current points. A random value within the range will be selected.");
             // 
             // txtMaxStreakDelay
             // 
@@ -448,6 +552,7 @@ namespace EdgeSearch.UI
             txtMaxStreakDelay.Name = "txtMaxStreakDelay";
             txtMaxStreakDelay.Size = new System.Drawing.Size(67, 23);
             txtMaxStreakDelay.TabIndex = 7;
+            toolTip1.SetToolTip(txtMaxStreakDelay, "The maximum waiting time (in seconds) before starting a new streak after completing the current one. A random value within the range will be selected.");
             // 
             // grpGeneral
             // 
@@ -455,7 +560,7 @@ namespace EdgeSearch.UI
             grpGeneral.Location = new System.Drawing.Point(778, 12);
             grpGeneral.Name = "grpGeneral";
             grpGeneral.Size = new System.Drawing.Size(263, 119);
-            grpGeneral.TabIndex = 3;
+            grpGeneral.TabIndex = 2;
             grpGeneral.TabStop = false;
             grpGeneral.Text = "General";
             // 
@@ -467,13 +572,14 @@ namespace EdgeSearch.UI
             cbSimulateKeyboardTyping.Size = new System.Drawing.Size(161, 19);
             cbSimulateKeyboardTyping.TabIndex = 0;
             cbSimulateKeyboardTyping.Text = "Simulate keyboard typing";
+            toolTip1.SetToolTip(cbSimulateKeyboardTyping, "Enables simulation of keyboard typing during searches to mimic human behavior and avoid detection.");
             cbSimulateKeyboardTyping.UseVisualStyleBackColor = true;
             // 
             // PreferencesForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1053, 527);
+            ClientSize = new System.Drawing.Size(1053, 565);
             Controls.Add(grpGeneral);
             Controls.Add(grpTimes);
             Controls.Add(grpDesktop);
@@ -538,5 +644,12 @@ namespace EdgeSearch.UI
         private src.UI.CustomProgressBarSettings cpbsMobileNormal;
         private GroupBox grpGeneral;
         private CheckBox cbSimulateKeyboardTyping;
+        private Label lblMarginExtracPointsDelay;
+        private Label lblMaxExtracPointsDelay;
+        private Label lblMinExtracPointsDelay;
+        private TextBox txtMarginExtracPointsDelay;
+        private TextBox txtMaxExtracPointsDelay;
+        private TextBox txtMinExtracPointsDelay;
+        private ToolTip toolTip1;
     }
 }

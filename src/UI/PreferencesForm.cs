@@ -77,6 +77,15 @@ namespace EdgeSearch.UI
             txtMarginStreakDelay.DataBindings.Clear();
             txtMarginStreakDelay.DataBindings.Add(nameof(txtMarginStreakDelay.Text), model, nameof(model.MarginStreakDelay), true, DataSourceUpdateMode.OnPropertyChanged);
 
+            txtMinExtracPointsDelay.DataBindings.Clear();
+            txtMinExtracPointsDelay.DataBindings.Add(nameof(txtMinExtracPointsDelay.Text), model, nameof(model.MinExtractPointsDelay), true, DataSourceUpdateMode.OnPropertyChanged);
+
+            txtMaxExtracPointsDelay.DataBindings.Clear();
+            txtMaxExtracPointsDelay.DataBindings.Add(nameof(txtMaxExtracPointsDelay.Text), model, nameof(model.MaxExtractPointsDelay), true, DataSourceUpdateMode.OnPropertyChanged);
+
+            txtMarginExtracPointsDelay.DataBindings.Clear();
+            txtMarginExtracPointsDelay.DataBindings.Add(nameof(txtMarginExtracPointsDelay.Text), model, nameof(model.MarginExtractPointsDelay), true, DataSourceUpdateMode.OnPropertyChanged);
+
             txtMobileUserAgent.DataBindings.Clear();
             txtMobileUserAgent.DataBindings.Add(nameof(txtMobileUserAgent.Text), model, nameof(model.MobileUserAgent), true, DataSourceUpdateMode.OnPropertyChanged);
 
@@ -114,6 +123,6 @@ namespace EdgeSearch.UI
 
         #region Events
 
-        #endregion
+        #endregion        
     }
 }
