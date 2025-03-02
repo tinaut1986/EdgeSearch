@@ -224,7 +224,7 @@ namespace EdgeSearch.src.Business
             {
                 // Construct and open the search URL directly
                 string encodedSearch = Uri.EscapeDataString(currentSearch);
-                _profile.Search.URL = new Uri(string.Format(_profile.Preferences.SearchesUrl, encodedSearch));
+                _profile.Search.URL = new Uri(string.Format(_profile.Preferences.SearchesFullUrl, encodedSearch));
                 await _wvSearchesController.OpenSearchesURL(_profile.Search.URL);
                 Console.WriteLine("Search initiated through direct URL navigation.");
             }
@@ -538,7 +538,7 @@ namespace EdgeSearch.src.Business
 
             await _wvSearchesController.EnsureCoreWebView2Async();
             await _wvRewardsController.EnsureCoreWebView2Async();
-            _profile.Search.URL = new Uri(_profile.Preferences.SearchesEmptyUrl);
+            _profile.Search.URL = new Uri(_profile.Preferences.SearchesBaseUrl);
             await _wvSearchesController.OpenSearchesURL(_profile.Search.URL);
             await _wvRewardsController.SetRewardsURL(new Uri(_profile.Preferences.RewardsUrl));
             _mainForm.SelectTabAndReturn(TabType.Rewards);

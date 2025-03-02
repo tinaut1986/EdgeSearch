@@ -325,9 +325,9 @@ namespace EdgeSearch.UI
             int currentRewards = search.CurrentRewards ?? 0;
             int totalRewards = search.TotalRewards ?? 0;
             string currentTime = $"{TimeSpan.FromSeconds(search.CurrentRewardsProgress):mm\\:ss}";
-            string maxTimee = $"{TimeSpan.FromSeconds(search.MaxRewardsProgress):mm\\:ss}";
+            string maxTime = $"{TimeSpan.FromSeconds(search.MaxRewardsProgress):mm\\:ss}";
 
-            pbRewards.Text = $"Rewards: ({openedRewards}) | {currentRewards} / {totalRewards} | {currentTime} / {maxTimee}";
+            pbRewards.Text = $"Rewards: ({openedRewards}) | {currentRewards} / {totalRewards} | {currentTime} / {maxTime}";
         }
 
         public void UpdateProgressBarSearches(Profile profile)

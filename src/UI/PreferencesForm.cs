@@ -107,6 +107,15 @@ namespace EdgeSearch.UI
             cbSimulateKeyboardTyping.DataBindings.Clear();
             cbSimulateKeyboardTyping.DataBindings.Add(nameof(cbSimulateKeyboardTyping.Checked), model, nameof(model.SimulateKeyboardTyping), true, DataSourceUpdateMode.OnPropertyChanged);
 
+            txtUrlSearches.DataBindings.Clear();
+            txtUrlSearches.DataBindings.Add(nameof(txtUrlSearches.Text), model, nameof(model.SearchesBaseUrl), true, DataSourceUpdateMode.OnPropertyChanged);
+
+            txtSearchesParameter.DataBindings.Clear();
+            txtSearchesParameter.DataBindings.Add(nameof(txtSearchesParameter.Text), model, nameof(model.SearchesParameterUrl), true, DataSourceUpdateMode.OnPropertyChanged);
+
+            txtUrlRewards.DataBindings.Clear();
+            txtUrlRewards.DataBindings.Add(nameof(txtUrlRewards.Text), model, nameof(model.RewardsUrl), true, DataSourceUpdateMode.OnPropertyChanged);
+
             cpbsMobileNormal.BindFields(model.mobileNormalProgressBarColors);
 
             cpbsMobileReverse.BindFields(model.mobileReverseProgressBarColors);
