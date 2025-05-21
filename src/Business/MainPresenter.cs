@@ -142,18 +142,19 @@ namespace EdgeSearch.src.Business
             _mainForm.RefreshSearchesURL();
         }
 
-        private async void _mainForm_PlayRewardsClicked(object sender, EventArgs e)
+        private void _mainForm_PlayRewardsClicked(object sender, EventArgs e)
         {
-            if (!_profile.Search.RewardsPlaying)
+            // If already playing, and rewards are the focus, this button acts as a stop for rewards.
+            // Otherwise, it tries to play rewards (potentially with searches or rewards-only).
+            if (_profile.Search.IsPlaying && _profile.Search.RewardsPlaying)
             {
-                if (!_refreshTimer.Enabled)
-                    _refreshTimer.Start(); // Inicia el temporizador cuando se presiona el botón
-
-                await _wvRewardsController.OpenRewards();
-
-                if (!_profile.Search.IsPlaying)
-                    _refreshTimer.Stop();
+                Stop(); // Stop will turn off RewardsPlaying and potentially everything else
             }
+            else
+            {
+                PlayAndStop(true); // True indicates intent to play rewards
+            }
+            _mainForm.UpdateInterface(_awaker, _extractPointsTimer);
         }
 
         private void _mainForm_PlaySearchesClicked(object sender, EventArgs e)
@@ -310,42 +311,87 @@ namespace EdgeSearch.src.Business
 
         private void PlayAndStop(bool openRewards)
         {
-            if (!_profile.Search.IsPlaying)
+            if (_profile.Search.IsPlaying)
             {
-                Play();
-
-                if (openRewards)
-                    _wvRewardsController.OpenRewards();
+                Stop();
             }
             else
-                Stop();
-
+            {
+                Play(openRewards);
+            }
             _mainForm.UpdateInterface(_awaker, _extractPointsTimer);
         }
 
         private void Stop()
         {
-            if (!_profile.Search.RewardsPlaying)
-                _refreshTimer.Stop(); // Detiene el temporizador si ya está activo
-            _extractPointsTimer.Stop(); // Detiene el temporizador de extracción de puntos
-            _profile.Search.Stop();
-
+            _profile.Search.IsPlaying = false;
+            _profile.Search.RewardsPlaying = false; // Signal OpenRewards to stop
+            _refreshTimer.Stop();
+            _extractPointsTimer.Stop();
             _awaker.Stop();
-            _cancellationTokenSource.Cancel();
+            if (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
+            {
+                _cancellationTokenSource.Cancel();
+            }
+            _profile.Search.Stop(); // Original stop logic from profile
+            _mainForm.UpdateInterface(_awaker, _extractPointsTimer);
         }
 
-        private async void Play()
+        private async void Play(bool playRewardsIntent)
         {
-            RestartRepetitionsLimits();
-
-            _refreshTimer.Start(); // Inicia el temporizador cuando se presiona el botón
-            _extractPointsTimer.Start(); // Inicia el temporizador de extracción de puntos
             _profile.Search.IsPlaying = true;
             _awaker.Start();
+            _extractPointsTimer.Start(); // Start extracting points early if rewards are intended.
 
+            RestartRepetitionsLimits();
             EnsureFreshCancellationTokenSource();
 
-            await _wvSearchesController.SimulateHorizontalScrollAsync(_cancellationTokenSource.Token);
+            bool searchesAvailable = !_profile.Search.EmergencyStop();
+
+            if (searchesAvailable)
+            {
+                _refreshTimer.Start(); // For ManageSearch
+                await _wvSearchesController.SimulateHorizontalScrollAsync(_cancellationTokenSource.Token);
+
+                if (playRewardsIntent)
+                {
+                    _profile.Search.RewardsPlaying = true;
+                    Task.Run(async () => await _wvRewardsController.OpenRewards()).ContinueWith(task =>
+                    {
+                        Console.WriteLine("MainPresenter: OpenRewards task completed (called from searchesAvailable block).");
+                        // _profile.Search.RewardsPlaying should be false here if OpenRewards completed its job or was stopped.
+                        if (_profile.Search.EmergencyStop() && !_profile.Search.RewardsPlaying)
+                        {
+                            Console.WriteLine("MainPresenter: OpenRewards completed, no searches left. Calling Stop().");
+                            Stop();
+                        }
+                    });
+                }
+            }
+            else if (playRewardsIntent) // Rewards-only mode
+            {
+                _profile.Search.RewardsPlaying = true;
+                // Use Task.Run to ensure Play method doesn't get blocked.
+                Task.Run(async () => await _wvRewardsController.OpenRewards()).ContinueWith(task =>
+                {
+                    Console.WriteLine("MainPresenter: OpenRewards task completed (called from rewards-only block).");
+                    // _profile.Search.RewardsPlaying should be false here if OpenRewards completed its job or was stopped.
+                    // In rewards-only mode, EmergencyStop() would be true (or no searches were available to begin with).
+                    if (!_profile.Search.RewardsPlaying) // No need to check EmergencyStop() as we are in rewards-only path
+                    {
+                        Console.WriteLine("MainPresenter: OpenRewards completed (rewards-only mode). Calling Stop().");
+                        Stop();
+                    }
+                });
+            }
+            else // No searches available and no intent to play rewards
+            {
+                _profile.Search.IsPlaying = false;
+                _awaker.Stop();
+                _extractPointsTimer.Stop();
+                // _refreshTimer was not started
+            }
+            _mainForm.UpdateInterface(_awaker, _extractPointsTimer);
         }
 
         public void RestartRepetitionsLimits()
@@ -384,6 +430,24 @@ namespace EdgeSearch.src.Business
         private async Task ManageSearch()
         {
             DateTime now = DateTime.Now;
+
+            // If EmergencyStop is true (no more searches)
+            if (_profile.Search.EmergencyStop())
+            {
+                // And if rewards are not playing (or intended to play)
+                if (!_profile.Search.RewardsPlaying)
+                {
+                    Stop();
+                    return;
+                }
+                // If rewards are playing, ManageSearch should not interfere with them.
+                // It should also ensure the _refreshTimer (for searches) is stopped.
+                if (_refreshTimer.Enabled)
+                {
+                    _refreshTimer.Stop();
+                }
+                return; // Let rewards play out, or be stopped by user.
+            }
 
             // Si estamos en espera entre rachas
             if (_profile.Search.State == SearchState.OnStreaksDelay)

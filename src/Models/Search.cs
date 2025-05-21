@@ -344,6 +344,7 @@ namespace EdgeSearch.src.Models
         public Search()
         {
             CurrentMode = SearchMode.Desktop;
+            _rewardsPlaying = false; // Explicitly initialize, though default is false
         }
         #endregion
 

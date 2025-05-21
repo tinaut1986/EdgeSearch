@@ -321,13 +321,11 @@ namespace EdgeSearch.UI
 
         public void UpdateProgressBarRewards(Search search)
         {
-            int openedRewards = search.OpenedRewards;
-            int currentRewards = search.CurrentRewards ?? 0;
-            int totalRewards = search.TotalRewards ?? 0;
-            string currentTime = $"{TimeSpan.FromSeconds(search.CurrentRewardsProgress):mm\\:ss}";
-            string maxTime = $"{TimeSpan.FromSeconds(search.MaxRewardsProgress):mm\\:ss}";
-
-            pbRewards.Text = $"Rewards: ({openedRewards}) | {currentRewards} / {totalRewards} | {currentTime} / {maxTime}";
+            // string openedRewardsStr = search.OpenedRewards > 0 ? $" (Opening: {search.OpenedRewards})" : "";
+            // Updated to reflect task requirements, which seem to have a slight variation from the thought process
+            // Using the exact line from the task description:
+            string openedRewardsStr = search.OpenedRewards > 0 ? $" (Opening: {search.OpenedRewards})" : ""; 
+            pbRewards.Text = $"Rewards: {search.CurrentRewards ?? 0} / {search.TotalRewards ?? 0}{openedRewardsStr}";
         }
 
         public void UpdateProgressBarSearches(Profile profile)
@@ -390,24 +388,10 @@ namespace EdgeSearch.UI
 
         public void SetRewardsProgressBarState(Search search)
         {
-            if (search.DelayBetweenRewardsTime != null)
-            {
-                pbRewards.Maximum = search.DelayBetweenRewards.Value;
-                pbRewards.Value = Convert.ToInt32((DateTime.Now - search.DelayBetweenRewardsTime.Value).TotalSeconds);
-                pbRewards.Minimum = 0;
-            }
-            else if (search.DelayToRetryRewardsTime != null)
-            {
-                pbRewards.Maximum = search.DelayToRetryRewards.Value;
-                pbRewards.Value = search.DelayToRetryRewards.Value - Convert.ToInt32((DateTime.Now - search.DelayToRetryRewardsTime.Value).TotalSeconds);
-                pbRewards.Minimum = 0;
-            }
-            else
-            {
-                pbRewards.Maximum = 0;
-                pbRewards.Value = 0;
-                pbRewards.Minimum = 0;
-            }
+            pbRewards.Minimum = 0;
+            pbRewards.Maximum = search.TotalRewards ?? 0;
+            // Ensure Value does not exceed Maximum, especially during transient states or if CurrentRewards could somehow exceed TotalRewards.
+            pbRewards.Value = Math.Min(search.CurrentRewards ?? 0, search.TotalRewards ?? 0);
         }
 
         #endregion
