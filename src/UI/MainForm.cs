@@ -321,11 +321,18 @@ namespace EdgeSearch.UI
 
         public void UpdateProgressBarRewards(Search search)
         {
-            // string openedRewardsStr = search.OpenedRewards > 0 ? $" (Opening: {search.OpenedRewards})" : "";
-            // Updated to reflect task requirements, which seem to have a slight variation from the thought process
-            // Using the exact line from the task description:
-            string openedRewardsStr = search.OpenedRewards > 0 ? $" (Opening: {search.OpenedRewards})" : ""; 
-            pbRewards.Text = $"Rewards: {search.CurrentRewards ?? 0} / {search.TotalRewards ?? 0}{openedRewardsStr}";
+            if (search.DelayToRetryRewardsTime.HasValue && search.DelayToRetryRewards.HasValue)
+            {
+                int totalDelaySeconds = search.DelayToRetryRewards.Value / 1000;
+                int elapsedSeconds = Convert.ToInt32((DateTime.Now - search.DelayToRetryRewardsTime.Value).TotalSeconds);
+                int remainingSeconds = Math.Max(0, totalDelaySeconds - elapsedSeconds);
+                pbRewards.Text = $"Rewards: Next attempt in {TimeSpan.FromSeconds(remainingSeconds):mm\\:ss} / {TimeSpan.FromSeconds(totalDelaySeconds):mm\\:ss}";
+            }
+            else
+            {
+                string openedRewardsStr = search.OpenedRewards > 0 ? $" (Opening: {search.OpenedRewards})" : "";
+                pbRewards.Text = $"Rewards: {search.CurrentRewards ?? 0} / {search.TotalRewards ?? 0}{openedRewardsStr}";
+            }
         }
 
         public void UpdateProgressBarSearches(Profile profile)
@@ -389,9 +396,19 @@ namespace EdgeSearch.UI
         public void SetRewardsProgressBarState(Search search)
         {
             pbRewards.Minimum = 0;
-            pbRewards.Maximum = search.TotalRewards ?? 0;
-            // Ensure Value does not exceed Maximum, especially during transient states or if CurrentRewards could somehow exceed TotalRewards.
-            pbRewards.Value = Math.Min(search.CurrentRewards ?? 0, search.TotalRewards ?? 0);
+            if (search.DelayToRetryRewardsTime.HasValue && search.DelayToRetryRewards.HasValue)
+            {
+                int totalDelaySeconds = search.DelayToRetryRewards.Value / 1000; // Assuming DelayToRetryRewards is in milliseconds
+                int elapsedSeconds = Convert.ToInt32((DateTime.Now - search.DelayToRetryRewardsTime.Value).TotalSeconds);
+                pbRewards.Maximum = totalDelaySeconds;
+                pbRewards.Value = Math.Max(0, totalDelaySeconds - elapsedSeconds); // Reversed progress
+            }
+            else
+            {
+                pbRewards.Maximum = search.TotalRewards ?? 0;
+                // Ensure Value does not exceed Maximum, especially during transient states or if CurrentRewards could somehow exceed TotalRewards.
+                pbRewards.Value = Math.Min(search.CurrentRewards ?? 0, search.TotalRewards ?? 0);
+            }
         }
 
         #endregion

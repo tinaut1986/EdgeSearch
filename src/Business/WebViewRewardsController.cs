@@ -67,9 +67,12 @@ namespace EdgeSearch.src.Business
             // Initial count of total available reward buttons
             string initialCheckScript = string.Format(@"
                 (function() {{
-                    var buttons = document.getElementsByClassName('{0}');
-                    var validButtons = Array.prototype.filter.call(buttons, function(button) {{
-                        return !button.classList.contains('{1}');
+                    function isVisible(elem) {{
+                        return !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length > 0) && getComputedStyle(elem).visibility !== 'hidden' && getComputedStyle(elem).display !== 'none';
+                    }}
+                    var buttons = Array.from(document.getElementsByClassName('{0}'));
+                    var validButtons = buttons.filter(function(button) {{
+                        return !button.classList.contains('{1}') && isVisible(button);
                     }});
                     return validButtons.length;
                 }})()
@@ -107,9 +110,12 @@ namespace EdgeSearch.src.Business
                 // Verificar si hay botones disponibles for the current pass
                 string checkScript = string.Format(@"
                     (function() {{
-                        var buttons = document.getElementsByClassName('{0}');
-                        var validButtons = Array.prototype.filter.call(buttons, function(button) {{
-                            return !button.classList.contains('{1}');
+                        function isVisible(elem) {{
+                            return !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length > 0) && getComputedStyle(elem).visibility !== 'hidden' && getComputedStyle(elem).display !== 'none';
+                        }}
+                        var buttons = Array.from(document.getElementsByClassName('{0}'));
+                        var validButtons = buttons.filter(function(button) {{
+                            return !button.classList.contains('{1}') && isVisible(button);
                         }});
                         return validButtons.length;
                     }})()
@@ -141,9 +147,12 @@ namespace EdgeSearch.src.Business
 
                     string clickScript = string.Format(@"
                         (function() {{
-                            var buttons = document.getElementsByClassName('{0}');
-                            var validButtons = Array.prototype.filter.call(buttons, function(button) {{
-                                return !button.classList.contains('{1}');
+                            function isVisible(elem) {{
+                                return !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length > 0) && getComputedStyle(elem).visibility !== 'hidden' && getComputedStyle(elem).display !== 'none';
+                            }}
+                            var buttons = Array.from(document.getElementsByClassName('{0}'));
+                            var validButtons = buttons.filter(function(button) {{
+                                return !button.classList.contains('{1}') && isVisible(button);
                             }});
                             if (validButtons.length > {2}) {{ // Check against current i
                                 validButtons[{2}].click(); // Click the i-th button in the filtered list
@@ -151,7 +160,7 @@ namespace EdgeSearch.src.Business
                             }}
                             return false;
                         }})()
-                    ", className, excludeClassName, i); // Corrected to use i
+                    ", className, excludeClassName, i);
 
                     var clickResult = await _wvRewards.ExecuteScriptAsync(clickScript);
                     if (clickResult == null || clickResult.ToString().ToLower() != "true")
