@@ -111,19 +111,23 @@ namespace EdgeSearch.src.Business
 
                 // Event handler for navigation completed
                 EventHandler<CoreWebView2NavigationCompletedEventArgs> handler = null;
+                bool navigationProcessed = false;
 
                 handler = async (s, args) =>
                 {
                     // Close the new window after it has fully loaded
-                    if (args.IsSuccess)
+                    if (args.IsSuccess && !navigationProcessed)
                     {
+                        navigationProcessed = true;
+                        newWebView.CoreWebView2.NavigationCompleted -= handler; // Unsubscribe from the event
+
                         await Task.Delay(15000); // Wait for 15 seconds before closing the window
 
-                        // TODO: For some reason, this code runs more than once. 
-                        // Investigate how to prevent the counter from decrementing multiple times.
-                        // newWebView.CoreWebView2.NavigationCompleted -= handler; // Unsubscribe from the event
+                        if (!newWebView.IsDisposed)
+                        {
+                            newWebView.Dispose(); // Dispose of the WebView2 instance
+                        }
 
-                        newWebView.Dispose(); // Dispose of the WebView2 instance
                         _mainForm.SetRewardsProgressBarState(_profile.Search.RewardsPlayed);
                         _mainForm.UpdateProgressBarRewards(_profile.Search); // Update progress bar again
                     }
